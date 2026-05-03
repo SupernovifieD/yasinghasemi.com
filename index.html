@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yasin Ghasemi's Personal Blog</title>
+  <link rel="stylesheet" href="style/style.css" />
+</head>
+<body>
+  <div class="desktop" id="desktop">
+    <!-- Desktop icons -->
+    <div class="desktop-icons">
+      <button class="desktop-icon" data-name="My Computer" data-type="system">
+        <div class="icon-image placeholder-icon"></div>
+        <span>My Computer</span>
+      </button>
+
+      <button class="desktop-icon" data-name="My Documents" data-type="system">
+        <div class="icon-image placeholder-icon"></div>
+        <span>My Documents</span>
+      </button>
+
+      <button class="desktop-icon"
+              data-name="About.doc"
+              data-type="doc"
+              data-app="word"
+              data-file="desktop/about.html"
+              data-title="About.doc - Microsoft Word">
+        <div class="icon-image placeholder-icon"></div>
+        <span>About.doc</span>
+      </button>
+
+      <button class="desktop-icon"
+              data-name="Welcome.doc"
+              data-type="doc"
+              data-app="word"
+              data-file="desktop/welcome.html"
+              data-title="Welcome.doc - Microsoft Word">
+        <div class="icon-image placeholder-icon"></div>
+        <span>Welcome.doc</span>
+      </button>
+
+      <button class="desktop-icon"
+              data-name="TODO.txt"
+              data-type="doc"
+              data-app="notepad"
+              data-file="desktop/todo.html"
+              data-title="TODO.txt - Notepad">
+        <div class="icon-image placeholder-icon"></div>
+        <span>TODO.txt</span>
+      </button>
+
+      <button class="desktop-icon" data-name="Recycle Bin" data-type="system">
+        <div class="icon-image placeholder-icon"></div>
+        <span>Recycle Bin</span>
+      </button>
+    </div>
+
+    <!-- Windows will be created here -->
+    <div id="windows-layer"></div>
+  </div>
+
+  <!-- Taskbar -->
+  <footer class="taskbar">
+    <button class="start-button" id="start-btn">
+      <span class="start-logo placeholder-icon tiny"></span>
+      Start
+    </button>
+
+    <div class="quick-launch">
+      <button class="ql-icon placeholder-icon tiny" aria-label="Quick launch icon 1"></button>
+      <button class="ql-icon placeholder-icon tiny" aria-label="Quick launch icon 2"></button>
+      <button class="ql-icon placeholder-icon tiny" aria-label="Quick launch icon 3"></button>
+    </div>
+
+    <div class="task-buttons" id="task-buttons"></div>
+
+    <div class="taskbar-spacer"></div>
+
+    <div class="system-tray">
+      <span class="tray-icon placeholder-icon tiny"></span>
+      <span class="tray-icon placeholder-icon tiny"></span>
+      <time id="clock">12:00 AM</time>
+    </div>
+  </footer>
+
+  <!-- Start menu -->
+  <div class="start-menu hidden" id="start-menu">
+    <div class="start-menu-side">Windows 98</div>
+    <ul class="start-menu-list">
+      <li>Programs</li>
+      <li>Documents</li>
+      <li>Settings</li>
+      <li>Find</li>
+      <li>Help</li>
+      <li>Run...</li>
+      <li class="separator"></li>
+      <li>Shut Down...</li>
+    </ul>
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
