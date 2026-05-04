@@ -111,6 +111,67 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     state.minimized = false;
   }
 
+  function setMaxButtonState(state, isMaximized) {
+    const maxBtn = state.el.querySelector(".max-btn");
+    if (!maxBtn) return;
+
+    if (isMaximized) {
+      maxBtn.setAttribute("aria-label", "Restore");
+      maxBtn.textContent = "❐";
+      return;
+    }
+
+    maxBtn.setAttribute("aria-label", "Maximize");
+    maxBtn.textContent = "□";
+  }
+
+  function maximizeWindow(winId) {
+    const state = windowsMap.get(winId);
+    if (!state || state.maximized) return;
+
+    state.restoreBounds = {
+      left: state.el.style.left,
+      top: state.el.style.top,
+      width: state.el.style.width,
+      height: state.el.style.height
+    };
+
+    const layerBounds = windowsLayer.getBoundingClientRect();
+
+    state.el.style.left = "0";
+    state.el.style.top = "0";
+    state.el.style.width = `${Math.max(0, Math.floor(layerBounds.width))}px`;
+    state.el.style.height = `${Math.max(0, Math.floor(layerBounds.height))}px`;
+    state.maximized = true;
+    setMaxButtonState(state, true);
+  }
+
+  function restoreFromMaximized(winId) {
+    const state = windowsMap.get(winId);
+    if (!state || !state.maximized) return;
+
+    const bounds = state.restoreBounds || {};
+    state.el.style.left = bounds.left || "";
+    state.el.style.top = bounds.top || "";
+    state.el.style.width = bounds.width || "";
+    state.el.style.height = bounds.height || "";
+    state.maximized = false;
+    state.restoreBounds = null;
+    setMaxButtonState(state, false);
+  }
+
+  function toggleMaximized(winId) {
+    const state = windowsMap.get(winId);
+    if (!state) return;
+
+    if (state.maximized) {
+      restoreFromMaximized(winId);
+      return;
+    }
+
+    maximizeWindow(winId);
+  }
+
   function closeWindow(winId) {
     const state = windowsMap.get(winId);
     if (!state) return;
@@ -149,7 +210,9 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
       app,
       el: winEl,
       taskBtn,
-      minimized: false
+      minimized: false,
+      maximized: false,
+      restoreBounds: null
     };
     windowsMap.set(id, state);
 
@@ -171,16 +234,29 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     winEl.addEventListener("mousedown", () => bringToFront(id));
 
     const minBtn = winEl.querySelector(".min-btn");
+    const maxBtn = winEl.querySelector(".max-btn");
     const closeBtn = winEl.querySelector(".close-btn");
+    const titleBar = winEl.querySelector(".title-bar");
 
     minBtn.addEventListener("click", (event) => {
       event.stopPropagation();
       minimizeWindow(id);
     });
 
+    maxBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggleMaximized(id);
+      bringToFront(id);
+    });
+
     closeBtn.addEventListener("click", (event) => {
       event.stopPropagation();
       closeWindow(id);
+    });
+
+    titleBar.addEventListener("dblclick", () => {
+      toggleMaximized(id);
+      bringToFront(id);
     });
 
     taskBtn.addEventListener("click", () => {
