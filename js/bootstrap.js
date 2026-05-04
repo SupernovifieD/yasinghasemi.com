@@ -9,7 +9,12 @@ function runWhenReady(callback) {
 
 runWhenReady(async () => {
   try {
-    const { initApp } = await import("./app.js");
+    const [{ loadDesktopShell }, { initApp }] = await Promise.all([
+      import("./desktop-shell.js"),
+      import("./app.js")
+    ]);
+
+    await loadDesktopShell();
     initApp();
   } catch (error) {
     console.error("Failed to bootstrap app.", error);
