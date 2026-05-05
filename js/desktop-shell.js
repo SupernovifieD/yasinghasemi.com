@@ -3,7 +3,10 @@ const START_ICON_URL = new URL("../assets/icons/16/start-here.png", import.meta.
 const ICON_BY_ID = {
   "my-computer": new URL("../assets/icons/64/computer_win98.png", import.meta.url).href,
   "my-documents": new URL("../assets/icons/64/folder-documents.png", import.meta.url).href,
-  "office-doc": new URL("../assets/icons/64/x-office-document.png", import.meta.url).href
+  "office-doc": new URL("../assets/icons/32/x-office-document.png", import.meta.url).href,
+  "desktop-home": new URL("../assets/icons/16/emblem-desktop.png", import.meta.url).href,
+  notepad: new URL("../assets/icons/48/w98_notepad.ico", import.meta.url).href,
+  "recycle-bin": new URL("../assets/icons/48/w98_recycle_bin_empty_cool.ico", import.meta.url).href
 };
 
 function getShellUrl(shellPath) {

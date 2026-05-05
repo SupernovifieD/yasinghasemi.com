@@ -3,7 +3,8 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   const ICON_MAXIMIZE_URL = new URL("../assets/icons/16/window-maximize.png", import.meta.url).href;
   const ICON_RESTORE_URL = new URL("../assets/icons/16/window-restore.png", import.meta.url).href;
   const ICON_CLOSE_URL = new URL("../assets/icons/16/window-close.png", import.meta.url).href;
-  const ICON_OFFICE_DOC_URL = new URL("../assets/icons/64/x-office-document.png", import.meta.url).href;
+  const ICON_OFFICE_DOC_URL = new URL("../assets/icons/16/x-office-document.png", import.meta.url).href;
+  const ICON_NOTEPAD_URL = new URL("../assets/icons/48/w98_notepad.ico", import.meta.url).href;
 
   const windowsLayer = document.getElementById(windowsLayerId);
   const taskButtonsContainer = document.getElementById(taskButtonsId);
@@ -39,7 +40,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   function buildWindowShell({ id, title, app }) {
     const isNotepad = app === "notepad";
     const titleIcon = isNotepad
-      ? `<div class="title-icon placeholder-icon small"></div>`
+      ? `<img class="title-icon title-app-icon small" src="${ICON_NOTEPAD_URL}" alt="" aria-hidden="true" />`
       : `<img class="title-icon title-app-icon small" src="${ICON_OFFICE_DOC_URL}" alt="" aria-hidden="true" />`;
 
     const win = document.createElement("section");

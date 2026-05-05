@@ -334,7 +334,22 @@ html, body {
   border-right: 1px solid #8d8d8d;
 }
 
-.ql-icon { width: 24px; }
+.ql-icon {
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.ql-icon-image {
+  width: 16px;
+  height: 16px;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
 
 .task-buttons {
   display: flex;

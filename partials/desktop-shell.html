@@ -37,12 +37,12 @@
             data-app="notepad"
             data-file="desktop/todo.html"
             data-title="TODO.txt - Notepad">
-      <div class="icon-image placeholder-icon"></div>
+      <img class="icon-image desktop-icon-image" data-icon-id="notepad" alt="" aria-hidden="true" />
       <span>TODO.txt</span>
     </button>
 
     <button class="desktop-icon" data-name="Recycle Bin" data-type="system">
-      <div class="icon-image placeholder-icon"></div>
+      <img class="icon-image desktop-icon-image" data-icon-id="recycle-bin" alt="" aria-hidden="true" />
       <span>Recycle Bin</span>
     </button>
   </div>
@@ -59,7 +59,9 @@
   </button>
 
   <div class="quick-launch">
-    <button class="ql-icon placeholder-icon tiny" aria-label="Quick launch icon 1"></button>
+    <a class="ql-icon" href="/" aria-label="Go to Desktop Home">
+      <img class="ql-icon-image" data-icon-id="desktop-home" alt="" aria-hidden="true" />
+    </a>
     <button class="ql-icon placeholder-icon tiny" aria-label="Quick launch icon 2"></button>
     <button class="ql-icon placeholder-icon tiny" aria-label="Quick launch icon 3"></button>
   </div>
