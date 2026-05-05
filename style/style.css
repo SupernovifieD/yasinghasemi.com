@@ -311,6 +311,89 @@ html, body {
   min-width: 70px;
 }
 
+/* Explorer */
+.win98-window.explorer {
+  width: min(860px, 92vw);
+  height: min(560px, 80vh);
+}
+
+.explorer-toolbar {
+  gap: 8px;
+}
+
+.explorer-toolbar-label {
+  font-size: 12px;
+}
+
+.explorer-address {
+  height: 18px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  background: #fff;
+  border-top: 1px solid var(--win-dark-gray);
+  border-left: 1px solid var(--win-dark-gray);
+  border-right: 1px solid var(--win-white);
+  border-bottom: 1px solid var(--win-white);
+}
+
+.explorer-area {
+  background: #fff;
+  padding: 12px;
+}
+
+.explorer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(94px, 1fr));
+  gap: 12px 14px;
+  align-content: start;
+}
+
+.explorer-item {
+  border: 1px solid transparent;
+  background: transparent;
+  min-height: 86px;
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  cursor: default;
+}
+
+.explorer-item-icon {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.explorer-item-label {
+  text-align: center;
+  line-height: 1.3;
+  color: #000;
+  overflow-wrap: anywhere;
+}
+
+.explorer-item.is-selected {
+  background: #000080;
+  border-color: #000080;
+}
+
+.explorer-item.is-selected .explorer-item-label {
+  color: #fff;
+}
+
+.explorer-item.is-disabled {
+  opacity: 0.5;
+}
+
+.explorer-empty {
+  color: #444;
+}
+
 /* Taskbar */
 .taskbar {
   position: fixed;
@@ -460,8 +543,9 @@ html, body {
   position: fixed;
   left: 4px;
   bottom: 32px;
-  width: 220px;
-  height: 280px;
+  width: 224px;
+  min-height: 280px;
+  max-height: 70vh;
   display: flex;
   z-index: 10000;
 }
@@ -485,13 +569,112 @@ html, body {
   flex: 1;
   background: var(--win-gray);
   padding: 4px 0;
+  overflow-y: auto;
 }
 
-.start-menu-list li { padding: 7px 12px; }
+.start-menu-row {
+  margin: 0;
+}
 
-.start-menu-list li:hover {
+.start-menu-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #000;
+  text-align: left;
+  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: default;
+  font: inherit;
+}
+
+.start-menu-item:hover,
+.start-menu-row:focus-within .start-menu-item {
   background: var(--selection-blue);
   color: #fff;
+}
+
+.start-menu-arrow {
+  margin-left: auto;
+  font-size: 10px;
+}
+
+.start-item-icon {
+  display: inline-block;
+  flex: 0 0 auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.start-tree-empty {
+  padding: 4px 14px;
+  color: #333;
+}
+
+.start-cascade-root {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+}
+
+.start-cascade-panel {
+  position: fixed;
+  width: 230px;
+  max-height: 70vh;
+  overflow-y: auto;
+  border-top: 2px solid var(--win-light);
+  border-left: 2px solid var(--win-light);
+  border-right: 2px solid var(--win-dark-gray);
+  border-bottom: 2px solid var(--win-dark-gray);
+  background: var(--win-gray);
+  pointer-events: auto;
+}
+
+.start-cascade-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+}
+
+.start-cascade-row {
+  margin: 0;
+}
+
+.start-cascade-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #000;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font: inherit;
+  cursor: default;
+}
+
+.start-cascade-item:hover,
+.start-cascade-item.is-open {
+  background: var(--selection-blue);
+  color: #fff;
+}
+
+.start-cascade-item.is-disabled {
+  opacity: 0.6;
+}
+
+.start-cascade-item.is-disabled:hover {
+  background: transparent;
+  color: #000;
+}
+
+.start-cascade-arrow {
+  margin-left: auto;
+  font-size: 10px;
 }
 
 .separator {

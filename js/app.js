@@ -2,6 +2,14 @@ import { initClock } from "./clock.js";
 import { initStartMenu } from "./start-menu.js";
 import { createWindowManager } from "./window-manager.js";
 import { initDesktopIcons } from "./desktop-icons.js";
+import {
+  findNodeByPath,
+  findSingleDocInFolder,
+  getFolderChildren,
+  loadFsManifest,
+  normalizeManifestPath
+} from "./fs-manifest.js";
+import { parseDocsRoute, setDocsRoute } from "./docs-router.js";
 
 function isMobileClient() {
   const compactViewport = window.matchMedia("(max-width: 900px)").matches;
@@ -11,7 +19,22 @@ function isMobileClient() {
   return compactViewport && (coarsePointer || touchCapable);
 }
 
-export function initApp() {
+function createFallbackManifest() {
+  return {
+    title: "My Documents",
+    type: "folder",
+    url: "/#/docs",
+    path: "",
+    page: false,
+    children: []
+  };
+}
+
+function isOpenableFileType(type) {
+  return type === "doc" || type === "txt";
+}
+
+export async function initApp() {
   initClock();
   const windowManager = createWindowManager();
 
@@ -29,11 +52,123 @@ export function initApp() {
     return;
   }
 
-  initStartMenu();
+  let manifestRoot = createFallbackManifest();
+  try {
+    manifestRoot = await loadFsManifest();
+  } catch (error) {
+    console.error("Failed to load fs.json. Falling back to an empty Documents tree.", error);
+  }
+
+  const openFileNode = (fileNode) => {
+    if (!fileNode || !isOpenableFileType(fileNode.type)) return;
+
+    if (fileNode.type === "doc") {
+      windowManager.openDocument({
+        name: fileNode.title,
+        title: `${fileNode.title} - Microsoft Word`,
+        file: fileNode.url,
+        app: "word"
+      });
+      return;
+    }
+
+    if (fileNode.type === "txt") {
+      windowManager.openDocument({
+        name: fileNode.title,
+        title: `${fileNode.title} - Notepad`,
+        file: fileNode.url,
+        app: "notepad"
+      });
+    }
+  };
+
+  const openExplorerForFolder = (folderNode) => {
+    if (!folderNode || folderNode.type !== "folder") return;
+
+    windowManager.openExplorer({
+      name: folderNode.title,
+      title: `${folderNode.title} - My Documents`,
+      folderPath: folderNode.path,
+      items: getFolderChildren(folderNode),
+      onOpenItem: handleManifestNodeOpen
+    });
+  };
+
+  function handleDocsRoute(folderPath) {
+    const normalizedPath = normalizeManifestPath(folderPath);
+    const target = findNodeByPath(manifestRoot, normalizedPath);
+
+    if (!target || target.type !== "folder") {
+      const changed = setDocsRoute("");
+      if (!changed) {
+        openExplorerForFolder(manifestRoot);
+      }
+      return true;
+    }
+
+    openExplorerForFolder(target);
+
+    if (target.page) {
+      const singleDoc = findSingleDocInFolder(target);
+      if (singleDoc) {
+        openFileNode(singleDoc);
+      }
+    }
+
+    return true;
+  }
+
+  function handleManifestNodeOpen(node) {
+    if (!node) return;
+
+    if (node.type === "folder") {
+      if (node.page) {
+        const changed = setDocsRoute(node.path);
+        if (!changed) {
+          handleDocsRoute(node.path);
+        }
+        return;
+      }
+
+      openExplorerForFolder(node);
+      return;
+    }
+
+    openFileNode(node);
+  }
+
+  const openRootDocuments = () => {
+    openExplorerForFolder(manifestRoot);
+  };
+
+  initStartMenu({
+    manifestRoot,
+    onOpenNode: handleManifestNodeOpen
+  });
 
   initDesktopIcons({
-    onOpenDocument: windowManager.openDocument
+    onOpenDocument: windowManager.openDocument,
+    onOpenSystemIcon: ({ name }) => {
+      if (name === "My Documents") {
+        openRootDocuments();
+        return;
+      }
+
+      alert(`${name} will open later.`);
+    }
   });
+
+  window.addEventListener("hashchange", () => {
+    const route = parseDocsRoute();
+    if (!route.matched) return;
+    handleDocsRoute(route.folderPath);
+  });
+
+  const initialRoute = parseDocsRoute();
+  if (initialRoute.matched) {
+    handleDocsRoute(initialRoute.folderPath);
+    return;
+  }
 
   windowManager.openDocument({
     name: "Welcome.doc",

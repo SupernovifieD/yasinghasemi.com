@@ -81,13 +81,49 @@
 <div class="start-menu hidden" id="start-menu">
   <div class="start-menu-side">Windows 98</div>
   <ul class="start-menu-list">
-    <li>Programs</li>
-    <li>Documents</li>
-    <li>Settings</li>
-    <li>Find</li>
-    <li>Help</li>
-    <li>Run...</li>
+    <li class="start-menu-row">
+      <button class="start-menu-item" type="button" data-start-item="programs">
+        <span class="start-item-icon placeholder-icon tiny" aria-hidden="true"></span>
+        <span>Programs</span>
+      </button>
+    </li>
+    <li class="start-menu-row start-documents-row">
+      <button class="start-menu-item" type="button" id="start-documents-btn" data-start-item="documents" aria-expanded="false">
+        <img class="start-item-icon small" data-icon-id="my-documents" alt="" aria-hidden="true" />
+        <span>Documents</span>
+        <span class="start-menu-arrow" aria-hidden="true">▶</span>
+      </button>
+    </li>
+    <li class="start-menu-row">
+      <button class="start-menu-item" type="button" data-start-item="settings">
+        <span class="start-item-icon placeholder-icon tiny" aria-hidden="true"></span>
+        <span>Settings</span>
+      </button>
+    </li>
+    <li class="start-menu-row">
+      <button class="start-menu-item" type="button" data-start-item="find">
+        <span class="start-item-icon placeholder-icon tiny" aria-hidden="true"></span>
+        <span>Find</span>
+      </button>
+    </li>
+    <li class="start-menu-row">
+      <button class="start-menu-item" type="button" data-start-item="help">
+        <span class="start-item-icon placeholder-icon tiny" aria-hidden="true"></span>
+        <span>Help</span>
+      </button>
+    </li>
+    <li class="start-menu-row">
+      <button class="start-menu-item" type="button" data-start-item="run">
+        <span class="start-item-icon placeholder-icon tiny" aria-hidden="true"></span>
+        <span>Run...</span>
+      </button>
+    </li>
     <li class="separator"></li>
-    <li>Shut Down...</li>
+    <li class="start-menu-row">
+      <button class="start-menu-item" type="button" data-start-item="shutdown">
+        <span class="start-item-icon placeholder-icon tiny" aria-hidden="true"></span>
+        <span>Shut Down...</span>
+      </button>
+    </li>
   </ul>
 </div>

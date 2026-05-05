@@ -4,7 +4,12 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   const ICON_RESTORE_URL = new URL("../assets/icons/16/window-restore.png", import.meta.url).href;
   const ICON_CLOSE_URL = new URL("../assets/icons/16/window-close.png", import.meta.url).href;
   const ICON_OFFICE_DOC_URL = new URL("../assets/icons/16/x-office-document.png", import.meta.url).href;
+  const ICON_OFFICE_DOC_32_URL = new URL("../assets/icons/32/x-office-document.png", import.meta.url).href;
   const ICON_NOTEPAD_URL = new URL("../assets/icons/48/w98_notepad.ico", import.meta.url).href;
+  const ICON_FOLDER_16_URL = new URL("../assets/icons/16/folder.png", import.meta.url).href;
+  const ICON_FOLDER_32_URL = new URL("../assets/icons/32/folder.png", import.meta.url).href;
+
+  const UNSUPPORTED_EXPLORER_TYPES = new Set(["jpeg", "png", "mpeg", "mp3", "file"]);
 
   const windowsLayer = document.getElementById(windowsLayerId);
   const taskButtonsContainer = document.getElementById(taskButtonsId);
@@ -17,12 +22,22 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   let winCounter = 0;
   const windowsMap = new Map();
 
+  function normalizeFolderPath(value = "") {
+    return String(value)
+      .replace(/^\/+/, "")
+      .replace(/\/+$/, "");
+  }
+
   function fillWindowToDesktop(el) {
     const layerBounds = windowsLayer.getBoundingClientRect();
     el.style.left = "0";
     el.style.top = "0";
     el.style.width = `${Math.max(0, Math.floor(layerBounds.width))}px`;
     el.style.height = `${Math.max(0, Math.floor(layerBounds.height))}px`;
+  }
+
+  function shouldRenderWord(state) {
+    return state.kind === "document" && state.app === "word";
   }
 
   function getWordPageMetrics(state) {
@@ -225,7 +240,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   }
 
   function setWordZoomClass(state) {
-    if (state.app === "notepad") return;
+    if (!shouldRenderWord(state)) return;
     state.el.classList.toggle("word-maximized", Boolean(state.maximized));
   }
 
@@ -253,7 +268,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     el.style.top = `${70 + offset}px`;
   }
 
-  function buildWindowShell({ id, title, app, locked = false }) {
+  function buildDocumentShell({ id, title, app, locked = false }) {
     const isNotepad = app === "notepad";
     const titleIcon = isNotepad
       ? `<img class="title-icon title-app-icon small" src="${ICON_NOTEPAD_URL}" alt="" aria-hidden="true" />`
@@ -265,7 +280,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
 
     const statusMarkup = isNotepad
       ? `<div class="status-panel">Ln 1, Col 1</div>`
-      : `<div class="status-panel page-indicator">Page 1 of 1</div><div class="status-panel">Sec 1</div><div class="status-panel">At 1"</div>`;
+      : `<div class="status-panel page-indicator">Page 1 of 1</div><div class="status-panel">Sec 1</div><div class="status-panel">At 1&quot;</div>`;
 
     const win = document.createElement("section");
     win.className = `win98-window ${isNotepad ? "notepad" : "word"}${locked ? " locked-window" : ""}`;
@@ -312,6 +327,51 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
       <div class="document-area">${contentMarkup}</div>
 
       <div class="status-bar">${statusMarkup}</div>
+    `;
+
+    return win;
+  }
+
+  function buildExplorerShell({ id, title }) {
+    const win = document.createElement("section");
+    win.className = "win98-window explorer";
+    win.dataset.winId = id;
+
+    win.innerHTML = `
+      <div class="title-bar">
+        <div class="title-left">
+          <img class="title-icon title-app-icon small" src="${ICON_FOLDER_16_URL}" alt="" aria-hidden="true" />
+          <span class="window-title-text">${title}</span>
+        </div>
+        <div class="title-buttons">
+          <button class="title-btn min-btn" aria-label="Minimize">
+            <img class="title-btn-icon" src="${ICON_MINIMIZE_URL}" alt="" aria-hidden="true" />
+          </button>
+          <button class="title-btn max-btn" aria-label="Maximize">
+            <img class="title-btn-icon" src="${ICON_MAXIMIZE_URL}" alt="" aria-hidden="true" />
+          </button>
+          <button class="title-btn close-btn" aria-label="Close">
+            <img class="title-btn-icon" src="${ICON_CLOSE_URL}" alt="" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      <div class="menu-bar">
+        <span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Favorites</span><span>Help</span>
+      </div>
+
+      <div class="toolbar-row explorer-toolbar">
+        <span class="explorer-toolbar-label">Address:</span>
+        <div class="explorer-address"></div>
+      </div>
+
+      <div class="document-area explorer-area">
+        <div class="explorer-grid" role="list"></div>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-panel explorer-status">0 item(s)</div>
+      </div>
     `;
 
     return win;
@@ -375,7 +435,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     state.maximized = true;
     setMaxButtonState(state, true);
     setWordZoomClass(state);
-    if (state.app !== "notepad") {
+    if (shouldRenderWord(state)) {
       renderWordDocument(state);
     }
   }
@@ -393,7 +453,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     state.restoreBounds = null;
     setMaxButtonState(state, false);
     setWordZoomClass(state);
-    if (state.app !== "notepad") {
+    if (shouldRenderWord(state)) {
       renderWordDocument(state);
     }
   }
@@ -433,75 +493,16 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     }
   }
 
-  async function openDocument({
-    name,
-    title,
-    file,
-    app,
-    fullscreen = false,
-    locked = false,
-    createTaskbarButton = true
-  }) {
-    const id = `win-${++winCounter}`;
-
-    const winEl = buildWindowShell({ id, title, app, locked });
-    setWindowPosition(winEl);
-    windowsLayer.appendChild(winEl);
-
-    const taskBtn = createTaskbarButton ? createTaskButton(name, id) : null;
-
-    const state = {
-      id,
-      name,
-      title,
-      file,
-      app,
-      fullscreen,
-      el: winEl,
-      taskBtn,
-      locked,
-      minimized: false,
-      maximized: false,
-      restoreBounds: null,
-      wordSourceHtml: null,
-      wordLayout: null,
-      wordScrollHandler: null
-    };
-    windowsMap.set(id, state);
-
-    const contentEl = winEl.querySelector(".document-content");
-    try {
-      const response = await fetch(file);
-      if (!response.ok) throw new Error(`Failed to load ${file}`);
-      const raw = await response.text();
-
-      if (app === "notepad") {
-        contentEl.textContent = raw;
-      } else {
-        state.wordSourceHtml = raw;
-        renderWordDocument(state);
-      }
-    } catch (error) {
-      if (app === "notepad") {
-        contentEl.textContent = `Error\n\nCould not load ${file}\n${error.message}`;
-      } else {
-        state.wordSourceHtml = `
-          <h1>Error</h1>
-          <p>Could not load <strong>${file}</strong>.</p>
-          <p>${error.message}</p>
-        `;
-        renderWordDocument(state);
-      }
-    }
+  function attachWindowEvents(state) {
+    const { id, el, locked, taskBtn } = state;
 
     bringToFront(id);
+    el.addEventListener("mousedown", () => bringToFront(id));
 
-    winEl.addEventListener("mousedown", () => bringToFront(id));
-
-    const minBtn = winEl.querySelector(".min-btn");
-    const maxBtn = winEl.querySelector(".max-btn");
-    const closeBtn = winEl.querySelector(".close-btn");
-    const titleBar = winEl.querySelector(".title-bar");
+    const minBtn = el.querySelector(".min-btn");
+    const maxBtn = el.querySelector(".max-btn");
+    const closeBtn = el.querySelector(".close-btn");
+    const titleBar = el.querySelector(".title-bar");
 
     if (!locked) {
       minBtn.addEventListener("click", (event) => {
@@ -545,16 +546,258 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
         }
       });
     }
+  }
 
-    if (fullscreen) {
-      fillWindowToDesktop(winEl);
-      state.maximized = true;
-      setMaxButtonState(state, true);
-      setWordZoomClass(state);
-      if (state.app !== "notepad") {
+  function applyFullscreen(state) {
+    fillWindowToDesktop(state.el);
+    state.maximized = true;
+    setMaxButtonState(state, true);
+    setWordZoomClass(state);
+    if (shouldRenderWord(state)) {
+      renderWordDocument(state);
+    }
+  }
+
+  function restoreAndFocus(state) {
+    if (state.minimized) {
+      restoreWindow(state.id);
+    }
+    bringToFront(state.id);
+  }
+
+  function findExistingDocument(file, app) {
+    for (const state of windowsMap.values()) {
+      if (state.kind !== "document") continue;
+      if (state.file === file && state.app === app) {
+        return state;
+      }
+    }
+    return null;
+  }
+
+  function getExplorerIconUrl(type) {
+    if (type === "folder") return ICON_FOLDER_32_URL;
+    if (type === "doc") return ICON_OFFICE_DOC_32_URL;
+    if (type === "txt") return ICON_NOTEPAD_URL;
+    if (type === "jpeg" || type === "png" || type === "mpeg" || type === "mp3") {
+      return ICON_OFFICE_DOC_32_URL;
+    }
+    return ICON_OFFICE_DOC_32_URL;
+  }
+
+  function isExplorerItemOpenable(item) {
+    if (!item) return false;
+    if (item.type === "folder") return true;
+    if (item.type === "doc") return true;
+    if (item.type === "txt") return true;
+    return !UNSUPPORTED_EXPLORER_TYPES.has(item.type);
+  }
+
+  function renderExplorerItems(state) {
+    const grid = state.el.querySelector(".explorer-grid");
+    const status = state.el.querySelector(".explorer-status");
+    const addressEl = state.el.querySelector(".explorer-address");
+    if (!grid || !status || !addressEl) return;
+
+    const items = Array.isArray(state.items) ? state.items : [];
+
+    grid.innerHTML = "";
+    addressEl.textContent = state.folderPath ? `My Documents\\${state.folderPath.replaceAll("/", "\\")}` : "My Documents";
+
+    items.forEach((item) => {
+      const entryBtn = document.createElement("button");
+      const openable = isExplorerItemOpenable(item);
+      entryBtn.type = "button";
+      entryBtn.className = `explorer-item${openable ? "" : " is-disabled"}`;
+      entryBtn.dataset.entryPath = item.path || "";
+      entryBtn.dataset.entryType = item.type || "file";
+
+      const icon = document.createElement("img");
+      icon.className = "icon-image explorer-item-icon";
+      icon.setAttribute("aria-hidden", "true");
+      icon.setAttribute("alt", "");
+      icon.setAttribute("src", getExplorerIconUrl(item.type));
+
+      const label = document.createElement("span");
+      label.className = "explorer-item-label";
+      label.textContent = item.title || "Item";
+
+      entryBtn.appendChild(icon);
+      entryBtn.appendChild(label);
+
+      entryBtn.addEventListener("click", () => {
+        state.selectedEntryPath = item.path || "";
+        const allEntries = grid.querySelectorAll(".explorer-item");
+        allEntries.forEach((el) => el.classList.remove("is-selected"));
+        entryBtn.classList.add("is-selected");
+      });
+
+      entryBtn.addEventListener("dblclick", () => {
+        if (!openable) return;
+        if (typeof state.onOpenItem !== "function") return;
+        state.onOpenItem(item);
+      });
+
+      grid.appendChild(entryBtn);
+    });
+
+    if (items.length === 0) {
+      const emptyState = document.createElement("p");
+      emptyState.className = "explorer-empty";
+      emptyState.textContent = "This folder is empty.";
+      grid.appendChild(emptyState);
+    }
+
+    status.textContent = `${items.length} item(s)`;
+  }
+
+  function findExistingExplorer(folderPath) {
+    const normalizedFolderPath = normalizeFolderPath(folderPath);
+
+    for (const state of windowsMap.values()) {
+      if (state.kind !== "explorer") continue;
+      if (normalizeFolderPath(state.folderPath) === normalizedFolderPath) {
+        return state;
+      }
+    }
+
+    return null;
+  }
+
+  async function openDocument({
+    name,
+    title,
+    file,
+    app,
+    fullscreen = false,
+    locked = false,
+    createTaskbarButton = true
+  }) {
+    const existing = findExistingDocument(file, app);
+    if (existing) {
+      restoreAndFocus(existing);
+      return existing.id;
+    }
+
+    const id = `win-${++winCounter}`;
+
+    const winEl = buildDocumentShell({ id, title, app, locked });
+    setWindowPosition(winEl);
+    windowsLayer.appendChild(winEl);
+
+    const taskBtn = createTaskbarButton ? createTaskButton(name, id) : null;
+
+    const state = {
+      id,
+      kind: "document",
+      name,
+      title,
+      file,
+      app,
+      fullscreen,
+      el: winEl,
+      taskBtn,
+      locked,
+      minimized: false,
+      maximized: false,
+      restoreBounds: null,
+      wordSourceHtml: null,
+      wordLayout: null,
+      wordScrollHandler: null
+    };
+    windowsMap.set(id, state);
+
+    const contentEl = winEl.querySelector(".document-content");
+    try {
+      const response = await fetch(file);
+      if (!response.ok) throw new Error(`Failed to load ${file}`);
+      const raw = await response.text();
+
+      if (app === "notepad") {
+        contentEl.textContent = raw;
+      } else {
+        state.wordSourceHtml = raw;
+        renderWordDocument(state);
+      }
+    } catch (error) {
+      if (app === "notepad") {
+        contentEl.textContent = `Error\n\nCould not load ${file}\n${error.message}`;
+      } else {
+        state.wordSourceHtml = `
+          <h1>Error</h1>
+          <p>Could not load <strong>${file}</strong>.</p>
+          <p>${error.message}</p>
+        `;
         renderWordDocument(state);
       }
     }
+
+    attachWindowEvents(state);
+
+    if (fullscreen) {
+      applyFullscreen(state);
+    }
+
+    return id;
+  }
+
+  function openExplorer({
+    name,
+    title,
+    folderPath = "",
+    items = [],
+    onOpenItem,
+    createTaskbarButton = true
+  }) {
+    const normalizedFolderPath = normalizeFolderPath(folderPath);
+    const existing = findExistingExplorer(normalizedFolderPath);
+
+    if (existing) {
+      existing.items = Array.isArray(items) ? items : [];
+      existing.onOpenItem = onOpenItem;
+      existing.title = title;
+      existing.name = name;
+      const titleEl = existing.el.querySelector(".window-title-text");
+      if (titleEl) {
+        titleEl.textContent = title;
+      }
+      if (existing.taskBtn) {
+        existing.taskBtn.textContent = name;
+      }
+      renderExplorerItems(existing);
+      restoreAndFocus(existing);
+      return existing.id;
+    }
+
+    const id = `win-${++winCounter}`;
+
+    const winEl = buildExplorerShell({ id, title });
+    setWindowPosition(winEl);
+    windowsLayer.appendChild(winEl);
+
+    const taskBtn = createTaskbarButton ? createTaskButton(name, id) : null;
+
+    const state = {
+      id,
+      kind: "explorer",
+      name,
+      title,
+      app: "explorer",
+      folderPath: normalizedFolderPath,
+      items: Array.isArray(items) ? items : [],
+      onOpenItem,
+      el: winEl,
+      taskBtn,
+      locked: false,
+      minimized: false,
+      maximized: false,
+      restoreBounds: null,
+      selectedEntryPath: ""
+    };
+
+    windowsMap.set(id, state);
+    renderExplorerItems(state);
+    attachWindowEvents(state);
 
     return id;
   }
@@ -565,13 +808,14 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
         fillWindowToDesktop(state.el);
       }
 
-      if (state.app !== "notepad" && state.wordSourceHtml) {
+      if (shouldRenderWord(state) && state.wordSourceHtml) {
         renderWordDocument(state);
       }
     });
   });
 
   return {
-    openDocument
+    openDocument,
+    openExplorer
   };
 }

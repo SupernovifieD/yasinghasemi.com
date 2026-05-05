@@ -15,7 +15,7 @@ runWhenReady(async () => {
     ]);
 
     await loadDesktopShell();
-    initApp();
+    await initApp();
   } catch (error) {
     console.error("Failed to bootstrap app.", error);
   }

@@ -1,0 +1,51 @@
+{
+  "title": "My Documents",
+  "type": "folder",
+  "url": "/#/docs",
+  "path": "",
+  "page": false,
+  "children": [
+    {
+      "title": "1-netradar",
+      "type": "folder",
+      "url": "/#/docs/1-netradar",
+      "path": "1-netradar",
+      "page": false,
+      "children": [
+        {
+          "title": "2026-05-02",
+          "type": "folder",
+          "url": "/#/docs/1-netradar/2026-05-02",
+          "path": "1-netradar/2026-05-02",
+          "page": true,
+          "children": [
+            {
+              "title": "2026-05-02.doc",
+              "type": "doc",
+              "url": "mydocuments/1-netradar/2026-05-02/2026-05-02.html",
+              "path": "1-netradar/2026-05-02/2026-05-02.html",
+              "page": false,
+              "children": []
+            }
+          ]
+        },
+        {
+          "title": "2026-05-03",
+          "type": "folder",
+          "url": "/#/docs/1-netradar/2026-05-03",
+          "path": "1-netradar/2026-05-03",
+          "page": false,
+          "children": []
+        }
+      ]
+    },
+    {
+      "title": "2-movieindex",
+      "type": "folder",
+      "url": "/#/docs/2-movieindex",
+      "path": "2-movieindex",
+      "page": false,
+      "children": []
+    }
+  ]
+}
