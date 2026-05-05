@@ -17,6 +17,14 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   let winCounter = 0;
   const windowsMap = new Map();
 
+  function fillWindowToDesktop(el) {
+    const layerBounds = windowsLayer.getBoundingClientRect();
+    el.style.left = "0";
+    el.style.top = "0";
+    el.style.width = `${Math.max(0, Math.floor(layerBounds.width))}px`;
+    el.style.height = `${Math.max(0, Math.floor(layerBounds.height))}px`;
+  }
+
   function bringToFront(winId) {
     const state = windowsMap.get(winId);
     if (!state || !state.el) return;
@@ -25,10 +33,14 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     state.el.style.zIndex = topZ;
 
     windowsMap.forEach((winState) => {
-      winState.taskBtn.classList.remove("active-task");
+      if (winState.taskBtn) {
+        winState.taskBtn.classList.remove("active-task");
+      }
     });
 
-    state.taskBtn.classList.add("active-task");
+    if (state.taskBtn) {
+      state.taskBtn.classList.add("active-task");
+    }
   }
 
   function setWindowPosition(el) {
@@ -37,14 +49,14 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     el.style.top = `${70 + offset}px`;
   }
 
-  function buildWindowShell({ id, title, app }) {
+  function buildWindowShell({ id, title, app, locked = false }) {
     const isNotepad = app === "notepad";
     const titleIcon = isNotepad
       ? `<img class="title-icon title-app-icon small" src="${ICON_NOTEPAD_URL}" alt="" aria-hidden="true" />`
       : `<img class="title-icon title-app-icon small" src="${ICON_OFFICE_DOC_URL}" alt="" aria-hidden="true" />`;
 
     const win = document.createElement("section");
-    win.className = `win98-window ${isNotepad ? "notepad" : "word"}`;
+    win.className = `win98-window ${isNotepad ? "notepad" : "word"}${locked ? " locked-window" : ""}`;
     win.dataset.winId = id;
 
     win.innerHTML = `
@@ -116,7 +128,9 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
 
     state.el.style.display = "none";
     state.minimized = true;
-    state.taskBtn.classList.remove("active-task");
+    if (state.taskBtn) {
+      state.taskBtn.classList.remove("active-task");
+    }
   }
 
   function restoreWindow(winId) {
@@ -153,12 +167,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
       height: state.el.style.height
     };
 
-    const layerBounds = windowsLayer.getBoundingClientRect();
-
-    state.el.style.left = "0";
-    state.el.style.top = "0";
-    state.el.style.width = `${Math.max(0, Math.floor(layerBounds.width))}px`;
-    state.el.style.height = `${Math.max(0, Math.floor(layerBounds.height))}px`;
+    fillWindowToDesktop(state.el);
     state.maximized = true;
     setMaxButtonState(state, true);
   }
@@ -194,7 +203,9 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     if (!state) return;
 
     state.el.remove();
-    state.taskBtn.remove();
+    if (state.taskBtn) {
+      state.taskBtn.remove();
+    }
     windowsMap.delete(winId);
 
     let topState = null;
@@ -205,19 +216,27 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
       }
     });
 
-    if (topState) {
+    if (topState && topState.taskBtn) {
       topState.taskBtn.classList.add("active-task");
     }
   }
 
-  async function openDocument({ name, title, file, app }) {
+  async function openDocument({
+    name,
+    title,
+    file,
+    app,
+    fullscreen = false,
+    locked = false,
+    createTaskbarButton = true
+  }) {
     const id = `win-${++winCounter}`;
 
-    const winEl = buildWindowShell({ id, title, app });
+    const winEl = buildWindowShell({ id, title, app, locked });
     setWindowPosition(winEl);
     windowsLayer.appendChild(winEl);
 
-    const taskBtn = createTaskButton(name, id);
+    const taskBtn = createTaskbarButton ? createTaskButton(name, id) : null;
 
     const state = {
       id,
@@ -227,6 +246,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
       app,
       el: winEl,
       taskBtn,
+      locked,
       minimized: false,
       maximized: false,
       restoreBounds: null
@@ -255,44 +275,60 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     const closeBtn = winEl.querySelector(".close-btn");
     const titleBar = winEl.querySelector(".title-bar");
 
-    minBtn.addEventListener("click", (event) => {
-      event.stopPropagation();
-      minimizeWindow(id);
-    });
-
-    maxBtn.addEventListener("click", (event) => {
-      event.stopPropagation();
-      toggleMaximized(id);
-      bringToFront(id);
-    });
-
-    closeBtn.addEventListener("click", (event) => {
-      event.stopPropagation();
-      closeWindow(id);
-    });
-
-    titleBar.addEventListener("dblclick", () => {
-      toggleMaximized(id);
-      bringToFront(id);
-    });
-
-    taskBtn.addEventListener("click", () => {
-      const windowState = windowsMap.get(id);
-      if (!windowState) return;
-
-      if (windowState.minimized) {
-        restoreWindow(id);
-        bringToFront(id);
-        return;
-      }
-
-      const isActive = taskBtn.classList.contains("active-task");
-      if (isActive) {
+    if (!locked) {
+      minBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
         minimizeWindow(id);
-      } else {
+      });
+
+      maxBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        toggleMaximized(id);
         bringToFront(id);
-      }
-    });
+      });
+
+      closeBtn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        closeWindow(id);
+      });
+
+      titleBar.addEventListener("dblclick", () => {
+        toggleMaximized(id);
+        bringToFront(id);
+      });
+    }
+
+    if (taskBtn) {
+      taskBtn.addEventListener("click", () => {
+        const windowState = windowsMap.get(id);
+        if (!windowState || windowState.locked) return;
+
+        if (windowState.minimized) {
+          restoreWindow(id);
+          bringToFront(id);
+          return;
+        }
+
+        const isActive = taskBtn.classList.contains("active-task");
+        if (isActive) {
+          minimizeWindow(id);
+        } else {
+          bringToFront(id);
+        }
+      });
+    }
+
+    if (fullscreen) {
+      fillWindowToDesktop(winEl);
+      state.maximized = true;
+      setMaxButtonState(state, true);
+      window.addEventListener("resize", () => {
+        if (!state.maximized) return;
+        fillWindowToDesktop(winEl);
+      });
+    }
+
+    return id;
   }
 
   return {

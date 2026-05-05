@@ -137,6 +137,10 @@ html, body {
   height: min(420px, 66vh);
 }
 
+.win98-window.locked-window .title-buttons {
+  display: none;
+}
+
 .title-bar {
   height: 24px;
   background: var(--win-blue-title);
@@ -381,6 +385,17 @@ html, body {
   border-right: 1px solid var(--win-white);
   border-bottom: 1px solid var(--win-white);
   background: var(--win-gray);
+}
+
+.mobile-gated .desktop-icons,
+.mobile-gated .quick-launch,
+.mobile-gated .task-buttons,
+.mobile-gated #start-btn {
+  pointer-events: none;
+}
+
+.mobile-gated #start-menu {
+  display: none !important;
 }
 
 /* Start menu */
