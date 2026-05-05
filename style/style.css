@@ -9,6 +9,20 @@
   --win-blue-title: #000080;
   --win-blue-title-text: #ffffff;
   --selection-blue: #000080;
+  --font-system: "MS Sans Serif", "Microsoft Sans Serif", Tahoma, sans-serif;
+  --font-fixed: "Fixedsys", "Fixedsys Regular", "Courier New", monospace;
+}
+
+@font-face {
+  font-family: "MS Sans Serif";
+  src: local("MS Sans Serif"), local("MS Sans Serif Regular");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Fixedsys";
+  src: local("Fixedsys"), local("Fixedsys Regular");
+  font-display: swap;
 }
 
 * {
@@ -25,7 +39,7 @@ html, body {
   overflow: hidden;
   background: var(--win-desktop);
   color: var(--win-black);
-  font-family: "MS Sans Serif", Tahoma, sans-serif;
+  font-family: var(--font-system);
   font-size: 12px;
   line-height: 1.2;
 }
@@ -91,6 +105,11 @@ html, body {
 }
 
 .icon-image { width: 32px; height: 32px; }
+.desktop-icon-image {
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
 .small { width: 16px !important; height: 16px !important; }
 .tiny { width: 14px !important; height: 14px !important; }
 
@@ -153,6 +172,23 @@ html, body {
   font-size: 11px;
   line-height: 1;
   cursor: default;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-btn-icon {
+  width: 12px;
+  height: 12px;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.title-app-icon {
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .title-btn:active {
@@ -217,7 +253,7 @@ html, body {
   margin: 0;
   border: none;
   padding: 10px;
-  font-family: "Courier New", monospace;
+  font-family: var(--font-fixed);
   font-size: 14px;
 }
 
@@ -271,6 +307,13 @@ html, body {
   align-items: center;
   gap: 6px;
   padding: 0 8px;
+}
+
+.start-logo {
+  width: 16px;
+  height: 16px;
+  display: block;
+  image-rendering: pixelated;
 }
 
 .start-button:active,

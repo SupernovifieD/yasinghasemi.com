@@ -1,4 +1,10 @@
 export function createWindowManager({ windowsLayerId = "windows-layer", taskButtonsId = "task-buttons" } = {}) {
+  const ICON_MINIMIZE_URL = new URL("../assets/icons/16/window-minimize.png", import.meta.url).href;
+  const ICON_MAXIMIZE_URL = new URL("../assets/icons/16/window-maximize.png", import.meta.url).href;
+  const ICON_RESTORE_URL = new URL("../assets/icons/16/window-restore.png", import.meta.url).href;
+  const ICON_CLOSE_URL = new URL("../assets/icons/16/window-close.png", import.meta.url).href;
+  const ICON_OFFICE_DOC_URL = new URL("../assets/icons/64/x-office-document.png", import.meta.url).href;
+
   const windowsLayer = document.getElementById(windowsLayerId);
   const taskButtonsContainer = document.getElementById(taskButtonsId);
 
@@ -32,6 +38,9 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
 
   function buildWindowShell({ id, title, app }) {
     const isNotepad = app === "notepad";
+    const titleIcon = isNotepad
+      ? `<div class="title-icon placeholder-icon small"></div>`
+      : `<img class="title-icon title-app-icon small" src="${ICON_OFFICE_DOC_URL}" alt="" aria-hidden="true" />`;
 
     const win = document.createElement("section");
     win.className = `win98-window ${isNotepad ? "notepad" : "word"}`;
@@ -40,13 +49,19 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     win.innerHTML = `
       <div class="title-bar">
         <div class="title-left">
-          <div class="title-icon placeholder-icon small"></div>
+          ${titleIcon}
           <span class="window-title-text">${title}</span>
         </div>
         <div class="title-buttons">
-          <button class="title-btn min-btn" aria-label="Minimize">_</button>
-          <button class="title-btn max-btn" aria-label="Maximize">□</button>
-          <button class="title-btn close-btn" aria-label="Close">×</button>
+          <button class="title-btn min-btn" aria-label="Minimize">
+            <img class="title-btn-icon" src="${ICON_MINIMIZE_URL}" alt="" aria-hidden="true" />
+          </button>
+          <button class="title-btn max-btn" aria-label="Maximize">
+            <img class="title-btn-icon" src="${ICON_MAXIMIZE_URL}" alt="" aria-hidden="true" />
+          </button>
+          <button class="title-btn close-btn" aria-label="Close">
+            <img class="title-btn-icon" src="${ICON_CLOSE_URL}" alt="" aria-hidden="true" />
+          </button>
         </div>
       </div>
 
@@ -114,15 +129,16 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   function setMaxButtonState(state, isMaximized) {
     const maxBtn = state.el.querySelector(".max-btn");
     if (!maxBtn) return;
+    const iconEl = maxBtn.querySelector(".title-btn-icon");
 
     if (isMaximized) {
       maxBtn.setAttribute("aria-label", "Restore");
-      maxBtn.textContent = "❐";
+      if (iconEl) iconEl.setAttribute("src", ICON_RESTORE_URL);
       return;
     }
 
     maxBtn.setAttribute("aria-label", "Maximize");
-    maxBtn.textContent = "□";
+    if (iconEl) iconEl.setAttribute("src", ICON_MAXIMIZE_URL);
   }
 
   function maximizeWindow(winId) {
