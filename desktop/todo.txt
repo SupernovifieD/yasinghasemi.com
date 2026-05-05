@@ -1,0 +1,9 @@
+
+TODO:
+- Replace placeholder icons with real Windows 98-style icons
+- Add draggable windows
+- Add My Computer window
+- Add Recycle Bin behavior
+- Polish sound effects (optional)
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
