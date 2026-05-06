@@ -35,7 +35,8 @@ export function initStartMenu({
   startMenuId = "start-menu",
   documentsButtonId = "start-documents-btn",
   manifestRoot = null,
-  onOpenNode
+  onOpenNode,
+  onAction
 } = {}) {
   const startBtn = document.getElementById(startButtonId);
   const startMenu = document.getElementById(startMenuId);
@@ -261,12 +262,15 @@ export function initStartMenu({
     });
   }
 
-  startMenu.addEventListener("click", (event) => {
+  startMenu.addEventListener("click", async (event) => {
     const rowButton = event.target.closest("[data-start-item]");
     if (!rowButton) return;
 
     const action = rowButton.getAttribute("data-start-item");
     if (action !== "documents") {
+      if (typeof onAction === "function") {
+        await onAction(action);
+      }
       closeMenu();
     }
   });

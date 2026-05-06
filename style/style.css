@@ -394,6 +394,125 @@ html, body {
   color: #444;
 }
 
+/* Find */
+.win98-window.find {
+  width: min(700px, 86vw);
+  height: min(460px, 72vh);
+}
+
+.find-toolbar {
+  gap: 8px;
+}
+
+.find-input-label {
+  white-space: nowrap;
+}
+
+.find-input {
+  flex: 1;
+  height: 20px;
+  border-top: 1px solid var(--win-dark-gray);
+  border-left: 1px solid var(--win-dark-gray);
+  border-right: 1px solid var(--win-white);
+  border-bottom: 1px solid var(--win-white);
+  background: #fff;
+  padding: 0 6px;
+  font: inherit;
+}
+
+.find-run-btn {
+  min-width: 82px;
+  height: 22px;
+  border-top: 1px solid var(--win-white);
+  border-left: 1px solid var(--win-white);
+  border-right: 1px solid var(--win-darker);
+  border-bottom: 1px solid var(--win-darker);
+  background: var(--win-gray);
+  padding: 0 8px;
+  font: inherit;
+}
+
+.find-run-btn:active {
+  border-top: 1px solid var(--win-darker);
+  border-left: 1px solid var(--win-darker);
+  border-right: 1px solid var(--win-white);
+  border-bottom: 1px solid var(--win-white);
+}
+
+.find-area {
+  background: #fff;
+  padding: 8px;
+}
+
+.find-empty {
+  color: #444;
+  padding: 4px;
+}
+
+.find-results {
+  list-style: none;
+}
+
+.find-result-row {
+  margin: 0;
+}
+
+.find-result-btn {
+  width: 100%;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #000;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px;
+  text-align: left;
+  font: inherit;
+  cursor: default;
+}
+
+.find-result-btn:hover,
+.find-result-btn.is-selected {
+  background: #000080;
+  color: #fff;
+}
+
+.find-result-btn.is-disabled {
+  opacity: 0.6;
+}
+
+.find-result-btn.is-disabled:hover {
+  background: transparent;
+  color: #000;
+}
+
+.find-result-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex: 0 0 auto;
+}
+
+.find-result-text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.find-result-title {
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.find-result-meta {
+  font-size: 11px;
+  opacity: 0.85;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
 /* Taskbar */
 .taskbar {
   position: fixed;

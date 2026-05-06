@@ -34,6 +34,26 @@ function isOpenableFileType(type) {
   return type === "doc" || type === "txt";
 }
 
+function collectSearchableNodes(rootNode) {
+  if (!rootNode) return [];
+
+  const nodes = [];
+  const stack = Array.isArray(rootNode.children) ? [...rootNode.children] : [];
+
+  while (stack.length > 0) {
+    const node = stack.pop();
+    if (!node) continue;
+
+    nodes.push(node);
+
+    if (Array.isArray(node.children) && node.children.length > 0) {
+      stack.push(...node.children);
+    }
+  }
+
+  return nodes;
+}
+
 export async function initApp() {
   initClock();
   const windowManager = createWindowManager();
@@ -58,6 +78,7 @@ export async function initApp() {
   } catch (error) {
     console.error("Failed to load fs.json. Falling back to an empty Documents tree.", error);
   }
+  const searchableNodes = collectSearchableNodes(manifestRoot);
 
   const openFileNode = (fileNode) => {
     if (!fileNode || !isOpenableFileType(fileNode.type)) return;
@@ -141,9 +162,30 @@ export async function initApp() {
     openExplorerForFolder(manifestRoot);
   };
 
+  const runManifestSearch = (query) => {
+    const normalizedQuery = String(query || "").trim().toLowerCase();
+    if (!normalizedQuery) return [];
+
+    return searchableNodes.filter((node) => {
+      const titleMatch = String(node.title || "").toLowerCase().includes(normalizedQuery);
+      const typeMatch = String(node.type || "").toLowerCase().includes(normalizedQuery);
+      return titleMatch || typeMatch;
+    });
+  };
+
   initStartMenu({
     manifestRoot,
-    onOpenNode: handleManifestNodeOpen
+    onOpenNode: handleManifestNodeOpen,
+    onAction: (action) => {
+      if (action !== "find") return;
+
+      windowManager.openFind({
+        name: "Find",
+        title: "Find - My Documents",
+        onSearch: runManifestSearch,
+        onOpenResult: handleManifestNodeOpen
+      });
+    }
   });
 
   initDesktopIcons({

@@ -6,6 +6,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   const ICON_OFFICE_DOC_URL = new URL("../assets/icons/16/x-office-document.png", import.meta.url).href;
   const ICON_OFFICE_DOC_32_URL = new URL("../assets/icons/32/x-office-document.png", import.meta.url).href;
   const ICON_NOTEPAD_URL = new URL("../assets/icons/48/w98_notepad.ico", import.meta.url).href;
+  const ICON_FIND_URL = new URL("../assets/icons/48/w2k_find.ico", import.meta.url).href;
   const ICON_FOLDER_16_URL = new URL("../assets/icons/16/folder.png", import.meta.url).href;
   const ICON_FOLDER_32_URL = new URL("../assets/icons/32/folder.png", import.meta.url).href;
 
@@ -377,6 +378,53 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     return win;
   }
 
+  function buildFindShell({ id, title }) {
+    const win = document.createElement("section");
+    win.className = "win98-window find";
+    win.dataset.winId = id;
+
+    win.innerHTML = `
+      <div class="title-bar">
+        <div class="title-left">
+          <img class="title-icon title-app-icon small" src="${ICON_FIND_URL}" alt="" aria-hidden="true" />
+          <span class="window-title-text">${title}</span>
+        </div>
+        <div class="title-buttons">
+          <button class="title-btn min-btn" aria-label="Minimize">
+            <img class="title-btn-icon" src="${ICON_MINIMIZE_URL}" alt="" aria-hidden="true" />
+          </button>
+          <button class="title-btn max-btn" aria-label="Maximize">
+            <img class="title-btn-icon" src="${ICON_MAXIMIZE_URL}" alt="" aria-hidden="true" />
+          </button>
+          <button class="title-btn close-btn" aria-label="Close">
+            <img class="title-btn-icon" src="${ICON_CLOSE_URL}" alt="" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+
+      <div class="menu-bar">
+        <span>File</span><span>Edit</span><span>Tools</span><span>Help</span>
+      </div>
+
+      <div class="toolbar-row find-toolbar">
+        <label class="find-input-label" for="${id}-query">Containing text:</label>
+        <input id="${id}-query" class="find-input" type="text" autocomplete="off" />
+        <button class="find-run-btn" type="button">Find Now</button>
+      </div>
+
+      <div class="document-area find-area">
+        <p class="find-empty">Type your query and click Find Now.</p>
+        <ul class="find-results hidden"></ul>
+      </div>
+
+      <div class="status-bar">
+        <div class="status-panel find-status">0 item(s)</div>
+      </div>
+    `;
+
+    return win;
+  }
+
   function createTaskButton(name, winId) {
     const btn = document.createElement("button");
     btn.className = "task-button";
@@ -664,6 +712,124 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     return null;
   }
 
+  function findExistingWindowByKind(kind) {
+    for (const state of windowsMap.values()) {
+      if (state.kind === kind) {
+        return state;
+      }
+    }
+    return null;
+  }
+
+  function renderFindResults(state) {
+    const resultsEl = state.el.querySelector(".find-results");
+    const emptyEl = state.el.querySelector(".find-empty");
+    const statusEl = state.el.querySelector(".find-status");
+    if (!resultsEl || !emptyEl || !statusEl) return;
+
+    const results = Array.isArray(state.results) ? state.results : [];
+    resultsEl.innerHTML = "";
+
+    if (results.length === 0) {
+      resultsEl.classList.add("hidden");
+      emptyEl.classList.remove("hidden");
+      emptyEl.textContent = state.lastQuery
+        ? "No items matched your query."
+        : "Type your query and click Find Now.";
+      statusEl.textContent = "0 item(s)";
+      return;
+    }
+
+    emptyEl.classList.add("hidden");
+    resultsEl.classList.remove("hidden");
+
+    results.forEach((node) => {
+      const openable = isExplorerItemOpenable(node);
+
+      const row = document.createElement("li");
+      row.className = "find-result-row";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `find-result-btn${openable ? "" : " is-disabled"}`;
+      btn.dataset.path = node.path || "";
+
+      const icon = document.createElement("img");
+      icon.className = "find-result-icon";
+      icon.alt = "";
+      icon.setAttribute("aria-hidden", "true");
+      icon.src = getExplorerIconUrl(node.type);
+
+      const textWrap = document.createElement("span");
+      textWrap.className = "find-result-text";
+
+      const title = document.createElement("span");
+      title.className = "find-result-title";
+      title.textContent = node.title || "Item";
+
+      const meta = document.createElement("span");
+      meta.className = "find-result-meta";
+      meta.textContent = `${node.type || "file"} • ${node.path || "root"}`;
+
+      textWrap.appendChild(title);
+      textWrap.appendChild(meta);
+      btn.appendChild(icon);
+      btn.appendChild(textWrap);
+
+      btn.addEventListener("click", () => {
+        state.selectedResultPath = node.path || "";
+        resultsEl.querySelectorAll(".find-result-btn").forEach((item) => {
+          item.classList.remove("is-selected");
+        });
+        btn.classList.add("is-selected");
+      });
+
+      btn.addEventListener("dblclick", () => {
+        if (!openable || typeof state.onOpenResult !== "function") return;
+        state.onOpenResult(node);
+      });
+
+      row.appendChild(btn);
+      resultsEl.appendChild(row);
+    });
+
+    statusEl.textContent = `${results.length} item(s)`;
+  }
+
+  function attachFindInteractions(state) {
+    const queryInput = state.el.querySelector(".find-input");
+    const runButton = state.el.querySelector(".find-run-btn");
+    if (!queryInput || !runButton) return;
+
+    const runSearch = async () => {
+      if (typeof state.onSearch !== "function") return;
+
+      const query = queryInput.value.trim();
+      state.lastQuery = query;
+      state.selectedResultPath = "";
+
+      const token = (state.searchToken || 0) + 1;
+      state.searchToken = token;
+
+      const results = await Promise.resolve(state.onSearch(query));
+      if (token !== state.searchToken) return;
+
+      state.results = Array.isArray(results) ? results : [];
+      renderFindResults(state);
+    };
+
+    runButton.addEventListener("click", runSearch);
+
+    queryInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        runSearch();
+      }
+    });
+
+    queryInput.focus();
+  }
+
   async function openDocument({
     name,
     title,
@@ -802,6 +968,73 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     return id;
   }
 
+  function openFind({
+    name = "Find",
+    title = "Find",
+    onSearch,
+    onOpenResult,
+    createTaskbarButton = true
+  }) {
+    const existing = findExistingWindowByKind("find");
+    if (existing) {
+      existing.onSearch = onSearch;
+      existing.onOpenResult = onOpenResult;
+      existing.name = name;
+      existing.title = title;
+
+      const titleEl = existing.el.querySelector(".window-title-text");
+      if (titleEl) {
+        titleEl.textContent = title;
+      }
+      if (existing.taskBtn) {
+        existing.taskBtn.textContent = name;
+      }
+
+      restoreAndFocus(existing);
+      const queryInput = existing.el.querySelector(".find-input");
+      if (queryInput) {
+        queryInput.focus();
+        queryInput.select();
+      }
+      return existing.id;
+    }
+
+    const id = `win-${++winCounter}`;
+
+    const winEl = buildFindShell({ id, title });
+    setWindowPosition(winEl);
+    windowsLayer.appendChild(winEl);
+
+    const taskBtn = createTaskbarButton ? createTaskButton(name, id) : null;
+
+    const state = {
+      id,
+      kind: "find",
+      name,
+      title,
+      app: "find",
+      el: winEl,
+      taskBtn,
+      locked: false,
+      minimized: false,
+      maximized: false,
+      restoreBounds: null,
+      onSearch,
+      onOpenResult,
+      results: [],
+      lastQuery: "",
+      selectedResultPath: "",
+      searchToken: 0
+    };
+
+    windowsMap.set(id, state);
+    renderFindResults(state);
+    attachWindowEvents(state);
+    attachFindInteractions(state);
+
+    return id;
+  }
+
   window.addEventListener("resize", () => {
     windowsMap.forEach((state) => {
       if (state.maximized) {
@@ -816,6 +1049,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
 
   return {
     openDocument,
-    openExplorer
+    openExplorer,
+    openFind
   };
 }
