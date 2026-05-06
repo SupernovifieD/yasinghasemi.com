@@ -6,6 +6,23 @@
   "page": false,
   "children": [
     {
+      "title": "0-thebeginning",
+      "type": "folder",
+      "url": "/#/docs/0-thebeginning",
+      "path": "0-thebeginning",
+      "page": true,
+      "children": [
+        {
+          "title": "howitcametobe.doc",
+          "type": "doc",
+          "url": "mydocuments/0-thebeginning/howitcametobe.html",
+          "path": "0-thebeginning/howitcametobe.html",
+          "page": false,
+          "children": []
+        }
+      ]
+    },
+    {
       "title": "1-netradar",
       "type": "folder",
       "url": "/#/docs/1-netradar",
