@@ -23,24 +23,24 @@
       ]
     },
     {
-      "title": "1-netradar",
+      "title": "1-NetRadar",
       "type": "folder",
-      "url": "/#/docs/1-netradar",
-      "path": "1-netradar",
+      "url": "/#/docs/1-NetRadar",
+      "path": "1-NetRadar",
       "page": false,
       "children": [
         {
-          "title": "2026-05-02",
+          "title": "1-howitstarted",
           "type": "folder",
-          "url": "/#/docs/1-netradar/2026-05-02",
-          "path": "1-netradar/2026-05-02",
+          "url": "/#/docs/1-NetRadar/1-howitstarted",
+          "path": "1-NetRadar/1-howitstarted",
           "page": true,
           "children": [
             {
-              "title": "2026-05-02.doc",
+              "title": "howitstarted.doc",
               "type": "doc",
-              "url": "mydocuments/1-netradar/2026-05-02/2026-05-02.html",
-              "path": "1-netradar/2026-05-02/2026-05-02.html",
+              "url": "mydocuments/1-NetRadar/1-howitstarted/howitstarted.html",
+              "path": "1-NetRadar/1-howitstarted/howitstarted.html",
               "page": false,
               "children": []
             }
@@ -49,8 +49,8 @@
         {
           "title": "2026-05-03",
           "type": "folder",
-          "url": "/#/docs/1-netradar/2026-05-03",
-          "path": "1-netradar/2026-05-03",
+          "url": "/#/docs/1-NetRadar/2026-05-03",
+          "path": "1-NetRadar/2026-05-03",
           "page": false,
           "children": []
         }

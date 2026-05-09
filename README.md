@@ -40,10 +40,10 @@ This section is auto-generated from `mydocuments/`
 - 📁 [My Documents](https://yasinghasemi.com/#/docs)
   - 📁 [0-thebeginning](https://yasinghasemi.com/#/docs/0-thebeginning)
     - 📄 [howitcametobe.doc](https://yasinghasemi.com/mydocuments/0-thebeginning/howitcametobe.html)
-  - 📁 [1-netradar](https://yasinghasemi.com/#/docs/1-netradar)
-    - 📁 [2026-05-02](https://yasinghasemi.com/#/docs/1-netradar/2026-05-02)
-      - 📄 [2026-05-02.doc](https://yasinghasemi.com/mydocuments/1-netradar/2026-05-02/2026-05-02.html)
-    - 📁 [2026-05-03](https://yasinghasemi.com/#/docs/1-netradar/2026-05-03)
+  - 📁 [1-NetRadar](https://yasinghasemi.com/#/docs/1-NetRadar)
+    - 📁 [1-howitstarted](https://yasinghasemi.com/#/docs/1-NetRadar/1-howitstarted)
+      - 📄 [howitstarted.doc](https://yasinghasemi.com/mydocuments/1-NetRadar/1-howitstarted/howitstarted.html)
+    - 📁 [2026-05-03](https://yasinghasemi.com/#/docs/1-NetRadar/2026-05-03)
   - 📁 [2-movieindex](https://yasinghasemi.com/#/docs/2-movieindex)
 <!-- DOCS_TOC:END -->
 
