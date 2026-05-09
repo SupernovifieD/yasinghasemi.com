@@ -85,12 +85,9 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     return { page, body };
   }
 
-  function sanitizeWordNodes(rawHtml) {
-    const template = document.createElement("template");
-    template.innerHTML = rawHtml;
-
+  function cloneRenderableWordNodes(nodeList) {
     const nodes = [];
-    template.content.childNodes.forEach((node) => {
+    nodeList.forEach((node) => {
       if (node.nodeType === Node.TEXT_NODE) {
         const text = node.textContent.replace(/\s+/g, " ").trim();
         if (!text) return;
@@ -106,6 +103,154 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     });
 
     return nodes;
+  }
+
+  function findBlogPostRoot(template) {
+    return Array.from(template.content.children).find((element) => {
+      if (element.tagName.toLowerCase() !== "article") return false;
+      return (
+        element.classList.contains("blog-post") ||
+        element.dataset.published ||
+        element.dataset.project ||
+        element.dataset.subtitle
+      );
+    });
+  }
+
+  function inferProjectNameFromFile(file = "") {
+    const match = String(file).match(/(?:^|\/)mydocuments\/([^/]+)/);
+    if (!match) return "";
+
+    const folderName = decodeURIComponent(match[1]).replace(/^\d+[-_]?/, "");
+    if (!folderName) return "";
+
+    const spaced = folderName.replace(/[-_]+/g, " ").trim();
+    if (/[A-Z]/.test(spaced)) return spaced;
+
+    return spaced.replace(/\b\w/g, (character) => character.toUpperCase());
+  }
+
+  function formatPublishedDate(value = "") {
+    const trimmed = String(value || "").trim();
+    const match = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!match) return trimmed;
+
+    const [, year, month, day] = match;
+    const date = new Date(Date.UTC(Number(year), Number(month) - 1, Number(day)));
+    if (Number.isNaN(date.getTime())) return trimmed;
+
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC"
+    }).format(date);
+  }
+
+  function getReadingTimeLabel(nodes) {
+    const scratch = document.createElement("div");
+    nodes.forEach((node) => scratch.appendChild(node.cloneNode(true)));
+
+    const text = (scratch.textContent || "").replace(/\s+/g, " ").trim();
+    if (!text) return "";
+
+    const wordCount = text.split(/\s+/).filter(Boolean).length;
+    const minutes = Math.max(1, Math.ceil(wordCount / 225));
+    return `${minutes} min read`;
+  }
+
+  function createMetaItem(text) {
+    const item = document.createElement("span");
+    item.className = "post-meta-item";
+    item.textContent = text;
+    return item;
+  }
+
+  function createPublishedMetaItem(dateValue) {
+    const item = document.createElement("span");
+    item.className = "post-meta-item";
+    item.appendChild(document.createTextNode("Published: "));
+
+    const time = document.createElement("time");
+    time.dateTime = dateValue;
+    time.textContent = formatPublishedDate(dateValue);
+    item.appendChild(time);
+
+    return item;
+  }
+
+  function createPostHeader({ headingNode, metadata, readingTime }) {
+    const header = document.createElement("section");
+    header.className = "post-header";
+
+    header.appendChild(headingNode.cloneNode(true));
+
+    const meta = document.createElement("p");
+    meta.className = "post-meta";
+
+    if (metadata.published) {
+      meta.appendChild(createPublishedMetaItem(metadata.published));
+    }
+    if (metadata.project) {
+      meta.appendChild(createMetaItem(metadata.project));
+    }
+    if (readingTime) {
+      meta.appendChild(createMetaItem(readingTime));
+    }
+    if (meta.children.length > 0) {
+      header.appendChild(meta);
+    }
+
+    if (metadata.subtitle) {
+      const subtitle = document.createElement("p");
+      subtitle.className = "post-subtitle";
+      subtitle.textContent = metadata.subtitle;
+      header.appendChild(subtitle);
+    }
+
+    const rule = document.createElement("hr");
+    rule.className = "post-rule";
+    header.appendChild(rule);
+
+    return header;
+  }
+
+  function enhanceBlogPostNodes(nodes, postRoot, state) {
+    if (!postRoot) return nodes;
+
+    const headingIndex = nodes.findIndex((node) => {
+      return node.nodeType === Node.ELEMENT_NODE && node.tagName.toLowerCase() === "h1";
+    });
+    if (headingIndex === -1) return nodes;
+
+    const metadata = {
+      published: String(postRoot.dataset.published || "").trim(),
+      project: String(postRoot.dataset.project || "").trim() || inferProjectNameFromFile(state.file),
+      subtitle: String(postRoot.dataset.subtitle || "").trim()
+    };
+    const readingTime = getReadingTimeLabel(nodes);
+    const header = createPostHeader({
+      headingNode: nodes[headingIndex],
+      metadata,
+      readingTime
+    });
+
+    return [
+      ...nodes.slice(0, headingIndex),
+      header,
+      ...nodes.slice(headingIndex + 1)
+    ];
+  }
+
+  function sanitizeWordNodes(rawHtml, state) {
+    const template = document.createElement("template");
+    template.innerHTML = rawHtml;
+
+    const postRoot = findBlogPostRoot(template);
+    const sourceNodes = postRoot ? postRoot.childNodes : template.content.childNodes;
+    const nodes = cloneRenderableWordNodes(sourceNodes);
+
+    return enhanceBlogPostNodes(nodes, postRoot, state);
   }
 
   function splitNodeByWords(node, testBody) {
@@ -221,7 +366,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     const metrics = getWordPageMetrics(state);
     state.wordLayout = metrics;
 
-    const nodes = sanitizeWordNodes(state.wordSourceHtml);
+    const nodes = sanitizeWordNodes(state.wordSourceHtml, state);
     pagesContainer.innerHTML = "";
 
     const firstPage = createWordPage(metrics);

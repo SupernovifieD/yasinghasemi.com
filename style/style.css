@@ -268,6 +268,51 @@ html, body {
 .paper ul,
 .paper ol { padding-left: 24px; margin-bottom: 12px; }
 
+.paper .post-header {
+  margin-bottom: 22px;
+}
+
+.paper .post-header h1 {
+  margin-bottom: 8px;
+}
+
+.paper .post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0;
+  color: #555;
+  font-size: 12px;
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.paper .post-meta-item {
+  display: inline-flex;
+  align-items: center;
+}
+
+.paper .post-meta-item:not(:last-child)::after {
+  content: "\00b7";
+  margin: 0 7px;
+  color: #777;
+}
+
+.paper .post-subtitle {
+  color: #333;
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 0;
+}
+
+.paper .post-rule {
+  height: 0;
+  border: 0;
+  border-top: 1px solid #777;
+  border-bottom: 1px solid #f2f2f2;
+  margin: 15px 0 0;
+}
+
 .word-maximized .document-area {
   padding: 18px 22px;
 }
