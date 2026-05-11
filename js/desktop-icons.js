@@ -1,4 +1,4 @@
-export function initDesktopIcons({ onOpenDocument, onOpenSystemIcon }) {
+export function initDesktopIcons({ onOpenDocument, onOpenSystemIcon, onOpenFolderPath }) {
   if (typeof onOpenDocument !== "function") {
     throw new Error("initDesktopIcons requires an onOpenDocument callback.");
   }
@@ -13,6 +13,11 @@ export function initDesktopIcons({ onOpenDocument, onOpenSystemIcon }) {
         const title = icon.dataset.title || `${name} - Document`;
         const app = icon.dataset.app || "word";
         await onOpenDocument({ name, title, file, app });
+        return;
+      }
+
+      if (type === "folder" && typeof onOpenFolderPath === "function") {
+        await onOpenFolderPath(icon.dataset.folderPath || "", { name, icon });
         return;
       }
 

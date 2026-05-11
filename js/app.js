@@ -190,6 +190,11 @@ export async function initApp() {
 
   initDesktopIcons({
     onOpenDocument: windowManager.openDocument,
+    onOpenFolderPath: (folderPath) => {
+      const target = findNodeByPath(manifestRoot, normalizeManifestPath(folderPath));
+      if (!target || target.type !== "folder") return;
+      openExplorerForFolder(target);
+    },
     onOpenSystemIcon: ({ name }) => {
       if (name === "My Documents") {
         openRootDocuments();
