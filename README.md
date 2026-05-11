@@ -1,10 +1,12 @@
 # yasinghasemi.com
 
-A retro Windows 98-style personal blog, served as a static website.
+My retro Windows 98-style personal blog, served as a static website. Feel free to explore, fork, copy, paste, interact, and suggest tweaks. 
 
-Website: [https://yasinghasemi.com](https://yasinghasemi.com)
+See it in action: [https://yasinghasemi.com](https://yasinghasemi.com)
 
 ## Run Locally
+
+Well, it is a static website, but scripts run when run them on a server. So:
 
 1. Start a local static server:
 
@@ -12,7 +14,7 @@ Website: [https://yasinghasemi.com](https://yasinghasemi.com)
 python3 -m http.server 8000
 ```
 
-2. Open:
+2. Open and enjoy:
 
 ```text
 http://localhost:8000
@@ -20,7 +22,7 @@ http://localhost:8000
 
 ## Regenerate Documents Manifest
 
-`fs.json` is generated from `mydocuments/`.
+There is actually in file system at work here which is not very complicated. `fs.json` is generated from `mydocuments/`. The following bash command does the job for you.
 
 ```bash
 bash filesystem.sh
