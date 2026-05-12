@@ -77,7 +77,14 @@ html, body {
 
 .desktop-project-icon {
   grid-column: 2;
+}
+
+.desktop-project-icon-primary {
   grid-row: 1;
+}
+
+.desktop-project-icon-secondary {
+  grid-row: 2;
 }
 
 .desktop-icon span {
