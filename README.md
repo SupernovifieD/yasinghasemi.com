@@ -46,7 +46,9 @@ This section is auto-generated from `mydocuments/`
     - 📁 [1-howitstarted](https://yasinghasemi.com/#/docs/1-NetRadar/1-howitstarted)
       - 📄 [howitstarted.doc](https://yasinghasemi.com/mydocuments/1-NetRadar/1-howitstarted/howitstarted.html)
     - 📁 [2026-05-03](https://yasinghasemi.com/#/docs/1-NetRadar/2026-05-03)
-  - 📁 [2-movieindex](https://yasinghasemi.com/#/docs/2-movieindex)
+  - 📁 [2-MineralProspectivityMapping](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping)
+    - 📁 [why](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/why)
+      - 📄 [why.doc](https://yasinghasemi.com/mydocuments/2-MineralProspectivityMapping/why/why.html)
 <!-- DOCS_TOC:END -->
 
 ## Icon Credits

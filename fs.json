@@ -57,12 +57,30 @@
       ]
     },
     {
-      "title": "2-movieindex",
+      "title": "2-MineralProspectivityMapping",
       "type": "folder",
-      "url": "/#/docs/2-movieindex",
-      "path": "2-movieindex",
+      "url": "/#/docs/2-MineralProspectivityMapping",
+      "path": "2-MineralProspectivityMapping",
       "page": false,
-      "children": []
+      "children": [
+        {
+          "title": "why",
+          "type": "folder",
+          "url": "/#/docs/2-MineralProspectivityMapping/why",
+          "path": "2-MineralProspectivityMapping/why",
+          "page": true,
+          "children": [
+            {
+              "title": "why.doc",
+              "type": "doc",
+              "url": "mydocuments/2-MineralProspectivityMapping/why/why.html",
+              "path": "2-MineralProspectivityMapping/why/why.html",
+              "page": false,
+              "children": []
+            }
+          ]
+        }
+      ]
     }
   ]
 }
