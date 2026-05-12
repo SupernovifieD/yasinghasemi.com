@@ -686,6 +686,69 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     }
   }
 
+  function clampWindowPosition(value, min, max) {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function startWindowDrag(state, event) {
+    if (!state || state.maximized) return;
+    if (event.button !== undefined && event.button !== 0) return;
+    const eventTarget = event.target instanceof Element ? event.target : null;
+    if (eventTarget && eventTarget.closest(".title-buttons")) return;
+    if (typeof event.clientX !== "number" || typeof event.clientY !== "number") return;
+
+    event.preventDefault();
+    bringToFront(state.id);
+
+    const titleBar = event.currentTarget;
+    const layerBounds = windowsLayer.getBoundingClientRect();
+    const windowBounds = state.el.getBoundingClientRect();
+    const startX = event.clientX;
+    const startY = event.clientY;
+    const startLeft = windowBounds.left - layerBounds.left;
+    const startTop = windowBounds.top - layerBounds.top;
+    const maxLeft = Math.max(0, layerBounds.width - windowBounds.width);
+    const maxTop = Math.max(0, layerBounds.height - windowBounds.height);
+
+    state.el.classList.add("is-dragging");
+
+    if (titleBar.setPointerCapture && event.pointerId !== undefined) {
+      try {
+        titleBar.setPointerCapture(event.pointerId);
+      } catch {
+        // Pointer capture can fail if the pointer is no longer active.
+      }
+    }
+
+    const onPointerMove = (moveEvent) => {
+      if (typeof moveEvent.clientX !== "number" || typeof moveEvent.clientY !== "number") return;
+
+      const nextLeft = clampWindowPosition(startLeft + moveEvent.clientX - startX, 0, maxLeft);
+      const nextTop = clampWindowPosition(startTop + moveEvent.clientY - startY, 0, maxTop);
+      state.el.style.left = `${Math.round(nextLeft)}px`;
+      state.el.style.top = `${Math.round(nextTop)}px`;
+    };
+
+    const stopDragging = (endEvent) => {
+      document.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerup", stopDragging);
+      document.removeEventListener("pointercancel", stopDragging);
+      state.el.classList.remove("is-dragging");
+
+      if (titleBar.releasePointerCapture && endEvent.pointerId !== undefined) {
+        try {
+          titleBar.releasePointerCapture(endEvent.pointerId);
+        } catch {
+          // The browser may have already released capture on cancel/up.
+        }
+      }
+    };
+
+    document.addEventListener("pointermove", onPointerMove);
+    document.addEventListener("pointerup", stopDragging);
+    document.addEventListener("pointercancel", stopDragging);
+  }
+
   function attachWindowEvents(state) {
     const { id, el, locked, taskBtn } = state;
 
@@ -696,6 +759,10 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     const maxBtn = el.querySelector(".max-btn");
     const closeBtn = el.querySelector(".close-btn");
     const titleBar = el.querySelector(".title-bar");
+
+    titleBar.addEventListener("pointerdown", (event) => {
+      startWindowDrag(state, event);
+    });
 
     if (!locked) {
       minBtn.addEventListener("click", (event) => {
