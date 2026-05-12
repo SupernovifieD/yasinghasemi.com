@@ -559,7 +559,12 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     if (node.nodeType !== Node.ELEMENT_NODE) return;
 
     const tagName = node.tagName.toLowerCase();
-    if (tagName === "hr" || tagName === "script" || tagName === "style") return;
+    if (tagName === "script" || tagName === "style") return;
+
+    if (tagName === "hr") {
+      blocks.push({ type: "rule", text: "" });
+      return;
+    }
 
     if (tagName === "h1") {
       blocks.push({ type: "title", text: normalizePrintableText(node.textContent) });
@@ -572,11 +577,18 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     }
 
     if (tagName === "p" || tagName === "li") {
-      const type = node.classList.contains("post-meta")
-        ? "meta"
-        : node.classList.contains("post-subtitle")
-          ? "subtitle"
-          : "body";
+      if (node.classList.contains("post-meta")) {
+        const metaItems = Array.from(node.querySelectorAll(".post-meta-item"))
+          .map((item) => normalizePrintableText(item.textContent))
+          .filter(Boolean);
+        const metaText = metaItems.length > 0
+          ? metaItems.join(" \u00b7 ")
+          : normalizePrintableText(node.textContent);
+        blocks.push({ type: "meta", text: metaText });
+        return;
+      }
+
+      const type = node.classList.contains("post-subtitle") ? "subtitle" : "body";
       blocks.push({ type, text: normalizePrintableText(node.textContent) });
       return;
     }
@@ -718,21 +730,48 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
 
   function createDocxParagraph(block) {
     const settings = {
-      title: { size: 32, bold: true, after: 220 },
-      heading: { size: 26, bold: true, after: 180 },
-      subtitle: { size: 24, bold: false, after: 160 },
-      meta: { size: 20, bold: false, after: 180 },
-      body: { size: 22, bold: false, after: 160 }
-    }[block.type] || { size: 22, bold: false, after: 160 };
+      title: { size: 40, bold: true, color: "000000", after: 130 },
+      heading: { size: 30, bold: true, color: "000000", after: 170, before: 140 },
+      subtitle: { size: 23, bold: false, color: "333333", after: 0 },
+      meta: { size: 18, bold: false, color: "555555", after: 120 },
+      body: { size: 22, bold: false, color: "000000", after: 160 }
+    }[block.type] || { size: 22, bold: false, color: "000000", after: 160 };
+
+    if (block.type === "rule") {
+      return `
+        <w:p>
+          <w:pPr>
+            <w:pBdr>
+              <w:bottom w:val="single" w:sz="6" w:space="1" w:color="777777"/>
+            </w:pBdr>
+            <w:spacing w:before="180" w:after="260"/>
+          </w:pPr>
+          <w:r>
+            <w:rPr>
+              <w:rFonts w:ascii="Tahoma" w:hAnsi="Tahoma" w:eastAsia="Tahoma" w:cs="Tahoma"/>
+              <w:color w:val="777777"/>
+              <w:sz w:val="6"/>
+            </w:rPr>
+            <w:t xml:space="preserve">________________________________________________________________________________</w:t>
+          </w:r>
+        </w:p>
+      `;
+    }
 
     const bold = settings.bold ? "<w:b/>" : "";
+    const before = settings.before ? ` w:before="${settings.before}"` : "";
     return `
       <w:p>
         <w:pPr>
-          <w:spacing w:after="${settings.after}" w:line="276" w:lineRule="auto"/>
+          <w:spacing${before} w:after="${settings.after}" w:line="276" w:lineRule="auto"/>
         </w:pPr>
         <w:r>
-          <w:rPr>${bold}<w:sz w:val="${settings.size}"/></w:rPr>
+          <w:rPr>
+            <w:rFonts w:ascii="Tahoma" w:hAnsi="Tahoma" w:eastAsia="Tahoma" w:cs="Tahoma"/>
+            ${bold}
+            <w:color w:val="${settings.color}"/>
+            <w:sz w:val="${settings.size}"/>
+          </w:rPr>
           <w:t xml:space="preserve">${escapeXml(block.text)}</w:t>
         </w:r>
       </w:p>
@@ -780,115 +819,6 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     ]);
   }
 
-  function wrapText(text, maxCharacters) {
-    const words = normalizePrintableText(text).split(/\s+/).filter(Boolean);
-    const lines = [];
-    let current = "";
-
-    words.forEach((word) => {
-      const next = current ? `${current} ${word}` : word;
-      if (next.length <= maxCharacters) {
-        current = next;
-        return;
-      }
-
-      if (current) lines.push(current);
-      current = word;
-    });
-
-    if (current) lines.push(current);
-    return lines;
-  }
-
-  function escapePdfText(value = "") {
-    return normalizePrintableText(value)
-      .replace(/[^\x20-\x7e]/g, "?")
-      .replace(/\\/g, "\\\\")
-      .replace(/\(/g, "\\(")
-      .replace(/\)/g, "\\)");
-  }
-
-  function createPdfPages(blocks) {
-    const pageWidth = 595.28;
-    const pageHeight = 841.89;
-    const margin = 72;
-    const contentWidth = pageWidth - margin * 2;
-    const pages = [];
-    let commands = [];
-    let y = pageHeight - margin;
-
-    const startNewPage = () => {
-      if (commands.length > 0) {
-        pages.push(commands.join("\n"));
-      }
-      commands = [];
-      y = pageHeight - margin;
-    };
-
-    const drawLine = (line, size, leading) => {
-      if (y < margin + leading) startNewPage();
-      commands.push(`BT /F1 ${size} Tf ${margin} ${y.toFixed(2)} Td (${escapePdfText(line)}) Tj ET`);
-      y -= leading;
-    };
-
-    blocks.forEach((block) => {
-      const settings = {
-        title: { size: 18, leading: 24, after: 10 },
-        heading: { size: 15, leading: 21, after: 8 },
-        subtitle: { size: 13, leading: 18, after: 8 },
-        meta: { size: 10, leading: 15, after: 10 },
-        body: { size: 11, leading: 16, after: 8 }
-      }[block.type] || { size: 11, leading: 16, after: 8 };
-      const maxCharacters = Math.max(24, Math.floor(contentWidth / (settings.size * 0.52)));
-
-      wrapText(block.text, maxCharacters).forEach((line) => {
-        drawLine(line, settings.size, settings.leading);
-      });
-      y -= settings.after;
-    });
-
-    startNewPage();
-    return pages.length > 0 ? pages : [""];
-  }
-
-  function createPdfBlob(state) {
-    const encoder = new TextEncoder();
-    const blocks = getDocumentTextBlocks(state);
-    const pageStreams = createPdfPages(blocks);
-    const objects = [null];
-    const pageIds = [];
-
-    objects.push("<< /Type /Catalog /Pages 2 0 R >>");
-    objects.push("");
-    const fontId = objects.push("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
-
-    pageStreams.forEach((stream) => {
-      const streamContent = `${stream}\n`;
-      const streamLength = encoder.encode(streamContent).length;
-      const contentId = objects.push(`<< /Length ${streamLength} >>\nstream\n${streamContent}endstream`);
-      const pageId = objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 ${fontId} 0 R >> >> /Contents ${contentId} 0 R >>`);
-      pageIds.push(pageId);
-    });
-
-    objects[2] = `<< /Type /Pages /Kids [${pageIds.map((id) => `${id} 0 R`).join(" ")}] /Count ${pageIds.length} >>`;
-
-    let pdf = "%PDF-1.4\n";
-    const offsets = [0];
-    for (let index = 1; index < objects.length; index += 1) {
-      offsets[index] = encoder.encode(pdf).length;
-      pdf += `${index} 0 obj\n${objects[index]}\nendobj\n`;
-    }
-
-    const xrefOffset = encoder.encode(pdf).length;
-    pdf += `xref\n0 ${objects.length}\n0000000000 65535 f \n`;
-    for (let index = 1; index < objects.length; index += 1) {
-      pdf += `${String(offsets[index]).padStart(10, "0")} 00000 n \n`;
-    }
-    pdf += `trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
-
-    return new Blob([encoder.encode(pdf)], { type: "application/pdf" });
-  }
-
   function saveDocument(state) {
     if (state.kind !== "document") return;
 
@@ -901,26 +831,9 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     downloadBlob(createDocxBlob(state), buildDownloadFileName(state, "docx"));
   }
 
-  function saveDocumentAs(state) {
-    if (state.kind !== "document") return;
-
-    if (state.app === "word") {
-      downloadBlob(createPdfBlob(state), buildDownloadFileName(state, "pdf"));
-      return;
-    }
-
-    const blob = new Blob([getPlainTextContent(state)], { type: "text/plain;charset=utf-8" });
-    downloadBlob(blob, buildDownloadFileName(state, "txt"));
-  }
-
   function handleMenuCommand(state, command) {
     if (command === "save") {
       saveDocument(state);
-      return;
-    }
-
-    if (command === "save-as") {
-      saveDocumentAs(state);
     }
   }
 
@@ -932,7 +845,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
         : ["File", "Edit", "View", "Insert", "Format", "Tools", "Table", "Window", "Help"],
       {
         save: true,
-        saveAs: true
+        saveAs: false
       }
     );
     const titleIcon = isNotepad
