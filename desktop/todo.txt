@@ -1,9 +1,35 @@
 
 TODO:
-- Replace placeholder icons with real Windows 98-style icons
-- Add draggable windows
-- Add My Computer window
-- Add Recycle Bin behavior
-- Polish sound effects (optional)
+- Replace placeholder icons with real Windows 98-style icons. This is the list of missing icons:
+    -network-neighborhood
+    - dial-up-networking
+    - internet
+    - globe
+    - network-monitor
+    - radar
+    - control-panel
+    - programs
+    - help
+    - run
+    - shutdown
+    - volume
+    - network-status
+    - new-document
+    - open-folder
+    - save
+    - print
+    - image-file
+    - audio-file
+    - video-file
+    - generic-file
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.
+- Add Hotjar
+- Add search for content within each window
+- Add classic windows warning window
+- Add folder specific icons for NetRadar and MPM + ML on Desktop
+- Add GitHub and LinkedIn pixelated icons to the taskbar
+- Add save as functionality for saving document as pdf or doc for the user
+- Add favicon
+- Add metadata in header
+- Add a share system for sharing content with others
+- Create a script to automatically add the latest blog posts to the welcome screen
