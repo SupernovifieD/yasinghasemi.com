@@ -210,9 +210,95 @@ html, body {
   height: 22px;
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 0 8px;
+  gap: 0;
+  padding: 0 4px;
   border-bottom: 1px solid #9a9a9a;
+  position: relative;
+  z-index: 4;
+  overflow: visible;
+}
+
+.menu-item {
+  position: relative;
+  height: 100%;
+}
+
+.menu-button {
+  height: 100%;
+  min-width: 42px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #000;
+  padding: 0 7px;
+  font: inherit;
+  text-align: left;
+  cursor: default;
+}
+
+.menu-item:hover .menu-button,
+.menu-item:focus-within .menu-button {
+  border-top-color: var(--win-white);
+  border-left-color: var(--win-white);
+  border-right-color: var(--win-dark-gray);
+  border-bottom-color: var(--win-dark-gray);
+}
+
+.menu-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 150px;
+  list-style: none;
+  padding: 2px;
+  background: var(--win-gray);
+  border-top: 2px solid var(--win-light);
+  border-left: 2px solid var(--win-light);
+  border-right: 2px solid var(--win-dark-gray);
+  border-bottom: 2px solid var(--win-dark-gray);
+  z-index: 50;
+}
+
+.menu-item:hover .menu-dropdown,
+.menu-item:focus-within .menu-dropdown {
+  display: block;
+}
+
+.menu-dropdown-row {
+  margin: 0;
+}
+
+.menu-command {
+  width: 100%;
+  min-height: 22px;
+  border: 0;
+  background: transparent;
+  color: #000;
+  display: block;
+  padding: 3px 26px 3px 18px;
+  font: inherit;
+  text-align: left;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.menu-command:not(:disabled):hover,
+.menu-command:not(:disabled):focus {
+  background: var(--selection-blue);
+  color: #fff;
+  outline: none;
+}
+
+.menu-command:disabled {
+  color: var(--win-dark-gray);
+  text-shadow: 1px 1px 0 var(--win-white);
+}
+
+.menu-separator {
+  height: 1px;
+  margin: 3px 2px;
+  background: var(--win-dark-gray);
+  border-bottom: 1px solid var(--win-white);
 }
 
 .toolbar-row {

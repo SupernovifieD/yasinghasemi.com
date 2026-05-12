@@ -414,8 +414,527 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     el.style.top = `${70 + offset}px`;
   }
 
+  function escapeHtml(value = "") {
+    return String(value).replace(/[&<>"']/g, (character) => {
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      };
+      return entities[character];
+    });
+  }
+
+  function buildMenuItem({ label, command = "", enabled = false, separator = false }) {
+    if (separator) {
+      return `<li class="menu-separator" role="separator"></li>`;
+    }
+
+    const commandAttr = command ? ` data-command="${escapeHtml(command)}"` : "";
+    const disabledAttr = enabled ? "" : " disabled aria-disabled=\"true\"";
+    return `
+      <li class="menu-dropdown-row">
+        <button class="menu-command" type="button"${commandAttr}${disabledAttr}>
+          ${escapeHtml(label)}
+        </button>
+      </li>
+    `;
+  }
+
+  function getMenuItems(menuName, capabilities = {}) {
+    if (menuName === "File") {
+      return [
+        { label: "New" },
+        { label: "Open..." },
+        { separator: true },
+        { label: "Save", command: "save", enabled: Boolean(capabilities.save) },
+        { label: "Save As...", command: "save-as", enabled: Boolean(capabilities.saveAs) },
+        { separator: true },
+        { label: "Page Setup..." },
+        { label: "Print..." },
+        { separator: true },
+        { label: "Properties" },
+        { label: "Exit" }
+      ];
+    }
+
+    const disabledMenus = {
+      Edit: ["Undo", "Cut", "Copy", "Paste", "Delete", "Select All", "Find..."],
+      Search: ["Find...", "Find Next", "Replace...", "Go To..."],
+      View: ["Normal", "Web Layout", "Print Layout", "Toolbars", "Zoom..."],
+      Insert: ["Break...", "Page Numbers...", "Date and Time...", "Picture..."],
+      Format: ["Font...", "Paragraph...", "Bullets and Numbering..."],
+      Tools: ["Spelling and Grammar...", "Word Count...", "Options..."],
+      Table: ["Insert Table...", "Delete", "Select", "Table Properties..."],
+      Window: ["New Window", "Arrange All", "Split"],
+      Go: ["Back", "Forward", "Up One Level", "Home Page"],
+      Favorites: ["Add to Favorites...", "Organize Favorites..."],
+      Help: ["Help Topics", "About"]
+    };
+
+    return (disabledMenus[menuName] || ["Unavailable"]).map((label) => ({ label }));
+  }
+
+  function buildMenuBarMarkup(menuNames, capabilities = {}) {
+    return `
+      <nav class="menu-bar" aria-label="Window menu">
+        ${menuNames
+          .map((menuName) => {
+            const items = getMenuItems(menuName, capabilities).map(buildMenuItem).join("");
+            return `
+              <div class="menu-item">
+                <button class="menu-button" type="button">${escapeHtml(menuName)}</button>
+                <ul class="menu-dropdown" role="menu">
+                  ${items}
+                </ul>
+              </div>
+            `;
+          })
+          .join("")}
+      </nav>
+    `;
+  }
+
+  function getVisibleWindowFileName(state) {
+    const titleEl = state.el.querySelector(".window-title-text");
+    const visibleTitle = titleEl ? titleEl.textContent : "";
+    return String(visibleTitle || state.name || "document")
+      .replace(/\s+-\s+(Microsoft Word|Notepad)$/i, "")
+      .trim();
+  }
+
+  function buildDownloadFileName(state, extension) {
+    const visibleFileName = getVisibleWindowFileName(state);
+    const baseName = visibleFileName
+      .replace(/\.[^.]+$/, "")
+      .replace(/[\\/:*?"<>|]+/g, "-")
+      .replace(/\s+/g, " ")
+      .trim() || "document";
+
+    return `${baseName} - yasinghasemi.com.${extension}`;
+  }
+
+  function downloadBlob(blob, fileName) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function escapeXml(value = "") {
+    return String(value).replace(/[&<>"']/g, (character) => {
+      const entities = {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&apos;"
+      };
+      return entities[character];
+    });
+  }
+
+  function normalizePrintableText(value = "") {
+    return String(value)
+      .replace(/[\u2018\u2019]/g, "'")
+      .replace(/[\u201c\u201d]/g, '"')
+      .replace(/[\u2013\u2014]/g, "-")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function collectTextBlocksFromNode(node, blocks) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = normalizePrintableText(node.textContent);
+      if (text) blocks.push({ type: "body", text });
+      return;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) return;
+
+    const tagName = node.tagName.toLowerCase();
+    if (tagName === "hr" || tagName === "script" || tagName === "style") return;
+
+    if (tagName === "h1") {
+      blocks.push({ type: "title", text: normalizePrintableText(node.textContent) });
+      return;
+    }
+
+    if (tagName === "h2" || tagName === "h3") {
+      blocks.push({ type: "heading", text: normalizePrintableText(node.textContent) });
+      return;
+    }
+
+    if (tagName === "p" || tagName === "li") {
+      const type = node.classList.contains("post-meta")
+        ? "meta"
+        : node.classList.contains("post-subtitle")
+          ? "subtitle"
+          : "body";
+      blocks.push({ type, text: normalizePrintableText(node.textContent) });
+      return;
+    }
+
+    node.childNodes.forEach((child) => collectTextBlocksFromNode(child, blocks));
+  }
+
+  function getWordTextBlocks(state) {
+    if (!state.wordSourceHtml) return [];
+
+    const nodes = sanitizeWordNodes(state.wordSourceHtml, state);
+    const blocks = [];
+    nodes.forEach((node) => collectTextBlocksFromNode(node, blocks));
+    return blocks.filter((block) => block.text);
+  }
+
+  function getDocumentTextBlocks(state) {
+    if (state.app === "word") {
+      return getWordTextBlocks(state);
+    }
+
+    const text = String(state.sourceText || "")
+      .split(/\n{2,}/)
+      .map(normalizePrintableText)
+      .filter(Boolean);
+    return text.map((paragraph, index) => ({
+      type: index === 0 ? "title" : "body",
+      text: paragraph
+    }));
+  }
+
+  function getPlainTextContent(state) {
+    if (state.app === "notepad") {
+      return String(state.sourceText || "");
+    }
+
+    return getDocumentTextBlocks(state)
+      .map((block) => block.text)
+      .join("\n\n");
+  }
+
+  const CRC32_TABLE = (() => {
+    const table = new Uint32Array(256);
+    for (let index = 0; index < table.length; index += 1) {
+      let value = index;
+      for (let bit = 0; bit < 8; bit += 1) {
+        value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
+      }
+      table[index] = value >>> 0;
+    }
+    return table;
+  })();
+
+  function getCrc32(bytes) {
+    let crc = 0xffffffff;
+    bytes.forEach((byte) => {
+      crc = CRC32_TABLE[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+    });
+    return (crc ^ 0xffffffff) >>> 0;
+  }
+
+  function getZipTimestamp() {
+    const now = new Date();
+    const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
+    const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+    return { dosTime, dosDate };
+  }
+
+  function createZipBlob(files) {
+    const encoder = new TextEncoder();
+    const { dosTime, dosDate } = getZipTimestamp();
+    const localParts = [];
+    const centralParts = [];
+    let offset = 0;
+
+    files.forEach((file) => {
+      const nameBytes = encoder.encode(file.name);
+      const dataBytes = typeof file.content === "string" ? encoder.encode(file.content) : file.content;
+      const crc = getCrc32(dataBytes);
+
+      const localHeader = new Uint8Array(30 + nameBytes.length);
+      const localView = new DataView(localHeader.buffer);
+      localView.setUint32(0, 0x04034b50, true);
+      localView.setUint16(4, 20, true);
+      localView.setUint16(6, 0, true);
+      localView.setUint16(8, 0, true);
+      localView.setUint16(10, dosTime, true);
+      localView.setUint16(12, dosDate, true);
+      localView.setUint32(14, crc, true);
+      localView.setUint32(18, dataBytes.length, true);
+      localView.setUint32(22, dataBytes.length, true);
+      localView.setUint16(26, nameBytes.length, true);
+      localView.setUint16(28, 0, true);
+      localHeader.set(nameBytes, 30);
+      localParts.push(localHeader, dataBytes);
+
+      const centralHeader = new Uint8Array(46 + nameBytes.length);
+      const centralView = new DataView(centralHeader.buffer);
+      centralView.setUint32(0, 0x02014b50, true);
+      centralView.setUint16(4, 20, true);
+      centralView.setUint16(6, 20, true);
+      centralView.setUint16(8, 0, true);
+      centralView.setUint16(10, 0, true);
+      centralView.setUint16(12, dosTime, true);
+      centralView.setUint16(14, dosDate, true);
+      centralView.setUint32(16, crc, true);
+      centralView.setUint32(20, dataBytes.length, true);
+      centralView.setUint32(24, dataBytes.length, true);
+      centralView.setUint16(28, nameBytes.length, true);
+      centralView.setUint16(30, 0, true);
+      centralView.setUint16(32, 0, true);
+      centralView.setUint16(34, 0, true);
+      centralView.setUint16(36, 0, true);
+      centralView.setUint32(38, 0, true);
+      centralView.setUint32(42, offset, true);
+      centralHeader.set(nameBytes, 46);
+      centralParts.push(centralHeader);
+
+      offset += localHeader.length + dataBytes.length;
+    });
+
+    const centralOffset = offset;
+    const centralSize = centralParts.reduce((size, part) => size + part.length, 0);
+    const endRecord = new Uint8Array(22);
+    const endView = new DataView(endRecord.buffer);
+    endView.setUint32(0, 0x06054b50, true);
+    endView.setUint16(4, 0, true);
+    endView.setUint16(6, 0, true);
+    endView.setUint16(8, files.length, true);
+    endView.setUint16(10, files.length, true);
+    endView.setUint32(12, centralSize, true);
+    endView.setUint32(16, centralOffset, true);
+    endView.setUint16(20, 0, true);
+
+    return new Blob([...localParts, ...centralParts, endRecord], {
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    });
+  }
+
+  function createDocxParagraph(block) {
+    const settings = {
+      title: { size: 32, bold: true, after: 220 },
+      heading: { size: 26, bold: true, after: 180 },
+      subtitle: { size: 24, bold: false, after: 160 },
+      meta: { size: 20, bold: false, after: 180 },
+      body: { size: 22, bold: false, after: 160 }
+    }[block.type] || { size: 22, bold: false, after: 160 };
+
+    const bold = settings.bold ? "<w:b/>" : "";
+    return `
+      <w:p>
+        <w:pPr>
+          <w:spacing w:after="${settings.after}" w:line="276" w:lineRule="auto"/>
+        </w:pPr>
+        <w:r>
+          <w:rPr>${bold}<w:sz w:val="${settings.size}"/></w:rPr>
+          <w:t xml:space="preserve">${escapeXml(block.text)}</w:t>
+        </w:r>
+      </w:p>
+    `;
+  }
+
+  function createDocxBlob(state) {
+    const blocks = getDocumentTextBlocks(state);
+    const paragraphs = blocks.map(createDocxParagraph).join("");
+    const documentXml = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+      <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
+        <w:body>
+          ${paragraphs}
+          <w:sectPr>
+            <w:pgSz w:w="11906" w:h="16838"/>
+            <w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/>
+          </w:sectPr>
+        </w:body>
+      </w:document>
+    `;
+
+    return createZipBlob([
+      {
+        name: "[Content_Types].xml",
+        content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+          <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+            <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+            <Default Extension="xml" ContentType="application/xml"/>
+            <Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>
+          </Types>
+        `
+      },
+      {
+        name: "_rels/.rels",
+        content: `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+          <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+            <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>
+          </Relationships>
+        `
+      },
+      {
+        name: "word/document.xml",
+        content: documentXml
+      }
+    ]);
+  }
+
+  function wrapText(text, maxCharacters) {
+    const words = normalizePrintableText(text).split(/\s+/).filter(Boolean);
+    const lines = [];
+    let current = "";
+
+    words.forEach((word) => {
+      const next = current ? `${current} ${word}` : word;
+      if (next.length <= maxCharacters) {
+        current = next;
+        return;
+      }
+
+      if (current) lines.push(current);
+      current = word;
+    });
+
+    if (current) lines.push(current);
+    return lines;
+  }
+
+  function escapePdfText(value = "") {
+    return normalizePrintableText(value)
+      .replace(/[^\x20-\x7e]/g, "?")
+      .replace(/\\/g, "\\\\")
+      .replace(/\(/g, "\\(")
+      .replace(/\)/g, "\\)");
+  }
+
+  function createPdfPages(blocks) {
+    const pageWidth = 595.28;
+    const pageHeight = 841.89;
+    const margin = 72;
+    const contentWidth = pageWidth - margin * 2;
+    const pages = [];
+    let commands = [];
+    let y = pageHeight - margin;
+
+    const startNewPage = () => {
+      if (commands.length > 0) {
+        pages.push(commands.join("\n"));
+      }
+      commands = [];
+      y = pageHeight - margin;
+    };
+
+    const drawLine = (line, size, leading) => {
+      if (y < margin + leading) startNewPage();
+      commands.push(`BT /F1 ${size} Tf ${margin} ${y.toFixed(2)} Td (${escapePdfText(line)}) Tj ET`);
+      y -= leading;
+    };
+
+    blocks.forEach((block) => {
+      const settings = {
+        title: { size: 18, leading: 24, after: 10 },
+        heading: { size: 15, leading: 21, after: 8 },
+        subtitle: { size: 13, leading: 18, after: 8 },
+        meta: { size: 10, leading: 15, after: 10 },
+        body: { size: 11, leading: 16, after: 8 }
+      }[block.type] || { size: 11, leading: 16, after: 8 };
+      const maxCharacters = Math.max(24, Math.floor(contentWidth / (settings.size * 0.52)));
+
+      wrapText(block.text, maxCharacters).forEach((line) => {
+        drawLine(line, settings.size, settings.leading);
+      });
+      y -= settings.after;
+    });
+
+    startNewPage();
+    return pages.length > 0 ? pages : [""];
+  }
+
+  function createPdfBlob(state) {
+    const encoder = new TextEncoder();
+    const blocks = getDocumentTextBlocks(state);
+    const pageStreams = createPdfPages(blocks);
+    const objects = [null];
+    const pageIds = [];
+
+    objects.push("<< /Type /Catalog /Pages 2 0 R >>");
+    objects.push("");
+    const fontId = objects.push("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+
+    pageStreams.forEach((stream) => {
+      const streamContent = `${stream}\n`;
+      const streamLength = encoder.encode(streamContent).length;
+      const contentId = objects.push(`<< /Length ${streamLength} >>\nstream\n${streamContent}endstream`);
+      const pageId = objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595.28 841.89] /Resources << /Font << /F1 ${fontId} 0 R >> >> /Contents ${contentId} 0 R >>`);
+      pageIds.push(pageId);
+    });
+
+    objects[2] = `<< /Type /Pages /Kids [${pageIds.map((id) => `${id} 0 R`).join(" ")}] /Count ${pageIds.length} >>`;
+
+    let pdf = "%PDF-1.4\n";
+    const offsets = [0];
+    for (let index = 1; index < objects.length; index += 1) {
+      offsets[index] = encoder.encode(pdf).length;
+      pdf += `${index} 0 obj\n${objects[index]}\nendobj\n`;
+    }
+
+    const xrefOffset = encoder.encode(pdf).length;
+    pdf += `xref\n0 ${objects.length}\n0000000000 65535 f \n`;
+    for (let index = 1; index < objects.length; index += 1) {
+      pdf += `${String(offsets[index]).padStart(10, "0")} 00000 n \n`;
+    }
+    pdf += `trailer\n<< /Size ${objects.length} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+
+    return new Blob([encoder.encode(pdf)], { type: "application/pdf" });
+  }
+
+  function saveDocument(state) {
+    if (state.kind !== "document") return;
+
+    if (state.app === "notepad") {
+      const blob = new Blob([getPlainTextContent(state)], { type: "text/plain;charset=utf-8" });
+      downloadBlob(blob, buildDownloadFileName(state, "txt"));
+      return;
+    }
+
+    downloadBlob(createDocxBlob(state), buildDownloadFileName(state, "docx"));
+  }
+
+  function saveDocumentAs(state) {
+    if (state.kind !== "document") return;
+
+    if (state.app === "word") {
+      downloadBlob(createPdfBlob(state), buildDownloadFileName(state, "pdf"));
+      return;
+    }
+
+    const blob = new Blob([getPlainTextContent(state)], { type: "text/plain;charset=utf-8" });
+    downloadBlob(blob, buildDownloadFileName(state, "txt"));
+  }
+
+  function handleMenuCommand(state, command) {
+    if (command === "save") {
+      saveDocument(state);
+      return;
+    }
+
+    if (command === "save-as") {
+      saveDocumentAs(state);
+    }
+  }
+
   function buildDocumentShell({ id, title, app, locked = false }) {
     const isNotepad = app === "notepad";
+    const menuMarkup = buildMenuBarMarkup(
+      isNotepad
+        ? ["File", "Edit", "Search", "Help"]
+        : ["File", "Edit", "View", "Insert", "Format", "Tools", "Table", "Window", "Help"],
+      {
+        save: true,
+        saveAs: true
+      }
+    );
     const titleIcon = isNotepad
       ? `<img class="title-icon title-app-icon small" src="${ICON_NOTEPAD_URL}" alt="" aria-hidden="true" />`
       : `<img class="title-icon title-app-icon small" src="${ICON_OFFICE_DOC_URL}" alt="" aria-hidden="true" />`;
@@ -451,13 +970,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
         </div>
       </div>
 
-      <div class="menu-bar">
-        ${
-          isNotepad
-            ? `<span>File</span><span>Edit</span><span>Search</span><span>Help</span>`
-            : `<span>File</span><span>Edit</span><span>View</span><span>Insert</span><span>Format</span><span>Tools</span><span>Table</span><span>Window</span><span>Help</span>`
-        }
-      </div>
+      ${menuMarkup}
 
       ${
         isNotepad
@@ -502,9 +1015,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
         </div>
       </div>
 
-      <div class="menu-bar">
-        <span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Favorites</span><span>Help</span>
-      </div>
+      ${buildMenuBarMarkup(["File", "Edit", "View", "Go", "Favorites", "Help"])}
 
       <div class="toolbar-row explorer-toolbar">
         <span class="explorer-toolbar-label">Address:</span>
@@ -547,9 +1058,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
         </div>
       </div>
 
-      <div class="menu-bar">
-        <span>File</span><span>Edit</span><span>Tools</span><span>Help</span>
-      </div>
+      ${buildMenuBarMarkup(["File", "Edit", "Tools", "Help"])}
 
       <div class="toolbar-row find-toolbar">
         <label class="find-input-label" for="${id}-query">Containing text:</label>
@@ -759,10 +1268,23 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     const maxBtn = el.querySelector(".max-btn");
     const closeBtn = el.querySelector(".close-btn");
     const titleBar = el.querySelector(".title-bar");
+    const menuBar = el.querySelector(".menu-bar");
 
     titleBar.addEventListener("pointerdown", (event) => {
       startWindowDrag(state, event);
     });
+
+    if (menuBar) {
+      menuBar.addEventListener("click", (event) => {
+        const eventTarget = event.target instanceof Element ? event.target : null;
+        const commandButton = eventTarget
+          ? eventTarget.closest(".menu-command[data-command]")
+          : null;
+        if (!commandButton || commandButton.disabled) return;
+        event.preventDefault();
+        handleMenuCommand(state, commandButton.dataset.command);
+      });
+    }
 
     if (!locked) {
       minBtn.addEventListener("click", (event) => {
@@ -1079,6 +1601,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
       minimized: false,
       maximized: false,
       restoreBounds: null,
+      sourceText: "",
       wordSourceHtml: null,
       wordLayout: null,
       wordScrollHandler: null
@@ -1090,6 +1613,7 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
       const response = await fetch(file);
       if (!response.ok) throw new Error(`Failed to load ${file}`);
       const raw = await response.text();
+      state.sourceText = raw;
 
       if (app === "notepad") {
         contentEl.textContent = raw;
@@ -1098,8 +1622,9 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
         renderWordDocument(state);
       }
     } catch (error) {
+      state.sourceText = `Error\n\nCould not load ${file}\n${error.message}`;
       if (app === "notepad") {
-        contentEl.textContent = `Error\n\nCould not load ${file}\n${error.message}`;
+        contentEl.textContent = state.sourceText;
       } else {
         state.wordSourceHtml = `
           <h1>Error</h1>
