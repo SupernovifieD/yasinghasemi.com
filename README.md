@@ -4,6 +4,16 @@ My retro Windows 98-style personal blog, served as a static website. Feel free t
 
 See it in action: [yasinghasemi.com](https://yasinghasemi.com)
 
+## Latest Posts
+
+This section is auto-generated from published posts in `mydocuments/`.
+
+<!-- LATEST_POSTS:START -->
+- [Why Did I Start Working on a Mineral Prospectivity Mapping Project?](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/why) - May 12, 2026
+- [How NetRadar Was Started](https://yasinghasemi.com/#/docs/1-NetRadar/1-howitstarted) - May 9, 2026
+- [The Story of This Blog, aka The Beginning](https://yasinghasemi.com/#/docs/0-thebeginning) - May 6, 2026
+<!-- LATEST_POSTS:END -->
+
 ## Run Locally
 
 Well, it is a static website, but scripts work when run them on a server. So:
