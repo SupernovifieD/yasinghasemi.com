@@ -33,4 +33,3 @@ TODO:
 - Add favicon
 - Add metadata in header
 - Add a share system for sharing content with others
-- Create a script to automatically add the latest blog posts to the welcome screen
