@@ -28,7 +28,8 @@ TODO:
 - Add classic windows warning window
 - Add folder specific icons for NetRadar and MPM + ML on Desktop
 - Add GitHub and LinkedIn pixelated icons to the taskbar
-- Add save as functionality for saving document as pdf or doc for the user
+- Add save as functionality for saving document as pdf
+- Improve docx saving header styling
 - Add favicon
 - Add metadata in header
 - Add a share system for sharing content with others

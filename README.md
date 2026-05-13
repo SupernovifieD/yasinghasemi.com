@@ -2,11 +2,11 @@
 
 My retro Windows 98-style personal blog, served as a static website. Feel free to explore, fork, copy, paste, interact, and suggest tweaks. 
 
-See it in action: [https://yasinghasemi.com](https://yasinghasemi.com)
+See it in action: [yasinghasemi.com](https://yasinghasemi.com)
 
 ## Run Locally
 
-Well, it is a static website, but scripts run when run them on a server. So:
+Well, it is a static website, but scripts work when run them on a server. So:
 
 1. Start a local static server:
 
