@@ -33,3 +33,27 @@ TODO:
 - Add favicon
 - Add metadata in header
 - Add a share system for sharing content with others
+
+- SEO + discoverability backlog:
+    - Add baseline SEO metadata to index.html:
+      - meta description
+      - canonical URL
+      - robots meta
+      - Open Graph tags
+      - Twitter card tags
+      - JSON-LD (Person + WebSite)
+    - Create crawlable post permalinks (e.g. /blog/<slug>/index.html) in addition to hash routes
+    - Add robots.txt
+    - Add sitemap.xml
+    - Auto-generate sitemap entries for homepage + all posts when publishing
+    - Add crawlable HTML links to latest posts on homepage (with a noscript fallback)
+    - Add per-post BlogPosting structured data (headline, description, author, published date, canonical URL)
+    - Replace Lorem Ipsum content in About page with real bio and expertise
+    - Add RSS feed for posts
+    - Set up Google Search Console and Bing Webmaster Tools
+    - Submit sitemap to search engines
+    - Create a per-post distribution checklist:
+      - share on X/LinkedIn
+      - post in relevant communities (Reddit/HN/etc.)
+      - cross-link from related GitHub repos/readmes
+    - Improve post titles for search intent (topic + outcome keywords)
