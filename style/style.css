@@ -315,6 +315,10 @@ html, body {
   border-left: 1px solid var(--win-white);
   border-right: 1px solid var(--win-dark-gray);
   border-bottom: 1px solid var(--win-dark-gray);
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+  background: var(--win-gray);
 }
 
 .document-area {
@@ -767,6 +771,12 @@ html, body {
   border-right: 1px solid var(--win-white);
   border-bottom: 1px solid var(--win-white);
   background: var(--win-gray);
+}
+
+.tray-icon {
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
 }
 
 .mobile-gated .desktop-icons,

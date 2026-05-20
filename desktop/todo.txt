@@ -1,28 +1,5 @@
 
 TODO:
-- Replace placeholder icons with real Windows 98-style icons. This is the list of missing icons:
-    -network-neighborhood
-    - dial-up-networking
-    - internet
-    - globe
-    - network-monitor
-    - radar
-    - control-panel
-    - programs
-    - help
-    - run
-    - shutdown
-    - volume
-    - network-status
-    - new-document
-    - open-folder
-    - save
-    - print
-    - image-file
-    - audio-file
-    - video-file
-    - generic-file
-
 - Add Hotjar
 - Add search for content within each window
 - Add classic windows warning window

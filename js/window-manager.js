@@ -9,6 +9,11 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
   const ICON_FIND_URL = new URL("../assets/icons/48/w2k_find.ico", import.meta.url).href;
   const ICON_FOLDER_16_URL = new URL("../assets/icons/16/folder.png", import.meta.url).href;
   const ICON_FOLDER_32_URL = new URL("../assets/icons/32/folder.png", import.meta.url).href;
+  const ICON_NEW_DOCUMENT_URL = new URL("../assets/icons/16/x-office-document.png", import.meta.url).href;
+  const ICON_OPEN_FOLDER_URL = new URL("../assets/icons/16/folder.png", import.meta.url).href;
+  const ICON_SAVE_URL = new URL("../assets/icons/48/w98_write_file.ico", import.meta.url).href;
+  const ICON_PRINT_URL = new URL("../assets/icons/48/w2k_printer.ico", import.meta.url).href;
+  const ICON_GENERIC_FILE_32_URL = new URL("../assets/icons/48/w2k_unknown_filetype.ico", import.meta.url).href;
 
   const UNSUPPORTED_EXPLORER_TYPES = new Set(["jpeg", "png", "mpeg", "mp3", "file"]);
 
@@ -889,10 +894,10 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
         isNotepad
           ? ""
           : `<div class="toolbar-row">
-              <div class="toolbar-icon placeholder-icon tiny"></div>
-              <div class="toolbar-icon placeholder-icon tiny"></div>
-              <div class="toolbar-icon placeholder-icon tiny"></div>
-              <div class="toolbar-icon placeholder-icon tiny"></div>
+              <img class="toolbar-icon tiny" src="${ICON_NEW_DOCUMENT_URL}" alt="" aria-hidden="true" />
+              <img class="toolbar-icon tiny" src="${ICON_OPEN_FOLDER_URL}" alt="" aria-hidden="true" />
+              <img class="toolbar-icon tiny" src="${ICON_SAVE_URL}" alt="" aria-hidden="true" />
+              <img class="toolbar-icon tiny" src="${ICON_PRINT_URL}" alt="" aria-hidden="true" />
             </div>`
       }
 
@@ -1274,10 +1279,11 @@ export function createWindowManager({ windowsLayerId = "windows-layer", taskButt
     if (type === "folder") return ICON_FOLDER_32_URL;
     if (type === "doc") return ICON_OFFICE_DOC_32_URL;
     if (type === "txt") return ICON_NOTEPAD_URL;
-    if (type === "jpeg" || type === "png" || type === "mpeg" || type === "mp3") {
-      return ICON_OFFICE_DOC_32_URL;
-    }
-    return ICON_OFFICE_DOC_32_URL;
+    if (type === "jpeg" || type === "png") return ICON_GENERIC_FILE_32_URL;
+    if (type === "mp3") return ICON_GENERIC_FILE_32_URL;
+    if (type === "mpeg") return ICON_GENERIC_FILE_32_URL;
+    if (type === "file") return ICON_GENERIC_FILE_32_URL;
+    return ICON_GENERIC_FILE_32_URL;
   }
 
   function isExplorerItemOpenable(item) {

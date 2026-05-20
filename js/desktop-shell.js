@@ -8,7 +8,28 @@ const ICON_BY_ID = {
   "office-doc": new URL("../assets/icons/32/x-office-document.png", import.meta.url).href,
   "desktop-home": new URL("../assets/icons/16/emblem-desktop.png", import.meta.url).href,
   notepad: new URL("../assets/icons/48/w98_notepad.ico", import.meta.url).href,
-  "recycle-bin": new URL("../assets/icons/48/w98_recycle_bin_empty_cool.ico", import.meta.url).href
+  "recycle-bin": new URL("../assets/icons/48/w98_recycle_bin_empty_cool.ico", import.meta.url).href,
+  "network-neighborhood": new URL("../assets/icons/48/w98_network_television.ico", import.meta.url).href,
+  "dial-up-networking": new URL("../assets/icons/48/w2k_dial-up_networking.ico", import.meta.url).href,
+  internet: new URL("../assets/icons/48/w2k_globe.ico", import.meta.url).href,
+  globe: new URL("../assets/icons/48/w2k_globe.ico", import.meta.url).href,
+  "network-monitor": new URL("../assets/icons/48/w98_monitor_gear.ico", import.meta.url).href,
+  radar: new URL("../assets/icons/48/w98_network_television.ico", import.meta.url).href,
+  "control-panel": new URL("../assets/icons/48/w2k_control_panel.ico", import.meta.url).href,
+  programs: new URL("../assets/icons/48/w2k_programs.ico", import.meta.url).href,
+  help: new URL("../assets/icons/48/w2k_control_panel.ico", import.meta.url).href,
+  run: new URL("../assets/icons/48/w2k_run.ico", import.meta.url).href,
+  shutdown: new URL("../assets/icons/48/w2k_shutdown.ico", import.meta.url).href,
+  volume: new URL("../assets/icons/48/w98_monitor_gear.ico", import.meta.url).href,
+  "network-status": new URL("../assets/icons/48/w98_network_television.ico", import.meta.url).href,
+  "new-document": new URL("../assets/icons/32/x-office-document.png", import.meta.url).href,
+  "open-folder": new URL("../assets/icons/16/folder.png", import.meta.url).href,
+  save: new URL("../assets/icons/48/w98_write_file.ico", import.meta.url).href,
+  print: new URL("../assets/icons/48/w2k_printer.ico", import.meta.url).href,
+  "image-file": new URL("../assets/icons/48/w2k_unknown_filetype.ico", import.meta.url).href,
+  "audio-file": new URL("../assets/icons/48/w2k_unknown_filetype.ico", import.meta.url).href,
+  "video-file": new URL("../assets/icons/48/w2k_unknown_filetype.ico", import.meta.url).href,
+  "generic-file": new URL("../assets/icons/48/w2k_unknown_filetype.ico", import.meta.url).href
 };
 
 function getShellUrl(shellPath) {

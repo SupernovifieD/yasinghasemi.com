@@ -1,6 +1,7 @@
 const ICON_FOLDER_URL = new URL("../assets/icons/16/folder.png", import.meta.url).href;
 const ICON_DOC_URL = new URL("../assets/icons/16/x-office-document.png", import.meta.url).href;
 const ICON_NOTEPAD_URL = new URL("../assets/icons/48/w98_notepad.ico", import.meta.url).href;
+const ICON_GENERIC_FILE_URL = new URL("../assets/icons/48/w2k_unknown_filetype.ico", import.meta.url).href;
 
 const UNSUPPORTED_TREE_TYPES = new Set(["jpeg", "png", "mpeg", "mp3", "file"]);
 
@@ -8,6 +9,10 @@ function getNodeIconUrl(node) {
   if (!node) return ICON_DOC_URL;
   if (node.type === "folder") return ICON_FOLDER_URL;
   if (node.type === "txt") return ICON_NOTEPAD_URL;
+  if (node.type === "jpeg" || node.type === "png") return ICON_GENERIC_FILE_URL;
+  if (node.type === "mp3") return ICON_GENERIC_FILE_URL;
+  if (node.type === "mpeg") return ICON_GENERIC_FILE_URL;
+  if (node.type === "file") return ICON_GENERIC_FILE_URL;
   return ICON_DOC_URL;
 }
 
