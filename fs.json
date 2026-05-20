@@ -71,6 +71,14 @@
           "page": true,
           "children": [
             {
+              "title": "mpm-and-its-challenges.doc",
+              "type": "doc",
+              "url": "mydocuments/2-MineralProspectivityMapping/why/mpm-and-its-challenges.html",
+              "path": "2-MineralProspectivityMapping/why/mpm-and-its-challenges.html",
+              "page": false,
+              "children": []
+            },
+            {
               "title": "why.doc",
               "type": "doc",
               "url": "mydocuments/2-MineralProspectivityMapping/why/why.html",
