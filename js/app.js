@@ -195,6 +195,18 @@ export async function initApp() {
       if (!target || target.type !== "folder") return;
       openExplorerForFolder(target);
     },
+    onDownloadFile: ({ file, downloadName }) => {
+      if (!file) return;
+
+      const link = document.createElement("a");
+      link.href = file;
+      link.download = downloadName || file.split("/").pop() || "download";
+      link.rel = "noopener";
+      link.style.display = "none";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    },
     onOpenSystemIcon: ({ name }) => {
       if (name === "My Documents") {
         openRootDocuments();
