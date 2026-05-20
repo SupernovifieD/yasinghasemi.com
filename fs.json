@@ -64,20 +64,29 @@
       "page": false,
       "children": [
         {
+          "title": "May-20",
+          "type": "folder",
+          "url": "/#/docs/2-MineralProspectivityMapping/May-20",
+          "path": "2-MineralProspectivityMapping/May-20",
+          "page": true,
+          "children": [
+            {
+              "title": "mpm-and-its-challenges.doc",
+              "type": "doc",
+              "url": "mydocuments/2-MineralProspectivityMapping/May-20/mpm-and-its-challenges.html",
+              "path": "2-MineralProspectivityMapping/May-20/mpm-and-its-challenges.html",
+              "page": false,
+              "children": []
+            }
+          ]
+        },
+        {
           "title": "why",
           "type": "folder",
           "url": "/#/docs/2-MineralProspectivityMapping/why",
           "path": "2-MineralProspectivityMapping/why",
           "page": true,
           "children": [
-            {
-              "title": "mpm-and-its-challenges.doc",
-              "type": "doc",
-              "url": "mydocuments/2-MineralProspectivityMapping/why/mpm-and-its-challenges.html",
-              "path": "2-MineralProspectivityMapping/why/mpm-and-its-challenges.html",
-              "page": false,
-              "children": []
-            },
             {
               "title": "why.doc",
               "type": "doc",

@@ -9,7 +9,7 @@ See it in action: [yasinghasemi.com](https://yasinghasemi.com)
 This section is auto-generated from published posts in `mydocuments/`.
 
 <!-- LATEST_POSTS:START -->
-- [When MPM Becomes a Decision Marathon](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/why) - May 20, 2026
+- [When MPM Becomes a Decision Marathon](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/May-20) - May 20, 2026
 - [Why Did I Start Working on a Mineral Prospectivity Mapping Project?](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/why) - May 12, 2026
 - [How NetRadar Was Started](https://yasinghasemi.com/#/docs/1-NetRadar/1-howitstarted) - May 9, 2026
 <!-- LATEST_POSTS:END -->
@@ -57,8 +57,9 @@ This section is auto-generated from `mydocuments/`
       - 📄 [howitstarted.doc](https://yasinghasemi.com/mydocuments/1-NetRadar/1-howitstarted/howitstarted.html)
     - 📁 [2026-05-03](https://yasinghasemi.com/#/docs/1-NetRadar/2026-05-03)
   - 📁 [2-MineralProspectivityMapping](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping)
+    - 📁 [May-20](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/May-20)
+      - 📄 [mpm-and-its-challenges.doc](https://yasinghasemi.com/mydocuments/2-MineralProspectivityMapping/May-20/mpm-and-its-challenges.html)
     - 📁 [why](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/why)
-      - 📄 [mpm-and-its-challenges.doc](https://yasinghasemi.com/mydocuments/2-MineralProspectivityMapping/why/mpm-and-its-challenges.html)
       - 📄 [why.doc](https://yasinghasemi.com/mydocuments/2-MineralProspectivityMapping/why/why.html)
 <!-- DOCS_TOC:END -->
 
