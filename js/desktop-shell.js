@@ -7,6 +7,8 @@ const ICON_BY_ID = {
   find: new URL("../assets/icons/48/w2k_find.ico", import.meta.url).href,
   "office-doc": new URL("../assets/icons/32/x-office-document.png", import.meta.url).href,
   "desktop-home": new URL("../assets/icons/16/emblem-desktop.png", import.meta.url).href,
+  "github-account": new URL("../assets/icons/16/github-pixel.svg", import.meta.url).href,
+  "linkedin-account": new URL("../assets/icons/16/linkedin-pixel.svg", import.meta.url).href,
   notepad: new URL("../assets/icons/48/w98_notepad.ico", import.meta.url).href,
   "recycle-bin": new URL("../assets/icons/48/w98_recycle_bin_empty_cool.ico", import.meta.url).href,
   "network-neighborhood": new URL("../assets/icons/48/w98_network_television.ico", import.meta.url).href,
