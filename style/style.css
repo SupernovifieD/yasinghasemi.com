@@ -773,6 +773,24 @@ html, body {
   background: var(--win-gray);
 }
 
+.icon-attribution {
+  position: fixed;
+  right: 8px;
+  bottom: 34px;
+  z-index: 9998;
+  font-size: 10px;
+  color: #e9ffff;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.icon-attribution a {
+  color: inherit;
+}
+
+.icon-attribution a:hover {
+  color: #fff;
+}
+
 .tray-icon {
   display: block;
   object-fit: contain;

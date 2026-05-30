@@ -69,3 +69,5 @@ Thanks to these projects for Windows-style icon assets:
 
 - [nestoris/Win98SE](https://github.com/nestoris/Win98SE)
 - [trapd00r/win95-winxp_icons](https://github.com/trapd00r/win95-winxp_icons/tree/master)
+- [GitHub](https://icons8.com/icon/3R1xLIHPgzn5/github) icon by [Icons8](https://icons8.com)
+- [LinkedIn](https://icons8.com/icon/ZADJgisVhP37/linkedin) icon by [Icons8](https://icons8.com)
