@@ -9,9 +9,9 @@ See it in action: [yasinghasemi.com](https://yasinghasemi.com)
 This section is auto-generated from published posts in `mydocuments/`.
 
 <!-- LATEST_POSTS:START -->
+- [Three Fast Weeks and a First Taste of Paid Programming](https://yasinghasemi.com/#/docs/Journal/06-09-2026) - June 9, 2026
 - [When MPM Becomes a Decision Marathon](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/May-20) - May 20, 2026
 - [Why Did I Start Working on a Mineral Prospectivity Mapping Project?](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/why) - May 12, 2026
-- [How NetRadar Was Started](https://yasinghasemi.com/#/docs/1-NetRadar/1-howitstarted) - May 9, 2026
 <!-- LATEST_POSTS:END -->
 
 ## Run Locally
@@ -61,6 +61,9 @@ This section is auto-generated from `mydocuments/`
       - 📄 [mpm-and-its-challenges.doc](https://yasinghasemi.com/mydocuments/2-MineralProspectivityMapping/May-20/mpm-and-its-challenges.html)
     - 📁 [why](https://yasinghasemi.com/#/docs/2-MineralProspectivityMapping/why)
       - 📄 [why.doc](https://yasinghasemi.com/mydocuments/2-MineralProspectivityMapping/why/why.html)
+  - 📁 [Journal](https://yasinghasemi.com/#/docs/Journal)
+    - 📁 [06-09-2026](https://yasinghasemi.com/#/docs/Journal/06-09-2026)
+      - 📄 [a-bit-of-bordom.doc](https://yasinghasemi.com/mydocuments/Journal/06-09-2026/a-bit-of-bordom.html)
 <!-- DOCS_TOC:END -->
 
 ## Icon Credits
