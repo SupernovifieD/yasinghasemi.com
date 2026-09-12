@@ -84,3 +84,13 @@ test("keeps mobile navigation and the site identity on separate rows", async ({
     ),
   ).toBe(true);
 });
+
+test("about preserves verified biography without the retired desktop framing", async ({
+  page,
+}) => {
+  await page.goto("/about");
+
+  await expect(page.getByText(/M\.Sc\. in mining engineering/)).toBeVisible();
+  await expect(page.getByText(/MinexPy/)).toBeVisible();
+  await expect(page.getByText(/Windows 98/)).toHaveCount(0);
+});
