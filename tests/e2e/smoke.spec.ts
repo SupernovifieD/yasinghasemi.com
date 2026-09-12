@@ -432,3 +432,17 @@ test("contact contains exactly the requested destinations", async ({
     page.getByRole("link", { name: "y@yasinghasemi.com" }),
   ).toHaveAttribute("href", "mailto:y@yasinassemi.com");
 });
+
+test("visitor endpoint is minimal, uncached, and cookieless by default", async ({
+  request,
+}) => {
+  const response = await request.get("/api/visitor");
+
+  expect(response.status()).toBe(200);
+  expect(await response.json()).toEqual({ ip: null });
+  expect(response.headers()["cache-control"]).toBe(
+    "private, no-store, max-age=0",
+  );
+  expect(response.headers()["set-cookie"]).toBeUndefined();
+  expect(response.headers()["access-control-allow-origin"]).toBeUndefined();
+});
