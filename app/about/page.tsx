@@ -1,8 +1,10 @@
+import { ReadingLayout } from "@/components/reading-layout";
+
 export default function AboutPage() {
   return (
-    <main id="main-content">
+    <ReadingLayout>
       <h1>About</h1>
       <p>About Yasin Ghasemi and his path into engineering.</p>
-    </main>
+    </ReadingLayout>
   );
 }

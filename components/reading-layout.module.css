@@ -1,0 +1,54 @@
+.reading {
+  max-width: var(--reading-width);
+  margin-inline: auto;
+  align-self: flex-start;
+}
+
+.prose {
+  color: var(--color-body);
+  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.0625rem);
+  line-height: 1.78;
+}
+
+.prose h1,
+.prose h2,
+.prose h3 {
+  color: var(--color-text);
+  line-height: 1.22;
+  text-wrap: balance;
+}
+
+.prose h1 {
+  max-width: 30ch;
+  margin: 0 0 var(--space-8);
+  font-size: clamp(1.8rem, 1.45rem + 1.4vw, 2.5rem);
+  letter-spacing: -0.025em;
+}
+
+.prose h2 {
+  margin: var(--space-12) 0 var(--space-4);
+  font-size: clamp(1.35rem, 1.2rem + 0.55vw, 1.65rem);
+}
+
+.prose h3 {
+  margin: var(--space-8) 0 var(--space-3);
+  font-size: 1.125rem;
+}
+
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote,
+.prose pre,
+.prose table {
+  margin-block: 0 var(--space-6);
+}
+
+.prose ul,
+.prose ol {
+  padding-inline-start: 1.5rem;
+}
+
+.prose li + li {
+  margin-block-start: var(--space-2);
+}
