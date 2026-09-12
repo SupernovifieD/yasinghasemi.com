@@ -60,10 +60,9 @@ export function matchLegacyHash(hash: string): LegacyHashMatch {
   return href ? { kind: "redirect", href } : { kind: "unknown" };
 }
 
-export function getLegacyDirectRedirects() {
+export function getLegacyStaticRedirects() {
   return legacyArticleRoutes.map(({ directPath, canonicalPath }) => ({
-    source: directPath,
-    destination: canonicalPath,
-    permanent: true,
+    outputPath: directPath.slice(1),
+    canonicalPath,
   }));
 }

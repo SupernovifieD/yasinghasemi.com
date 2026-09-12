@@ -12,31 +12,9 @@ test("serves the root page", async ({ page }) => {
   ).toHaveAttribute("href", "/blog");
 });
 
-test("serves tested security headers without breaking hydration", async ({
-  page,
-}) => {
-  const violations: string[] = [];
-  page.on("console", (message) => {
-    if (
-      message.type() === "error" &&
-      /content security policy/i.test(message.text())
-    ) {
-      violations.push(message.text());
-    }
-  });
-
+test("hydrates terminal behavior from the static export", async ({ page }) => {
   const response = await page.goto("/");
-  expect(response?.headers()["content-security-policy"]).toContain(
-    "frame-ancestors 'none'",
-  );
-  expect(response?.headers()["permissions-policy"]).toBe(
-    "camera=(), geolocation=(), microphone=()",
-  );
-  expect(response?.headers()["referrer-policy"]).toBe(
-    "strict-origin-when-cross-origin",
-  );
-  expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
-  expect(response?.headers()["x-frame-options"]).toBe("DENY");
+  expect(response?.status()).toBe(200);
 
   const input = page.getByRole("textbox", {
     name: "Website navigation command",
@@ -46,7 +24,6 @@ test("serves tested security headers without breaking hydration", async ({
   await expect(
     page.getByRole("region", { name: "Terminal command output" }),
   ).toContainText("/");
-  expect(violations).toEqual([]);
 });
 
 for (const [path, heading] of [
@@ -254,8 +231,8 @@ test("unknown post slugs return not found", async ({ page }) => {
   ).toHaveAttribute("href", "/blog");
 });
 
-test("legacy html article URLs redirect once to canonical posts", async ({
-  request,
+test("legacy html article URLs replace history with canonical posts", async ({
+  page,
 }) => {
   for (const [source, destination] of [
     [
@@ -279,9 +256,9 @@ test("legacy html article URLs redirect once to canonical posts", async ({
       "/blog/three-fast-weeks-and-a-first-taste-of-paid-programming",
     ],
   ]) {
-    const response = await request.get(source, { maxRedirects: 0 });
-    expect(response.status()).toBe(308);
-    expect(response.headers().location).toBe(destination);
+    await page.goto(source);
+    await expect(page).toHaveURL(new RegExp(`${destination}$`));
+    await expect(page.locator("h1")).toHaveCount(1);
   }
 });
 
@@ -685,7 +662,9 @@ test("privacy policy describes implemented and unverified data handling", async 
   await page.goto("/privacy");
 
   await expect(page.getByText(/no user accounts/)).toBeVisible();
-  await expect(page.getByText(/memory for the current browser tab/)).toBeVisible();
+  await expect(
+    page.getByText(/memory for the current browser tab/),
+  ).toBeVisible();
   await expect(page.getByText(/may keep operational logs/)).toBeVisible();
   await expect(page.getByText(/have not been verified here/)).toBeVisible();
 });

@@ -20,12 +20,11 @@ describe("publishing discovery metadata", () => {
     expect(urls.some((url) => url.includes("category"))).toBe(false);
   });
 
-  it("allows public routes while excluding utility APIs", () => {
+  it("allows the fully public static site", () => {
     expect(robots()).toEqual({
       rules: {
         userAgent: "*",
         allow: "/",
-        disallow: "/api/",
       },
       sitemap: "https://yasinghasemi.com/sitemap.xml",
     });

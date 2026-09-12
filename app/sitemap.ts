@@ -3,6 +3,8 @@ import type { MetadataRoute } from "next";
 import { getPublishedPosts } from "@/lib/posts";
 import { siteConfig } from "@/lib/site-config";
 
+export const dynamic = "force-static";
+
 const publicPagePaths = [
   "/",
   "/about",
