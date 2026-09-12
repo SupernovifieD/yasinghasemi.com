@@ -148,6 +148,43 @@ test("legacy html article URLs redirect once to canonical posts", async ({
   }
 });
 
+test("recovers known legacy hash bookmarks with history replacement", async ({
+  page,
+}) => {
+  await page.goto("/#/docs/0-thebeginning");
+  await expect(page).toHaveURL(/\/blog\/the-story-of-this-blog$/);
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "The Story of This Blog, aka The Beginning",
+    }),
+  ).toBeVisible();
+
+  await page.goto("/#%2Fdocs%2FJournal%2F06-09-2026%2F");
+  await expect(page).toHaveURL(
+    /\/blog\/three-fast-weeks-and-a-first-taste-of-paid-programming$/,
+  );
+
+  await page.goto("/#/docs/1-NetRadar/2026-05-03");
+  await expect(page).toHaveURL(/\/blog$/);
+});
+
+test("leaves modern anchors alone and explains unknown legacy hashes", async ({
+  page,
+}) => {
+  await page.goto("/#main-content");
+  await expect(page).toHaveURL(/\/#main-content$/);
+  await expect(page.getByText(/old document bookmark/i)).toHaveCount(0);
+
+  await page.goto("/#/docs/not-in-the-audit");
+  await expect(page).toHaveURL(/\/#\/docs\/not-in-the-audit$/);
+  await expect(page.getByText(/old document bookmark/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: "all posts" })).toHaveAttribute(
+    "href",
+    "/blog",
+  );
+});
+
 test("long article content does not overflow the page", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");

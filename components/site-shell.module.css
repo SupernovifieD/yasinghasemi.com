@@ -33,6 +33,21 @@
   border-block-start: 1px solid var(--color-divider);
 }
 
+.legacyRecovery,
+.noScriptNote {
+  width: min(100%, var(--outer-width));
+  margin: 0 auto;
+  padding: var(--space-3) var(--gutter);
+  border-block-end: 1px solid var(--color-divider);
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.legacyRecovery a,
+.noScriptNote a {
+  color: var(--color-text);
+}
+
 .headerInner,
 .footerInner {
   width: min(100%, var(--outer-width));
