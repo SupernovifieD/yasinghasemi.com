@@ -1,5 +1,11 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {};
+import { getLegacyDirectRedirects } from "./lib/legacy-routes";
+
+const nextConfig: NextConfig = {
+  async redirects() {
+    return getLegacyDirectRedirects();
+  },
+};
 
 export default nextConfig;

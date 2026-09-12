@@ -1,4 +1,4 @@
-import { legacyPostSources } from "@/lib/posts/legacy-sources";
+import { legacyPostSources } from "./posts/legacy-sources";
 
 export type CanonicalBlogPath = `/blog/${string}`;
 

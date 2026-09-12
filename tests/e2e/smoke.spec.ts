@@ -117,6 +117,37 @@ test("unknown post slugs return not found", async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
+test("legacy html article URLs redirect once to canonical posts", async ({
+  request,
+}) => {
+  for (const [source, destination] of [
+    [
+      "/mydocuments/0-thebeginning/howitcametobe.html",
+      "/blog/the-story-of-this-blog",
+    ],
+    [
+      "/mydocuments/1-NetRadar/1-howitstarted/howitstarted.html",
+      "/blog/how-netradar-was-started",
+    ],
+    [
+      "/mydocuments/2-MineralProspectivityMapping/why/why.html",
+      "/blog/why-i-started-mineral-prospectivity-mapping",
+    ],
+    [
+      "/mydocuments/2-MineralProspectivityMapping/May-20/mpm-and-its-challenges.html",
+      "/blog/when-mpm-becomes-a-decision-marathon",
+    ],
+    [
+      "/mydocuments/Journal/06-09-2026/a-bit-of-bordom.html",
+      "/blog/three-fast-weeks-and-a-first-taste-of-paid-programming",
+    ],
+  ]) {
+    const response = await request.get(source, { maxRedirects: 0 });
+    expect(response.status()).toBe(308);
+    expect(response.headers().location).toBe(destination);
+  }
+});
+
 test("long article content does not overflow the page", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");
