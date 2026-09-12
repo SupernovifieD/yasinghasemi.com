@@ -1,26 +1,103 @@
-@import "tailwindcss";
-
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --color-page: #000000;
+  --color-panel: #080808;
+  --color-hover: #111111;
+  --color-divider: #262626;
+  --color-text: #f5f5f5;
+  --color-body: #d4d4d4;
+  --color-muted: #a3a3a3;
+  --color-outline: #d4d4d4;
+  --color-focus: #ffffff;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --outer-width: 72rem;
+  --reading-width: 70ch;
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --focus-ring: 2px solid var(--color-focus);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  min-width: 20rem;
+  min-height: 100%;
+  background: var(--color-page);
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin: 0;
+  background: var(--color-page);
+  color: var(--color-body);
+  font-family:
+    var(--font-geist-mono), ui-monospace, "DejaVu Sans Mono", "Liberation Mono",
+    monospace;
+  font-size: 1rem;
+  line-height: 1.7;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  color: inherit;
+  font: inherit;
+}
+
+a {
+  color: var(--color-text);
+  text-decoration-color: var(--color-muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: var(--focus-ring);
+  outline-offset: 0.25rem;
+}
+
+::selection {
+  background: var(--color-text);
+  color: var(--color-page);
+}
+
+img,
+svg,
+video,
+canvas {
+  display: block;
+  max-inline-size: 100%;
+}
+
+h1,
+h2,
+h3,
+p {
+  overflow-wrap: break-word;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
