@@ -185,32 +185,43 @@ test("serves canonical page and article metadata", async ({ page }) => {
 test("renders every published article directly with one title", async ({
   page,
 }) => {
-  for (const { slug, title, date } of [
+  for (const { slug, title, date, paragraphs, finalText } of [
     {
       slug: "the-story-of-this-blog",
       title: "The Story of This Blog, aka The Beginning",
       date: "2026-05-06",
+      paragraphs: 7,
+      finalText: "Feel free to use the blog code",
     },
     {
       slug: "how-netradar-was-started",
       title: "How NetRadar Was Started",
       date: "2026-05-09",
+      paragraphs: 10,
+      finalText: "Let's be a judge of this over time.",
     },
     {
       slug: "why-i-started-mineral-prospectivity-mapping",
       title:
         "Why Did I Start Working on a Mineral Prospectivity Mapping Project?",
       date: "2026-05-12",
+      paragraphs: 7,
+      finalText: "before I become comepletely uninterested in this project.",
     },
     {
       slug: "when-mpm-becomes-a-decision-marathon",
       title: "When MPM Becomes a Decision Marathon",
       date: "2026-05-20",
+      paragraphs: 7,
+      finalText: "Hopefully, AI is here to save the day.",
     },
     {
       slug: "three-fast-weeks-and-a-first-taste-of-paid-programming",
       title: "Three Fast Weeks and a First Taste of Paid Programming",
       date: "2026-06-09",
+      paragraphs: 6,
+      finalText:
+        "This is the first time I'm earning money directly with programming.",
     },
   ]) {
     await page.goto(`/blog/${slug}`);
@@ -222,6 +233,8 @@ test("renders every published article directly with one title", async ({
     await expect(
       page.getByRole("link", { name: "← Back to /blog" }),
     ).toHaveAttribute("href", "/blog");
+    await expect(page.locator("article > div p")).toHaveCount(paragraphs);
+    await expect(page.getByText(finalText, { exact: false })).toBeVisible();
   }
 });
 
@@ -275,22 +288,41 @@ test("legacy html article URLs redirect once to canonical posts", async ({
 test("recovers known legacy hash bookmarks with history replacement", async ({
   page,
 }) => {
-  await page.goto("/#/docs/0-thebeginning");
-  await expect(page).toHaveURL(/\/blog\/the-story-of-this-blog$/);
-  await expect(
-    page.getByRole("heading", {
-      level: 1,
-      name: "The Story of This Blog, aka The Beginning",
-    }),
-  ).toBeVisible();
+  for (const [hash, slug] of [
+    ["/docs/0-thebeginning", "the-story-of-this-blog"],
+    ["/docs/1-NetRadar/1-howitstarted", "how-netradar-was-started"],
+    [
+      "/docs/2-MineralProspectivityMapping/why",
+      "why-i-started-mineral-prospectivity-mapping",
+    ],
+    [
+      "/docs/2-MineralProspectivityMapping/May-20",
+      "when-mpm-becomes-a-decision-marathon",
+    ],
+    [
+      "/docs/Journal/06-09-2026",
+      "three-fast-weeks-and-a-first-taste-of-paid-programming",
+    ],
+  ] as const) {
+    await page.goto(`/#${hash}`);
+    await expect(page).toHaveURL(new RegExp(`/blog/${slug}$`));
+  }
 
   await page.goto("/#%2Fdocs%2FJournal%2F06-09-2026%2F");
   await expect(page).toHaveURL(
     /\/blog\/three-fast-weeks-and-a-first-taste-of-paid-programming$/,
   );
 
-  await page.goto("/#/docs/1-NetRadar/2026-05-03");
-  await expect(page).toHaveURL(/\/blog$/);
+  for (const hash of [
+    "/docs",
+    "/docs/1-NetRadar",
+    "/docs/1-NetRadar/2026-05-03",
+    "/docs/2-MineralProspectivityMapping",
+    "/docs/Journal",
+  ]) {
+    await page.goto(`/#${hash}`);
+    await expect(page).toHaveURL(/\/blog$/);
+  }
 });
 
 test("leaves modern anchors alone and explains unknown legacy hashes", async ({
