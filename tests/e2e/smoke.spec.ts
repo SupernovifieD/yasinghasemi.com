@@ -471,6 +471,21 @@ test("terms describe a personal publishing site without product terms", async ({
   ).toHaveCount(0);
 });
 
+test("cookie management reflects the storage audit without fake controls", async ({
+  page,
+}) => {
+  await page.goto("/cookies");
+
+  await expect(page.getByText(/does not set cookies/)).toBeVisible();
+  await expect(page.getByText(/no optional cookies/)).toBeVisible();
+  await expect(
+    page.getByText(/hosting chain has not been verified/),
+  ).toBeVisible();
+  await expect(page.locator("main button, main input, main form")).toHaveCount(
+    0,
+  );
+});
+
 test("hydrates a validated first-party visitor identity without persistence", async ({
   page,
   context,
