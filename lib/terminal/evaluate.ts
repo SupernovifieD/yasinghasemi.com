@@ -3,6 +3,7 @@ import {
   listPublicChildren,
   type PublicRouteRegistry,
 } from "@/lib/terminal/routes";
+import { tokenizeCommand } from "@/lib/terminal/tokenize";
 
 export type TerminalOutputLine = {
   text: string;
@@ -10,6 +11,8 @@ export type TerminalOutputLine = {
 };
 
 export type TerminalEvaluation =
+  | { kind: "noop" }
+  | { kind: "clear" }
   | { kind: "output"; lines: TerminalOutputLine[] }
   | {
       kind: "navigate";
@@ -133,4 +136,43 @@ export function evaluateInformationCommand(
   }
 
   return null;
+}
+
+export function evaluateCommand({
+  input,
+  cwd,
+  previousDirectory,
+  registry,
+}: {
+  input: string;
+  cwd: string;
+  previousDirectory: string | null;
+  registry: PublicRouteRegistry;
+}): TerminalEvaluation {
+  const parsed = tokenizeCommand(input);
+  if (!parsed.ok) return { kind: "error", message: parsed.message };
+  if (parsed.tokens.length === 0) return { kind: "noop" };
+
+  const information = evaluateInformationCommand(parsed.tokens, cwd, registry);
+  if (information) return information;
+
+  const navigation = evaluateCdCommand(
+    parsed.tokens,
+    cwd,
+    previousDirectory,
+    registry,
+  );
+  if (navigation) return navigation;
+
+  const [command, ...args] = parsed.tokens;
+  if (command === "clear") {
+    return args.length
+      ? { kind: "error", message: "usage: clear" }
+      : { kind: "clear" };
+  }
+
+  return {
+    kind: "error",
+    message: `${command}: command not found. Type help for available commands.`,
+  };
 }
