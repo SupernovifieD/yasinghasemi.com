@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useId, type FormEvent, type KeyboardEvent } from "react";
+import {
+  type RefObject,
+  useId,
+  type FormEvent,
+  type KeyboardEvent,
+} from "react";
 
 import { MAX_COMMAND_LENGTH } from "@/lib/terminal/tokenize";
 
@@ -14,6 +19,8 @@ export function TerminalPrompt({
   onChange,
   onSubmit,
   onKeyDown,
+  inputRef,
+  disabled = false,
 }: {
   identity: string;
   pathname: string;
@@ -21,6 +28,8 @@ export function TerminalPrompt({
   onChange: (value: string) => void;
   onSubmit: (value: string) => void;
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  inputRef?: RefObject<HTMLInputElement | null>;
+  disabled?: boolean;
 }) {
   const inputId = useId();
 
@@ -41,6 +50,7 @@ export function TerminalPrompt({
         Website navigation command
       </label>
       <input
+        ref={inputRef}
         id={inputId}
         className={styles.input}
         type="text"
@@ -53,8 +63,14 @@ export function TerminalPrompt({
         enterKeyHint="go"
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={onKeyDown}
+        disabled={disabled}
       />
-      <button className={styles.submit} type="submit" aria-label="Run command">
+      <button
+        className={styles.submit}
+        type="submit"
+        aria-label="Run command"
+        disabled={disabled}
+      >
         <span aria-hidden="true">↵</span>
       </button>
     </form>

@@ -246,6 +246,59 @@ test("keeps mobile navigation and the site identity on separate rows", async ({
   ).toBe(true);
 });
 
+test("runs terminal information and navigation commands safely", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await expect(input).not.toBeFocused();
+
+  await input.fill("pwd");
+  await input.press("Enter");
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toContainText("/");
+
+  await input.fill("cd blog");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(
+    page.getByText("visitor@yasinghasemi.com: /blog $"),
+  ).toBeVisible();
+  await expect(input).toBeFocused();
+
+  await input.fill("ls");
+  await input.press("Enter");
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toContainText("the-story-of-this-blog/");
+
+  await input.fill("clear");
+  await input.press("Enter");
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toHaveCount(0);
+  await expect(page).toHaveURL(/\/blog$/);
+});
+
+test("keeps failed terminal navigation on the current route", async ({
+  page,
+}) => {
+  await page.goto("/about");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await input.fill("cd blog");
+  await input.press("Enter");
+
+  await expect(page).toHaveURL(/\/about$/);
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toContainText("Try cd /blog.");
+});
+
 test("about preserves verified biography without the retired desktop framing", async ({
   page,
 }) => {

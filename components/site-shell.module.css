@@ -64,11 +64,18 @@
   flex-wrap: wrap;
 }
 
-.identity {
+.terminalPrompt {
+  flex: 1 1 30rem;
   min-width: 0;
+}
+
+.promptPlaceholder {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--color-body);
   font-size: 0.9375rem;
-  font-weight: 500;
-  text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
 .navigation {
@@ -174,10 +181,8 @@
     justify-content: space-between;
   }
 
-  .identity {
-    display: flex;
-    min-height: 2.75rem;
-    align-items: center;
+  .terminalPrompt {
+    flex-basis: 100%;
   }
 
   .main {
