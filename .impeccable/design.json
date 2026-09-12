@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T11:03:09Z",
+  "title": "Design System: yasinghasemi.com",
+  "extensions": {
+    "colorMeta": {
+      "page-black": {
+        "role": "neutral",
+        "displayName": "Page Black",
+        "canonical": "#000000",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#f5f5f5"
+        ]
+      },
+      "panel-black": {
+        "role": "neutral",
+        "displayName": "Panel Black",
+        "canonical": "#080808",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#f5f5f5"
+        ]
+      },
+      "hover-black": {
+        "role": "neutral",
+        "displayName": "Hover Black",
+        "canonical": "#111111",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#f5f5f5"
+        ]
+      },
+      "divider-gray": {
+        "role": "neutral",
+        "displayName": "Divider Gray",
+        "canonical": "#262626",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#f5f5f5"
+        ]
+      },
+      "primary-white": {
+        "role": "primary",
+        "displayName": "Primary White",
+        "canonical": "#f5f5f5",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#f5f5f5"
+        ]
+      },
+      "body-gray": {
+        "role": "neutral",
+        "displayName": "Body Gray",
+        "canonical": "#d4d4d4",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#f5f5f5"
+        ]
+      },
+      "muted-gray": {
+        "role": "neutral",
+        "displayName": "Muted Gray",
+        "canonical": "#a3a3a3",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#f5f5f5"
+        ]
+      },
+      "outline-gray": {
+        "role": "neutral",
+        "displayName": "Outline Gray",
+        "canonical": "#d4d4d4",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#f5f5f5"
+        ]
+      },
+      "focus-white": {
+        "role": "neutral",
+        "displayName": "Focus White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#000000",
+          "#080808",
+          "#111111",
+          "#262626",
+          "#525252",
+          "#737373",
+          "#a3a3a3",
+          "#ffffff"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Primary page headings."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Long-form section headings."
+      },
+      "title": {
+        "displayName": "Result Title",
+        "purpose": "Blog result titles."
+      },
+      "body": {
+        "displayName": "Reading Body",
+        "purpose": "Articles and policy prose."
+      },
+      "label": {
+        "displayName": "Shell Label",
+        "purpose": "Navigation, metadata, hints, and transcript output."
+      }
+    },
+    "breakpoints": [{ "name": "shell-stack", "value": "40rem" }]
+  },
+  "components": [
+    {
+      "name": "Terminal Command Input",
+      "kind": "input",
+      "refersTo": "command-input",
+      "description": "Native editable command field with a literal terminal caret.",
+      "html": "<label class=\"ds-visually-hidden\" for=\"ds-command\">Website navigation command</label><input class=\"ds-command-input\" id=\"ds-command\" value=\"pwd\">",
+      "css": ".ds-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; } .ds-command-input { width: 16rem; max-width: 100%; min-height: 2.75rem; padding: .5rem 0; border: 0; border-bottom: 1px solid var(--color-divider, #262626); border-radius: 0; background: var(--color-page, #000); color: var(--color-text, #f5f5f5); caret-color: #fff; font: 400 1rem/1.7 \"JetBrains Mono\", monospace; } .ds-command-input:focus-visible { outline: 2px solid #fff; outline-offset: .2rem; }"
+    },
+    {
+      "name": "Terminal Return Button",
+      "kind": "button",
+      "refersTo": "terminal-submit",
+      "description": "Compact submit control for touch and keyboard users.",
+      "html": "<button class=\"ds-terminal-submit\" type=\"button\" aria-label=\"Run command\">↵</button>",
+      "css": ".ds-terminal-submit { display: inline-flex; width: 2.75rem; height: 2.75rem; padding: 0; align-items: center; justify-content: center; border: 1px solid var(--color-divider, #262626); border-radius: 0; background: #000; color: #f5f5f5; font: 400 1rem/1 \"JetBrains Mono\", monospace; } .ds-terminal-submit:hover { border-color: #d4d4d4; background: #111; } .ds-terminal-submit:focus-visible { outline: 2px solid #fff; outline-offset: .25rem; }"
+    },
+    {
+      "name": "Primary Route Navigation",
+      "kind": "nav",
+      "refersTo": "navigation-link",
+      "description": "Literal route links with monochrome active treatment.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Primary navigation\"><a href=\"/about\">/about</a><a aria-current=\"page\" href=\"/blog\">/blog</a></nav>",
+      "css": ".ds-nav { display: flex; gap: 1.5rem; background: #000; font: 400 .9375rem/1.7 \"JetBrains Mono\", monospace; } .ds-nav a { display: inline-flex; min-height: 2.75rem; align-items: center; color: #d4d4d4; text-decoration: none; } .ds-nav a:hover, .ds-nav a[aria-current=\"page\"] { color: #f5f5f5; text-decoration: underline; text-underline-offset: .35rem; } .ds-nav a:focus-visible { outline: 2px solid #fff; outline-offset: .25rem; }"
+    },
+    {
+      "name": "Blog Search Result",
+      "kind": "custom",
+      "description": "Flat title, excerpt, and date hierarchy for the chronological index.",
+      "html": "<article class=\"ds-result\"><h2><a href=\"/blog/example\">A Complete Article Title</a></h2><p>A concise preserved excerpt explaining the post.</p><time datetime=\"2026-06-09\">June 9, 2026</time></article>",
+      "css": ".ds-result { max-width: 82ch; background: #000; color: #d4d4d4; font: 400 1rem/1.65 \"JetBrains Mono\", monospace; } .ds-result h2 { margin: 0 0 .75rem; color: #f5f5f5; font-size: clamp(1.2rem,1.08rem + .45vw,1.5rem); line-height: 1.35; } .ds-result p { margin: 0 0 .75rem; } .ds-result time { color: #a3a3a3; font-size: .9375rem; } .ds-result a { color: inherit; text-decoration-color: #a3a3a3; text-underline-offset: .22em; } .ds-result a:focus-visible { outline: 2px solid #fff; outline-offset: .25rem; }"
+    },
+    {
+      "name": "Reading Column",
+      "kind": "custom",
+      "description": "Centered long-form prose with comfortable measure and rhythm.",
+      "html": "<article class=\"ds-reading\"><h1>Article title</h1><p>Readable long-form content stays left aligned inside the centered column.</p></article>",
+      "css": ".ds-reading { max-width: 70ch; margin-inline: auto; background: #000; color: #d4d4d4; font: 400 clamp(1rem,.95rem + .2vw,1.0625rem)/1.78 \"JetBrains Mono\", monospace; } .ds-reading h1 { max-width: 30ch; margin: 0 0 2rem; color: #f5f5f5; font-size: clamp(1.8rem,1.45rem + 1.4vw,2.5rem); line-height: 1.22; letter-spacing: -.025em; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Quiet Shell Manual",
+    "overview": "The site combines the economy of a Unix manual page with the calm pacing of a small literary publication. Pitch black is the canvas, neutral text carries every hierarchy, and shell notation appears only where it explains navigation. The writing is always the product, and conventional navigation remains complete without the shell.",
+    "keyCharacteristics": [
+      "Absolute black ground with a neutral gray-to-white hierarchy.",
+      "One self-hosted monospace family and no decorative type pairing.",
+      "Flat, square, line-based controls without cards or ornamental surfaces.",
+      "Distinct center-left, left-index, and centered-reading geometries.",
+      "Progressive enhancement: conventional links remain complete without the shell."
+    ],
+    "rules": [
+      {
+        "name": "The No Accent Rule",
+        "body": "State is expressed with weight, underline, border, and white focus treatment; never introduce a chromatic accent.",
+        "section": "colors"
+      },
+      {
+        "name": "The Readability Rule",
+        "body": "Muted text remains real readable text, not low-opacity decoration.",
+        "section": "colors"
+      },
+      {
+        "name": "The Prose Is Not a Terminal Rule",
+        "body": "Use semantic paragraphs and natural wrapping; never turn articles into a preformatted text wall.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Document Rule",
+        "body": "A new surface must earn its boundary through content or interaction; never add card elevation as decoration.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do keep the page ground pitch black and use only the documented neutral hierarchy.",
+      "Do preserve the distinct home, index, and article alignments.",
+      "Do use semantic document elements and native controls.",
+      "Do keep standalone interactive targets near 2.75rem and show a two-pixel white focus outline.",
+      "Do test 320px reflow, long IPv6 identities, and long article slugs."
+    ],
+    "donts": [
+      "Don't introduce colored accents, gradients, glows, textures, scanlines, or CRT effects.",
+      "Don't add cards, dashboard modules, fake window controls, or decorative terminal chrome.",
+      "Don't center paragraph text or vertically center long reading pages.",
+      "Don't hide layout defects with global overflow clipping.",
+      "Don't make the shell the only way to reach content."
+    ]
+  }
+}
