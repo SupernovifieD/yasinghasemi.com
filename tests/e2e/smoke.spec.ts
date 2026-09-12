@@ -68,6 +68,55 @@ test("lists every published post newest first without categories", async ({
   await expect(page.getByText(/categor(y|ies)/i)).toHaveCount(0);
 });
 
+test("renders every published article directly with one title", async ({
+  page,
+}) => {
+  for (const { slug, title, date } of [
+    {
+      slug: "the-story-of-this-blog",
+      title: "The Story of This Blog, aka The Beginning",
+      date: "2026-05-06",
+    },
+    {
+      slug: "how-netradar-was-started",
+      title: "How NetRadar Was Started",
+      date: "2026-05-09",
+    },
+    {
+      slug: "why-i-started-mineral-prospectivity-mapping",
+      title:
+        "Why Did I Start Working on a Mineral Prospectivity Mapping Project?",
+      date: "2026-05-12",
+    },
+    {
+      slug: "when-mpm-becomes-a-decision-marathon",
+      title: "When MPM Becomes a Decision Marathon",
+      date: "2026-05-20",
+    },
+    {
+      slug: "three-fast-weeks-and-a-first-taste-of-paid-programming",
+      title: "Three Fast Weeks and a First Taste of Paid Programming",
+      date: "2026-06-09",
+    },
+  ]) {
+    await page.goto(`/blog/${slug}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+    await expect(page.locator("article time")).toHaveAttribute(
+      "datetime",
+      date,
+    );
+    await expect(
+      page.getByRole("link", { name: "← Back to /blog" }),
+    ).toHaveAttribute("href", "/blog");
+  }
+});
+
+test("unknown post slugs return not found", async ({ page }) => {
+  const response = await page.goto("/blog/not-a-published-post");
+
+  expect(response?.status()).toBe(404);
+});
+
 test("footer exposes every policy route", async ({ page }) => {
   await page.goto("/");
 
