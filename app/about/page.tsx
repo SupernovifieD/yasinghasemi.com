@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
+
 import { ReadingLayout } from "@/components/reading-layout";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "About",
+  description:
+    "About Yasin Ghasemi's path from mining engineering into programming.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (

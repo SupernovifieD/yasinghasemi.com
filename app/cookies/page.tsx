@@ -1,4 +1,13 @@
+import type { Metadata } from "next";
+
 import { ReadingLayout } from "@/components/reading-layout";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Cookie Management",
+  description: "The cookie and browser-storage inventory for yasinghasemi.com.",
+  path: "/cookies",
+});
 
 export default function CookiesPage() {
   return (

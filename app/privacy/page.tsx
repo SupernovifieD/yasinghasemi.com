@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
+
 import { ReadingLayout } from "@/components/reading-layout";
+import { createPageMetadata } from "@/lib/metadata";
 import { siteConfig } from "@/lib/site-config";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Privacy Policy",
+  description:
+    "How this personal blog handles terminal state, visitor addresses, and hosting data.",
+  path: "/privacy",
+});
 
 export default function PrivacyPage() {
   return (

@@ -1,8 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PostBody } from "@/components/post-body";
 import { ReadingLayout } from "@/components/reading-layout";
+import { createPageMetadata } from "@/lib/metadata";
 import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/posts";
 
 import styles from "./post.module.css";
@@ -16,6 +18,31 @@ const publicationDate = new Intl.DateTimeFormat("en", {
 
 export function generateStaticParams() {
   return getPublishedPosts().map(({ slug }) => ({ slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPublishedPostBySlug(slug);
+  if (!post) notFound();
+
+  const metadata = createPageMetadata({
+    title: post.title,
+    description: post.excerpt,
+    path: `/blog/${post.slug}`,
+  });
+
+  return {
+    ...metadata,
+    openGraph: {
+      ...metadata.openGraph,
+      type: "article",
+      publishedTime: post.publishedAt,
+    },
+  };
 }
 
 export default async function PostPage({

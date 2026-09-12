@@ -1,5 +1,7 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
+import { createPageMetadata } from "@/lib/metadata";
 import { getPublishedPosts } from "@/lib/posts";
 
 import styles from "./blog.module.css";
@@ -7,6 +9,13 @@ import styles from "./blog.module.css";
 const publicationDate = new Intl.DateTimeFormat("en", {
   dateStyle: "long",
   timeZone: "UTC",
+});
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Blog",
+  description:
+    "Published notes from Yasin Ghasemi about projects, decisions, and learning.",
+  path: "/blog",
 });
 
 export default function BlogPage() {

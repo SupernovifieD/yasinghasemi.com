@@ -1,4 +1,14 @@
+import type { Metadata } from "next";
+
 import { ReadingLayout } from "@/components/reading-layout";
+import { createPageMetadata } from "@/lib/metadata";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Terms of Service",
+  description:
+    "Terms for reading and using the yasinghasemi.com personal blog.",
+  path: "/terms",
+});
 
 export default function TermsPage() {
   return (

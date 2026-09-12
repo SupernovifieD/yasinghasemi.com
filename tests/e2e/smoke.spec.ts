@@ -68,6 +68,27 @@ test("lists every published post newest first without categories", async ({
   await expect(page.getByText(/categor(y|ies)/i)).toHaveCount(0);
 });
 
+test("serves canonical page and article metadata", async ({ page }) => {
+  await page.goto("/about");
+  await expect(page).toHaveTitle("About | Yasin Ghasemi");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://yasinghasemi.com/about",
+  );
+
+  await page.goto("/blog/the-story-of-this-blog");
+  await expect(page).toHaveTitle(
+    "The Story of This Blog, aka The Beginning | Yasin Ghasemi",
+  );
+  await expect(
+    page.locator('meta[property="article:published_time"]'),
+  ).toHaveAttribute("content", "2026-05-06");
+  await expect(page.locator('meta[property="og:type"]')).toHaveAttribute(
+    "content",
+    "article",
+  );
+});
+
 test("renders every published article directly with one title", async ({
   page,
 }) => {
