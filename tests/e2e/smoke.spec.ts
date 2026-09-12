@@ -332,6 +332,7 @@ test("leaves modern anchors alone and explains unknown legacy hashes", async ({
   await expect(page).toHaveURL(/\/#main-content$/);
   await expect(page.getByText(/old document bookmark/i)).toHaveCount(0);
 
+  await page.goto("/about");
   await page.goto("/#/docs/not-in-the-audit");
   await expect(page).toHaveURL(/\/#\/docs\/not-in-the-audit$/);
   await expect(page.getByText(/old document bookmark/i)).toBeVisible();
@@ -601,11 +602,11 @@ test("rejects multiline paste and composition Enter", async ({ page }) => {
   });
 
   await input.evaluate((element) => {
-    const data = new DataTransfer();
-    data.setData("text", "pwd\ncd /blog");
-    element.dispatchEvent(
-      new ClipboardEvent("paste", { bubbles: true, clipboardData: data }),
-    );
+    const event = new Event("paste", { bubbles: true, cancelable: true });
+    Object.defineProperty(event, "clipboardData", {
+      value: { getData: () => "pwd\ncd /blog" },
+    });
+    element.dispatchEvent(event);
   });
   await expect(
     page.getByRole("region", { name: "Terminal command output" }),
