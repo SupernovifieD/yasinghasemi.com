@@ -4,7 +4,7 @@ export const siteConfig = {
   origin: "https://yasinghasemi.com",
   email: {
     label: "y@yasinghasemi.com",
-    href: "mailto:y@yasinassemi.com",
+    href: "mailto:y@yasinghasemi.com",
   },
   social: {
     github: "https://github.com/SupernovifieD",

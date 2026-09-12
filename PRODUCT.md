@@ -32,7 +32,7 @@ Visitors arrive through direct links, search results, current navigation, or arc
 - The client shell supports only allowlisted `cd`, `pwd`, `ls`, `clear`, and `help` behavior over public routes. It never evaluates input or exposes server files, APIs, drafts, or archived directories.
 - Five verified archived posts must be migrated without rewriting their historical content. Publication dates, excerpts, structure, emphasis, and links come from the audited archive.
 - There are no categories, accounts, comments, CMS, database, analytics, contact form, payments, search service, or persistent terminal history.
-- Contact destinations are GitHub, LinkedIn, and the explicitly requested display/link email pair. The spelling difference is retained for owner review.
+- Contact destinations are GitHub, LinkedIn, and `y@yasinghasemi.com` for both the displayed address and mail link.
 - The prompt uses the static site identity `yasinghasemi.com`; it does not inspect or display a reader's IP address.
 - GitHub Actions verifies and publishes the generated `out/` artifact to GitHub Pages. The static host cannot provide request-time application behavior.
 

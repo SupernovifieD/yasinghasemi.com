@@ -43,6 +43,8 @@ artifact, `.github/workflows/deploy-pages.yml` verifies and deploys it, and the
 repository Pages source is set to `workflow`. The custom domain remains
 `yasinghasemi.com`; no DNS or hosting-account change was made.
 
-## Known owner-review item
+## Contact correction
 
-The requested contact presentation deliberately differs from the archived address: display `y@yasinghasemi.com`, link target `mailto:y@yasinassemi.com`. The refresh will preserve that exact discrepancy and flag it for owner review without sending email.
+The owner confirmed that the contact address is `y@yasinghasemi.com`. Both the
+displayed address and `mailto:` destination now use that exact spelling. No test
+email was sent.

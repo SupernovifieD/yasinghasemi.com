@@ -7,10 +7,10 @@ describe("project foundation", () => {
     expect(new URL(siteConfig.origin).origin).toBe(siteConfig.origin);
   });
 
-  it("preserves the requested email display and link values", () => {
+  it("uses the requested email for both display and link values", () => {
     expect(siteConfig.email).toEqual({
       label: "y@yasinghasemi.com",
-      href: "mailto:y@yasinassemi.com",
+      href: "mailto:y@yasinghasemi.com",
     });
   });
 });

@@ -653,7 +653,7 @@ test("contact contains exactly the requested destinations", async ({
   );
   await expect(
     page.getByRole("link", { name: "y@yasinghasemi.com" }),
-  ).toHaveAttribute("href", "mailto:y@yasinassemi.com");
+  ).toHaveAttribute("href", "mailto:y@yasinghasemi.com");
 });
 
 test("privacy policy describes implemented and unverified data handling", async ({

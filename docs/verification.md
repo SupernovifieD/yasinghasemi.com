@@ -212,9 +212,9 @@ deployment.
 
 ## Operations and owner review
 
-- The required contact display is `y@yasinghasemi.com`, while its deliberately
-  different requested link target is `mailto:y@yasinassemi.com`. This is preserved
-  exactly and remains an owner-review item.
+- The owner-confirmed contact address is `y@yasinghasemi.com`. Both the displayed
+  address and `mailto:y@yasinghasemi.com` destination use that exact spelling. No
+  test email was sent.
 - The policy pages make no unverified claim about hosting providers, legal
   jurisdiction, infrastructure log retention, or optional cookies. Those facts
   require owner/hosting review if the operating environment changes.
