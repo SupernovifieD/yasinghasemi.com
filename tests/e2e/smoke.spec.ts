@@ -136,6 +136,16 @@ test("unknown post slugs return not found", async ({ page }) => {
   const response = await page.goto("/blog/not-a-published-post");
 
   expect(response?.status()).toBe(404);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Page not found" }),
+  ).toBeVisible();
+  await expect(page.getByRole("link", { name: "Return home" })).toHaveAttribute(
+    "href",
+    "/",
+  );
+  await expect(
+    page.getByRole("link", { name: "View all posts" }),
+  ).toHaveAttribute("href", "/blog");
 });
 
 test("legacy html article URLs redirect once to canonical posts", async ({
