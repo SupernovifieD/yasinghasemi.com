@@ -447,6 +447,17 @@ test("visitor endpoint is minimal, uncached, and cookieless by default", async (
   expect(response.headers()["access-control-allow-origin"]).toBeUndefined();
 });
 
+test("privacy policy describes implemented and unverified data handling", async ({
+  page,
+}) => {
+  await page.goto("/privacy");
+
+  await expect(page.getByText(/no user accounts/)).toBeVisible();
+  await expect(page.getByText(/only in memory/)).toBeVisible();
+  await expect(page.getByText(/may keep operational logs/)).toBeVisible();
+  await expect(page.getByText(/have not been verified here/)).toBeVisible();
+});
+
 test("hydrates a validated first-party visitor identity without persistence", async ({
   page,
   context,
