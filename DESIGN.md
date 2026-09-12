@@ -186,7 +186,7 @@ Blog results are a plain vertical list with title, excerpt, and date—never car
 - **Do** preserve the distinct home, index, and article alignments.
 - **Do** use semantic document elements and native controls.
 - **Do** keep standalone interactive targets near 2.75rem and show a two-pixel white focus outline.
-- **Do** test 320px reflow, long IPv6 identities, and long article slugs.
+- **Do** test 320px reflow, long prompt paths, and long article slugs.
 
 ### Don't:
 

@@ -69,35 +69,28 @@ filesystem, URL passthrough, or arbitrary router destination. Post directories i
 update the single public registry and its resolver/evaluator tests rather than
 adding a second route list in a client component.
 
-## Visitor identity and environment
+## Static preview and deployment
 
-No environment variable is required for normal local reading. With no trusted
-ingress configuration, `/api/visitor` deliberately returns `{ "ip": null }` and
-the prompt shows `visitor`.
+`pnpm build` creates the complete static site in `out/` and then adds five exact
+legacy HTML redirect documents. `pnpm start` serves that generated directory for
+local production-style review; rebuild after changing application or content
+files.
 
-`VISITOR_IP_TRUST_MODE=trusted-proxy` is permitted only behind an ingress that
-overwrites `X-Yasinghasemi-Client-IP` with a validated client address and prevents
-direct public access to the Next.js upstream. The complete trust, spoofing, and
-no-cache checklist is in `docs/visitor-ip-deployment.md`. Naming a header in an
-environment variable does not establish trust.
+Pushes to `main` run `.github/workflows/deploy-pages.yml`. The workflow installs
+the frozen pnpm graph, checks formatting, lint, types, and unit tests, builds the
+static export, and deploys the `out/` artifact through the `github-pages`
+environment. GitHub Pages must remain configured with **GitHub Actions** as its
+build source so the legacy Jekyll branch build cannot replace the Next.js export.
 
-## Runtime and deployment boundary
-
-Run the production application with `pnpm build` followed by `pnpm start`. Public
-pages and posts are prerendered, while `/api/visitor` requires a request-capable
-Next.js runtime behind the verified private ingress.
-
-The repository's currently configured GitHub Pages deployment publishes static
-files from `main` at the repository root. That service cannot execute the visitor
-route or serve this application as a normal Next.js runtime. Pushing code is not a
-substitute for the separately authorized hosting, proxy, cache, origin-protection,
-and DNS work described in the deployment checklist. Do not enable a static export
-while claiming the visitor endpoint will run.
+The custom domain is recorded in `public/CNAME`, and `public/.nojekyll` preserves
+Next.js `_next` assets. The prompt uses the static `yasinghasemi.com` identity and
+does not inspect or display reader IP addresses. GitHub Pages cannot provide
+request-time Next.js routes or custom `next.config.ts` response headers.
 
 ## Storage and policy changes
 
-The baseline application sets no cookies and keeps terminal history, transcript,
-and hydrated IP state only in memory. Before adding analytics, optional storage,
-external assets, or another processor, update the actual controls and the Privacy
-Policy and Cookie Management page together. Never add a banner or preference
-toggle that does not control real behavior.
+The baseline application sets no cookies and keeps terminal history and transcript
+only in memory. Before adding analytics, optional storage, external assets, or
+another processor, update the actual controls and the Privacy Policy and Cookie
+Management page together. Never add a banner or preference toggle that does not
+control real behavior.

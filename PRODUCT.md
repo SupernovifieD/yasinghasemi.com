@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Next.js App Router, React, strict TypeScript, and pnpm, using the repository's root-level `app/` convention. Public writing is server-rendered or prerendered; only the safe navigation shell and request-IP hydration require client-side behavior. A runtime-capable deployment is required for the first-party visitor-IP endpoint.
+Next.js App Router, React, strict TypeScript, and pnpm, using the repository's root-level `app/` convention. The site is built as a static export for GitHub Pages; public writing is prerendered and only the safe navigation shell requires client-side behavior.
 
 ## Users
 
@@ -33,8 +33,8 @@ Visitors arrive through direct links, search results, current navigation, or arc
 - Five verified archived posts must be migrated without rewriting their historical content. Publication dates, excerpts, structure, emphasis, and links come from the audited archive.
 - There are no categories, accounts, comments, CMS, database, analytics, contact form, payments, search service, or persistent terminal history.
 - Contact destinations are GitHub, LinkedIn, and the explicitly requested display/link email pair. The spelling difference is retained for owner review.
-- Visitor IP display is first-party, transient, uncached, and unavailable unless a trusted ingress explicitly supplies a validated value. The neutral fallback is `visitor`.
-- The existing GitHub Pages configuration is static and cannot run the visitor endpoint. Hosting, DNS, proxy, or production infrastructure changes are outside this implementation's authority.
+- The prompt uses the static site identity `yasinghasemi.com`; it does not inspect or display a reader's IP address.
+- GitHub Actions verifies and publishes the generated `out/` artifact to GitHub Pages. The static host cannot provide request-time application behavior.
 
 ## Brand Commitments
 

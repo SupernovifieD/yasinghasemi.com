@@ -33,9 +33,15 @@ The member listing contains one relative archive root, no absolute paths, no `..
 
 ## Push and deployment behavior
 
-GitHub reports legacy Pages as enabled for `main` at `/`, with the custom domain `yasinghasemi.com`. Recent pushes trigger the GitHub-managed `pages-build-deployment` workflow; the most recent run inspected during this audit completed successfully. There is no workflow file in this repository to modify or disable.
+At the initial audit, GitHub Pages used its legacy Jekyll build from `main` at the
+repository root. That process rendered the repository README rather than the
+Next.js application.
 
-This deployment is a static-hosting configuration. It cannot satisfy the requested request-time `/api/visitor` route in a normal Next.js runtime. The implementation will keep public content prerenderable and will document the required runtime-capable, trusted reverse-proxy deployment boundary. No hosting, DNS, Cloudflare, Nginx, or manual production deployment changes are authorized by this refresh.
+On 2026-09-12, the owner authorized a GitHub Pages conversion and removal of the
+request-specific identity feature. The application now produces a static `out/`
+artifact, `.github/workflows/deploy-pages.yml` verifies and deploys it, and the
+repository Pages source is set to `workflow`. The custom domain remains
+`yasinghasemi.com`; no DNS or hosting-account change was made.
 
 ## Known owner-review item
 

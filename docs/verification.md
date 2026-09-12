@@ -1,6 +1,8 @@
 # Terminal blog refresh verification
 
-Verified on 2026-09-12 from `/Users/yasin/yasinghasemi.com`.
+Verified on 2026-09-12 from `/Users/yasin/yasinghasemi.com`. The GitHub Pages
+conversion recorded below supersedes the original runtime-specific deployment
+notes from earlier the same day.
 
 ## Delivered implementation
 
@@ -16,15 +18,14 @@ Verified on 2026-09-12 from `/Users/yasin/yasinghasemi.com`.
   `pwd`, `ls`, `help`, and `clear`, including safe path resolution, bounded
   history/transcript state, IME and multiline-paste protection, `cd -`, and
   browser history synchronization.
-- Exact direct-HTML redirects and a client-side hash bridge for recognized legacy
-  routes. Folder-only legacy views recover to the flat blog index; categories
-  were not restored.
-- A request-time, no-store `/api/visitor` endpoint with a minimal nullable IP
-  response. It remains unavailable unless an explicitly trusted ingress mode is
-  configured.
+- Exact static direct-HTML compatibility documents and a client-side hash bridge
+  for recognized legacy routes. Folder-only legacy views recover to the flat blog
+  index; categories were not restored.
+- A static `yasinghasemi.com` terminal identity. The site does not inspect or
+  display reader IP addresses.
 - Canonical, social, and article metadata; sitemap and robots routes; a
   monochrome favicon; truthful privacy, terms, and cookie pages; and tested
-  site-specific response headers.
+  static-host-compatible response behavior.
 - Impeccable working artifacts in `PRODUCT.md`, `DESIGN.md`, and
   `.impeccable/design.json`. The final interface review used the documented
   “Quiet Shell Manual” design system and found no material ship-blocking issue.
@@ -69,21 +70,18 @@ ambiguous source directory name.
 | `pnpm format:check`                      | Passed.                                                                                                                            |
 | `pnpm lint`                              | Passed with zero warnings.                                                                                                         |
 | `pnpm typecheck`                         | Passed.                                                                                                                            |
-| `pnpm test --run`                        | Passed: 17 files, 168 tests.                                                                                                       |
-| `pnpm build`                             | Passed: 17 static pages, five generated article paths, and the request-time `/api/visitor` route.                                  |
-| `pnpm test:e2e`                          | Passed: 132 tests across Chromium, Firefox, and WebKit in 2.8 minutes.                                                             |
+| `pnpm test --run`                        | Passed after the Pages conversion: 14 files, 150 tests.                                                                            |
+| `pnpm build`                             | Passed as a static export: 17 pages, five generated article paths, and five exact legacy redirect documents in `out/`.             |
+| `pnpm test:e2e`                          | Passed against the exported artifact: 117 tests across Chromium, Firefox, and WebKit in 3.2 minutes.                               |
 | Legacy migration dry run                 | Passed: five audited sources; generated Markdown matched the checkout; two dry runs were identical.                                |
 | Impeccable detector                      | Passed: `impeccable detect --json app components lib/site-config.ts` returned an empty issue list.                                 |
 | Production console/network inspection    | Eight representative routes returned 200 with zero page/console errors and zero failed requests in Chromium.                       |
 
 The browser suite covers normal and no-JavaScript navigation, reduced motion,
 keyboard focus and history, terminal command/attack cases, every article,
-canonical metadata, legacy redirects/hash recovery, visitor identity isolation
-and failure, security-header hydration, and responsive terminal containment.
-Testing an unknown generated article correctly returns the custom 404, although
-Next.js 16.3.5 writes an internal `NoFallbackError` diagnostic to the production
-server console while doing so. Playwright also emits a harmless `NO_COLOR` versus
-`FORCE_COLOR` warning.
+canonical metadata, static legacy redirects/hash recovery, exported 404 behavior,
+and responsive terminal containment. Playwright emits a harmless `NO_COLOR`
+versus `FORCE_COLOR` warning.
 
 Lighthouse 13.0.3 was run against the production server with its default mobile
 throttling. These are measured local results, not claims about production:
@@ -111,14 +109,13 @@ Representative screenshots are in `/tmp/yasin-visual.g0GwLV/`:
 - `blog-1440.png`, `blog-320.png`
 - `long-post-1440.png`, `long-post-320.png`
 - `privacy-1440.png`, `privacy-320.png`
-- `terminal-ipv6-help-320.png`
 - `long-post-200-percent-text.png`
 
-Desktop and touch-layout behavior, focused/unfocused terminal states, long IPv6
-identity/path wrapping, transcript expansion/clearing, footer placement, and local
-overflow were inspected. A physical mobile keyboard and a literal browser 400%
-zoom session were unavailable; the touch viewport, touch submit control, 200%
-text, and equivalent 320-pixel reflow were tested instead.
+Desktop and touch-layout behavior, focused/unfocused terminal states, long path
+wrapping, transcript expansion/clearing, footer placement, and local overflow were
+inspected. A physical mobile keyboard and a literal browser 400% zoom session were
+unavailable; the touch viewport, touch submit control, 200% text, and equivalent
+320-pixel reflow were tested instead.
 
 GitHub and LinkedIn hrefs match the requested sources. GitHub returned HTTP 200 in
 an automated live check; LinkedIn returned its bot-throttling HTTP 999 response,
@@ -199,6 +196,20 @@ Ordered implementation commits before this final report:
 62. `ae4448a` `docs(publishing): document authoring and site operation`
 63. `eddc9cd` `test(e2e): stabilize cross browser event coverage`
 
+GitHub Pages conversion commits:
+
+1. `00fe8ce` `refactor(visitor): remove visitor identity feature`
+2. `cb1594f` `build(pages): export static site artifact`
+3. `00d94b1` `ci(pages): deploy static next export`
+4. `6ffd6bc` `fix(tooling): generate next types before checking`
+
+The first custom workflow run exposed that a clean checkout had no generated Next
+route types. The fourth commit fixed that reproducibility gap. GitHub Actions run
+`34697307656` then passed installation, formatting, lint, type checking, unit tests,
+static export, artifact upload, and deployment. The Pages build source was changed
+from the legacy branch/Jekyll mode to the repository workflow after that verified
+deployment.
+
 ## Operations and owner review
 
 - The required contact display is `y@yasinghasemi.com`, while its deliberately
@@ -207,14 +218,12 @@ Ordered implementation commits before this final report:
 - The policy pages make no unverified claim about hosting providers, legal
   jurisdiction, infrastructure log retention, or optional cookies. Those facts
   require owner/hosting review if the operating environment changes.
-- Production visitor-IP display is blocked until a runtime-capable Next.js host,
-  trusted ingress overwrite, private upstream, no-cache intermediary behavior,
-  and representative spoofing/isolation tests are verified. Until then the safe
-  prompt identity is `visitor`.
-- GitHub Pages remains configured as a legacy build from `main` at repository root.
-  Its managed `pages-build-deployment` run for `eddc9cd` completed successfully,
-  but the public URL rendered the repository README through Jekyll (including the
-  retired Windows 98 description), not the Next.js application. A successful
-  Pages job therefore does not mean this runtime application is deployed.
-- No manual deployment, DNS, Cloudflare, Nginx, firewall, hosting-account, remote,
-  branch, or workflow change was performed.
+- The reader-IP feature and its endpoint were removed by owner request. The prompt
+  now uses `yasinghasemi.com` as its static identity.
+- GitHub Pages is configured to deploy from GitHub Actions. The custom workflow
+  verifies the repository, builds `out/`, uploads that artifact, and deploys it to
+  the `github-pages` environment. The live domain was verified against the new
+  application after the successful run.
+- No DNS, Cloudflare, Nginx, firewall, hosting-account, remote, or branch change
+  was performed. The Pages build-source setting changed from legacy Jekyll to the
+  repository workflow as part of the authorized deployment conversion.
