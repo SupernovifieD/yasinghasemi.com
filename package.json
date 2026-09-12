@@ -7,7 +7,7 @@
     "build": "next build && tsx scripts/write-static-redirects.ts",
     "start": "tsx scripts/serve-static-export.ts",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
