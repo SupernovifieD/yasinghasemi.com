@@ -368,6 +368,41 @@ test("rejects multiline paste and composition Enter", async ({ page }) => {
   await input.dispatchEvent("compositionend");
 });
 
+for (const viewport of [
+  { width: 320, height: 760 },
+  { width: 390, height: 844 },
+  { width: 768, height: 420 },
+]) {
+  test(`keeps the terminal contained at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto(
+      "/blog/three-fast-weeks-and-a-first-taste-of-paid-programming",
+    );
+    const input = page.getByRole("textbox", {
+      name: "Website navigation command",
+    });
+    await input.fill("x".repeat(1024));
+    await input.press("Enter");
+
+    expect(
+      await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth <=
+          document.documentElement.clientWidth,
+      ),
+    ).toBe(true);
+    const transcript = page.getByRole("region", {
+      name: "Terminal command output",
+    });
+    await expect(transcript).toBeVisible();
+    expect((await transcript.boundingBox())?.height).toBeLessThanOrEqual(
+      Math.min(224, viewport.height * 0.35) + 1,
+    );
+  });
+}
+
 test("about preserves verified biography without the retired desktop framing", async ({
   page,
 }) => {
