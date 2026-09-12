@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { JetBrains_Mono } from "next/font/google";
+
+import { SiteShell } from "@/components/site-shell";
+
 import "./globals.css";
 
 const jetBrainsMono = JetBrains_Mono({
@@ -18,7 +21,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={jetBrainsMono.variable}>
-      <body>{children}</body>
+      <body>
+        <SiteShell>{children}</SiteShell>
+      </body>
     </html>
   );
 }
