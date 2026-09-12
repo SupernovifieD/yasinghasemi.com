@@ -698,6 +698,48 @@ test("visitor endpoint is minimal, uncached, and cookieless by default", async (
   expect(response.headers()["access-control-allow-origin"]).toBeUndefined();
 });
 
+test("isolates trusted visitor identities and ignores forged generic headers", async ({
+  browser,
+  request,
+}) => {
+  const forged = await request.get("/api/visitor", {
+    headers: {
+      "cf-connecting-ip": "203.0.113.99",
+      "x-forwarded-for": "203.0.113.99",
+      "x-real-ip": "203.0.113.99",
+    },
+  });
+  expect(await forged.json()).toEqual({ ip: null });
+
+  const firstContext = await browser.newContext({
+    extraHTTPHeaders: { "x-yasinghasemi-client-ip": "192.0.2.10" },
+  });
+  const secondContext = await browser.newContext({
+    extraHTTPHeaders: { "x-yasinghasemi-client-ip": "2001:db8::20" },
+  });
+  const firstPage = await firstContext.newPage();
+  const secondPage = await secondContext.newPage();
+
+  await Promise.all([firstPage.goto("/"), secondPage.goto("/")]);
+  await expect(
+    firstPage.getByText(/192\.0\.2\.10@yasinghasemi\.com/),
+  ).toBeVisible();
+  await expect(
+    secondPage.getByText(/2001:db8::20@yasinghasemi\.com/),
+  ).toBeVisible();
+  await Promise.all([firstPage.reload(), secondPage.reload()]);
+  await expect(
+    firstPage.getByText(/192\.0\.2\.10@yasinghasemi\.com/),
+  ).toBeVisible();
+  await expect(
+    secondPage.getByText(/2001:db8::20@yasinghasemi\.com/),
+  ).toBeVisible();
+  expect(await firstContext.cookies()).toEqual([]);
+  expect(await secondContext.cookies()).toEqual([]);
+
+  await Promise.all([firstContext.close(), secondContext.close()]);
+});
+
 test("privacy policy describes implemented and unverified data handling", async ({
   page,
 }) => {
@@ -765,4 +807,23 @@ test("keeps the visitor fallback for an invalid endpoint response", async ({
   await page.goto("/");
 
   await expect(page.getByText(/visitor@yasinghasemi\.com/)).toBeVisible();
+});
+
+test("keeps navigation usable when visitor lookup times out", async ({
+  page,
+}) => {
+  await page.route("**/api/visitor", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 3_250));
+    await route.abort("timedout").catch(() => undefined);
+  });
+  await page.goto("/");
+  await page.waitForTimeout(3_100);
+  await expect(page.getByText(/visitor@yasinghasemi\.com/)).toBeVisible();
+
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await input.fill("cd /blog");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/blog$/);
 });

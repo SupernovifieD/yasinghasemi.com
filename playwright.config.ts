@@ -12,6 +12,7 @@ export default defineConfig({
   },
   webServer: {
     command: "pnpm start --hostname 127.0.0.1",
+    env: { VISITOR_IP_TRUST_MODE: "trusted-proxy" },
     url: "http://127.0.0.1:3000",
     reuseExistingServer: false,
     timeout: 120_000,
