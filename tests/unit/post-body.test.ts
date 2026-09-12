@@ -16,6 +16,8 @@ describe("safeMarkdownUrl", () => {
   it.each([
     "javascript:alert(1)",
     "data:text/html,test",
+    "file:///etc/passwd",
+    "ftp://external.example/file",
     "//external.example",
     "https:\\external.example",
     "https://example.com\u0000bad",

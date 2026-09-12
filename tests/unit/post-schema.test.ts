@@ -39,4 +39,13 @@ describe("post frontmatter", () => {
       parsePostFrontmatter({ ...validPost, updatedAt: "2026-05-05" }),
     ).toThrow();
   });
+
+  it("validates leap days as real calendar dates", () => {
+    expect(
+      parsePostFrontmatter({ ...validPost, publishedAt: "2024-02-29" }),
+    ).toMatchObject({ publishedAt: "2024-02-29" });
+    expect(() =>
+      parsePostFrontmatter({ ...validPost, publishedAt: "2025-02-29" }),
+    ).toThrow();
+  });
 });

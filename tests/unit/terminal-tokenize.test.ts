@@ -24,7 +24,9 @@ describe("tokenizeCommand", () => {
   it.each([
     ['cd "unclosed', "unclosed quote"],
     ["pwd\nls", "submit one single-line command"],
+    ["pwd\rls", "submit one single-line command"],
     ["pwd\u0000", "control characters are not supported"],
+    ["pwd\u007f", "control characters are not supported"],
     ["cd /blog; ls", "shell operators and expansion are not supported"],
     ["cd /blog && pwd", "shell operators and expansion are not supported"],
     ["pwd | less", "shell operators and expansion are not supported"],
@@ -33,6 +35,8 @@ describe("tokenizeCommand", () => {
     ["echo \x60pwd\x60", "shell operators and expansion are not supported"],
     ["echo $HOME", "shell operators and expansion are not supported"],
     ["ls *.md", "shell operators and expansion are not supported"],
+    ["cd ..\\about", "shell operators and expansion are not supported"],
+    ["ls [ab]", "shell operators and expansion are not supported"],
     ["<script>", "shell operators and expansion are not supported"],
   ])("rejects %s", (input, message) => {
     expect(tokenizeCommand(input)).toEqual({ ok: false, message });

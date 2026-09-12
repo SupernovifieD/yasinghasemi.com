@@ -18,8 +18,10 @@ describe("resolvePublicPath", () => {
     ["/about", "~", "/"],
     ["/about", "~/blog", "/blog"],
     ["/", "blog/../about", "/about"],
+    ["/", "../../../about", "/about"],
     ["/", "///about", null],
     ["/", "/blog//known-post/", "/blog/known-post"],
+    ["/", "/blog/%6bnown-post", "/blog/known-post"],
   ])("resolves %s + %s", (cwd, input, expected) => {
     const result = resolvePublicPath(registry, cwd, input);
     if (expected === null) {
@@ -66,5 +68,12 @@ describe("resolvePublicPath", () => {
   it("does not expose utility routes or server paths", () => {
     expect(resolvePublicPath(registry, "/", "/api/visitor").ok).toBe(false);
     expect(resolvePublicPath(registry, "/", "/etc/passwd").ok).toBe(false);
+  });
+
+  it("does not infer children beneath public leaf routes", () => {
+    expect(resolvePublicPath(registry, "/about", "child")).toEqual({
+      ok: false,
+      message: "no such directory: /about/child",
+    });
   });
 });
