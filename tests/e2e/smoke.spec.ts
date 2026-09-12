@@ -14,7 +14,7 @@ test("serves the root page", async ({ page }) => {
 
 for (const [path, heading] of [
   ["/about", "About"],
-  ["/contact", "Contact"],
+  ["/contact", "/contact"],
   ["/blog", "Blog"],
   ["/privacy", "Privacy Policy"],
   ["/terms", "Terms of Service"],
@@ -93,4 +93,24 @@ test("about preserves verified biography without the retired desktop framing", a
   await expect(page.getByText(/M\.Sc\. in mining engineering/)).toBeVisible();
   await expect(page.getByText(/MinexPy/)).toBeVisible();
   await expect(page.getByText(/Windows 98/)).toHaveCount(0);
+});
+
+test("contact contains exactly the requested destinations", async ({
+  page,
+}) => {
+  await page.goto("/contact");
+
+  const mainLinks = page.locator("main a");
+  await expect(mainLinks).toHaveCount(3);
+  await expect(page.getByRole("link", { name: "GitHub" })).toHaveAttribute(
+    "href",
+    "https://github.com/SupernovifieD",
+  );
+  await expect(page.getByRole("link", { name: "LinkedIn" })).toHaveAttribute(
+    "href",
+    "https://www.linkedin.com/in/yasinghasemi/",
+  );
+  await expect(
+    page.getByRole("link", { name: "y@yasinghasemi.com" }),
+  ).toHaveAttribute("href", "mailto:y@yasinassemi.com");
 });

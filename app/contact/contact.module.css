@@ -1,0 +1,38 @@
+.contact {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  padding-inline: clamp(0rem, 5vw, 4rem);
+}
+
+.contact h1 {
+  margin: 0 0 var(--space-6);
+  color: var(--color-text);
+  font-size: clamp(1.875rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+.contact ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.contact li + li {
+  margin-block-start: var(--space-1);
+}
+
+.contact a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+}
+
+@media (max-width: 40rem), (max-height: 42rem) {
+  .contact {
+    align-items: flex-start;
+    padding-inline: 0;
+  }
+}
