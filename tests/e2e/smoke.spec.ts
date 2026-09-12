@@ -12,6 +12,43 @@ test("serves the root page", async ({ page }) => {
   ).toHaveAttribute("href", "/blog");
 });
 
+test("serves tested security headers without breaking hydration", async ({
+  page,
+}) => {
+  const violations: string[] = [];
+  page.on("console", (message) => {
+    if (
+      message.type() === "error" &&
+      /content security policy/i.test(message.text())
+    ) {
+      violations.push(message.text());
+    }
+  });
+
+  const response = await page.goto("/");
+  expect(response?.headers()["content-security-policy"]).toContain(
+    "frame-ancestors 'none'",
+  );
+  expect(response?.headers()["permissions-policy"]).toBe(
+    "camera=(), geolocation=(), microphone=()",
+  );
+  expect(response?.headers()["referrer-policy"]).toBe(
+    "strict-origin-when-cross-origin",
+  );
+  expect(response?.headers()["x-content-type-options"]).toBe("nosniff");
+  expect(response?.headers()["x-frame-options"]).toBe("DENY");
+
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await input.fill("pwd");
+  await input.press("Enter");
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toContainText("/");
+  expect(violations).toEqual([]);
+});
+
 for (const [path, heading] of [
   ["/about", "About"],
   ["/contact", "/contact"],
