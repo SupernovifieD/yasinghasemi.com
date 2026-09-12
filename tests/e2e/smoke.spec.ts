@@ -32,3 +32,21 @@ test("marks the current primary navigation item", async ({ page }) => {
     "page",
   );
 });
+
+test("footer exposes every policy route", async ({ page }) => {
+  await page.goto("/");
+
+  const footer = page.getByRole("contentinfo");
+  await expect(footer).toContainText(
+    "yasinghasemi.com · 2026 · © All rights reserved",
+  );
+  await expect(
+    footer.getByRole("link", { name: "Privacy Policy" }),
+  ).toHaveAttribute("href", "/privacy");
+  await expect(
+    footer.getByRole("link", { name: "Terms of Service" }),
+  ).toHaveAttribute("href", "/terms");
+  await expect(
+    footer.getByRole("link", { name: "Cookie Management" }),
+  ).toHaveAttribute("href", "/cookies");
+});

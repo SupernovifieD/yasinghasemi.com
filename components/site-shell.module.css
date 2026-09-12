@@ -112,12 +112,35 @@
   display: flex;
   min-height: 4.75rem;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-8);
+  flex-wrap: wrap;
   color: var(--color-muted);
   font-size: 0.875rem;
 }
 
 .footerInner a {
   color: inherit;
+}
+
+.copyright,
+.policyNavigation {
+  margin: 0;
+}
+
+.policyNavigation {
+  display: flex;
+  padding: 0;
+  align-items: center;
+  gap: var(--space-2) var(--space-6);
+  flex-wrap: wrap;
+  list-style: none;
+}
+
+.policyNavigation a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
 }
 
 @media (max-width: 40rem) {
