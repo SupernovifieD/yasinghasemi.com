@@ -1,0 +1,42 @@
+.blog {
+  align-self: flex-start;
+  width: min(100%, 82ch);
+}
+
+.blog h1 {
+  margin: 0 0 var(--space-10);
+  color: var(--color-text);
+  font-size: clamp(1.8rem, 1.45rem + 1.4vw, 2.5rem);
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+}
+
+.results {
+  display: grid;
+  gap: var(--space-10);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.result h2 {
+  max-width: 40ch;
+  margin: 0 0 var(--space-3);
+  color: var(--color-text);
+  font-size: clamp(1.2rem, 1.08rem + 0.45vw, 1.5rem);
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.result p {
+  max-width: 72ch;
+  margin: 0 0 var(--space-3);
+  color: var(--color-body);
+  line-height: 1.65;
+}
+
+.result time,
+.empty {
+  color: var(--color-muted);
+  font-size: 0.9375rem;
+}

@@ -38,6 +38,36 @@ test("marks the current primary navigation item", async ({ page }) => {
   );
 });
 
+test("lists every published post newest first without categories", async ({
+  page,
+}) => {
+  await page.goto("/blog");
+
+  const results = page.locator("main article");
+  await expect(results).toHaveCount(5);
+  await expect(results.locator("h2")).toHaveText([
+    "Three Fast Weeks and a First Taste of Paid Programming",
+    "When MPM Becomes a Decision Marathon",
+    "Why Did I Start Working on a Mineral Prospectivity Mapping Project?",
+    "How NetRadar Was Started",
+    "The Story of This Blog, aka The Beginning",
+  ]);
+  expect(
+    await results
+      .locator("time")
+      .evaluateAll((times) =>
+        times.map((time) => (time as HTMLTimeElement).dateTime),
+      ),
+  ).toEqual([
+    "2026-06-09",
+    "2026-05-20",
+    "2026-05-12",
+    "2026-05-09",
+    "2026-05-06",
+  ]);
+  await expect(page.getByText(/categor(y|ies)/i)).toHaveCount(0);
+});
+
 test("footer exposes every policy route", async ({ page }) => {
   await page.goto("/");
 
