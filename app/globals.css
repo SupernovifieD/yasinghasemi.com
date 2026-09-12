@@ -45,8 +45,9 @@ body {
   background: var(--color-page);
   color: var(--color-body);
   font-family:
-    var(--font-geist-mono), ui-monospace, "DejaVu Sans Mono", "Liberation Mono",
+    var(--font-terminal), ui-monospace, "DejaVu Sans Mono", "Liberation Mono",
     monospace;
+  font-variant-ligatures: none;
   font-size: 1rem;
   line-height: 1.7;
   text-rendering: optimizeLegibility;
