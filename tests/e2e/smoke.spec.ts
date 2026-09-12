@@ -426,6 +426,30 @@ test("keeps failed terminal navigation on the current route", async ({
   ).toContainText("Try cd /blog.");
 });
 
+test("serializes rapid terminal navigation submissions", async ({ page }) => {
+  await page.goto("/");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await input.fill("cd /blog");
+  await input.evaluate((element) => {
+    const form = element.closest("form");
+    form?.dispatchEvent(
+      new Event("submit", { bubbles: true, cancelable: true }),
+    );
+    form?.dispatchEvent(
+      new Event("submit", { bubbles: true, cancelable: true }),
+    );
+  });
+
+  await expect(page).toHaveURL(/\/blog$/);
+  const transcript = page.getByRole("region", {
+    name: "Terminal command output",
+  });
+  await expect(transcript).toContainText("cd /blog");
+  await expect(transcript.getByText(/cd \/blog/)).toHaveCount(1);
+});
+
 test("recalls terminal history and restores the in-progress draft", async ({
   page,
 }) => {

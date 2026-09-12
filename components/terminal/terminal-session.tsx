@@ -125,7 +125,7 @@ export function TerminalSession({
   }, [pathname, registry]);
 
   function submitCommand(rawInput: string) {
-    if (pendingHref) return;
+    if (pendingHref || pendingNavigation.current) return;
 
     const result = evaluateCommand({
       input: rawInput,
