@@ -458,6 +458,19 @@ test("privacy policy describes implemented and unverified data handling", async 
   await expect(page.getByText(/have not been verified here/)).toBeVisible();
 });
 
+test("terms describe a personal publishing site without product terms", async ({
+  page,
+}) => {
+  await page.goto("/terms");
+
+  await expect(page.getByText(/personal blog and publishing/)).toBeVisible();
+  await expect(page.getByText(/not a promise of future results/)).toBeVisible();
+  await expect(page.getByText(/repository license/)).toBeVisible();
+  await expect(
+    page.getByText(/subscription|payment|refund|account/i),
+  ).toHaveCount(0);
+});
+
 test("hydrates a validated first-party visitor identity without persistence", async ({
   page,
   context,
