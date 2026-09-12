@@ -117,6 +117,20 @@ test("unknown post slugs return not found", async ({ page }) => {
   expect(response?.status()).toBe(404);
 });
 
+test("long article content does not overflow the page", async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 900 });
+  await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");
+
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth,
+    ),
+  ).toBe(true);
+  await expect(page.locator("article p")).toHaveCount(7);
+});
+
 test("footer exposes every policy route", async ({ page }) => {
   await page.goto("/");
 
