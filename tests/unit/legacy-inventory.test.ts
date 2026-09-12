@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   assertSafeArchivePath,
+  convertLegacyArticle,
   inventoryLegacyArchive,
 } from "@/scripts/migrate-legacy-posts";
 
@@ -42,5 +43,33 @@ describe("legacy archive inventory", () => {
       paragraphCount: 2,
       links: ["https://example.com"],
     });
+  });
+
+  it("converts semantic content and removes executable or unsafe markup", () => {
+    const source = {
+      sourcePath: "mydocuments/post/post.html",
+      title: "Title",
+      publishedAt: "2026-06-09",
+      excerpt: "Excerpt",
+      slug: "title",
+      oldHashPath: "/docs/post",
+    };
+    const { markdown, report } = convertLegacyArticle(
+      `<article data-published="2026-06-09" data-subtitle="Excerpt">
+        <h1>Title</h1><h2>Heading</h2><p>One <strong>strong</strong> and <i>legacy</i> paragraph.</p>
+        <p><a href="https://example.com">Safe</a> and <a href="javascript:alert(1)">unsafe</a>.</p>
+        <script>throw new Error("no")</script>
+      </article>`,
+      source,
+    );
+
+    expect(markdown).not.toContain("# Title");
+    expect(markdown).toContain("## Heading");
+    expect(markdown).toContain("**strong**");
+    expect(markdown).toContain("*legacy*");
+    expect(markdown).toContain("[Safe](https://example.com)");
+    expect(markdown).not.toContain("javascript:");
+    expect(markdown).not.toContain("script");
+    expect(report.semanticParity).toBe(true);
   });
 });
