@@ -4,7 +4,7 @@ import styles from "@/app/home.module.css";
 
 export default function HomePage() {
   return (
-    <main className={styles.home} id="main-content">
+    <main className={styles.home} id="main-content" tabIndex={-1}>
       <div className={styles.introduction}>
         <h1>Hello, I&apos;m Yasin Ghasemi.</h1>
         <div className={styles.copy}>

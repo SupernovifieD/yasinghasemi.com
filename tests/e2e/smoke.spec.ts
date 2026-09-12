@@ -38,6 +38,19 @@ test("marks the current primary navigation item", async ({ page }) => {
   );
 });
 
+test("moves keyboard focus from the skip link to main content", async ({
+  browserName,
+  page,
+}) => {
+  await page.goto("/");
+  await page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
+
+  const skipLink = page.getByRole("link", { name: "Skip to content" });
+  await expect(skipLink).toBeFocused();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#main-content")).toBeFocused();
+});
+
 test("lists every published post newest first without categories", async ({
   page,
 }) => {
@@ -291,6 +304,9 @@ test("runs terminal information and navigation commands safely", async ({
   await expect(
     page.getByRole("region", { name: "Terminal command output" }),
   ).toContainText("/");
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toHaveAttribute("tabindex", "0");
 
   await input.fill("cd blog");
   await input.press("Enter");

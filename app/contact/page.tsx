@@ -12,7 +12,7 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function ContactPage() {
   return (
-    <main className={styles.contact} id="main-content">
+    <main className={styles.contact} id="main-content" tabIndex={-1}>
       <div>
         <h1>/contact</h1>
         <ul>

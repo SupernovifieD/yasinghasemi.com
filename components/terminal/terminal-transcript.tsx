@@ -17,6 +17,7 @@ export function TerminalTranscript({
         <section
           className={styles.transcript}
           aria-label="Terminal command output"
+          tabIndex={0}
         >
           {entries.map((entry) => (
             <div className={styles.transcriptEntry} key={entry.id}>

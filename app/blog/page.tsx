@@ -22,7 +22,7 @@ export default function BlogPage() {
   const posts = getPublishedPosts();
 
   return (
-    <main id="main-content" className={styles.blog}>
+    <main id="main-content" className={styles.blog} tabIndex={-1}>
       <h1>Blog</h1>
       {posts.length === 0 ? (
         <p className={styles.empty}>No posts have been published yet.</p>
