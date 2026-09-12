@@ -29,7 +29,7 @@ describe("public terminal route registry", () => {
   });
 
   it("never exposes an API or source path", () => {
-    expect(isPublicPath(registry, "/api/visitor")).toBe(false);
+    expect(isPublicPath(registry, "/api/private")).toBe(false);
     expect(isPublicPath(registry, "/content/posts/first-post.md")).toBe(false);
   });
 

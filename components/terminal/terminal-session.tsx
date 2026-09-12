@@ -23,7 +23,6 @@ import {
   appendTranscript,
   type TranscriptEntry,
 } from "@/lib/terminal/session";
-import { parseVisitorResponse } from "@/lib/visitor-ip";
 
 const subscribeToNothing = () => () => {};
 
@@ -40,7 +39,6 @@ export function TerminalSession({
     () => false,
   );
   const [input, setInput] = useState("");
-  const [identity, setIdentity] = useState("visitor");
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
   const [announcement, setAnnouncement] = useState("");
   const [pendingHref, setPendingHref] = useState<string | null>(null);
@@ -59,33 +57,6 @@ export function TerminalSession({
     lines: TerminalOutputLine[];
   } | null>(null);
   const navigationPending = pendingHref !== null && pendingHref !== pathname;
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const timeout = window.setTimeout(() => controller.abort(), 3_000);
-
-    fetch("/api/visitor", {
-      cache: "no-store",
-      headers: { Accept: "application/json" },
-      signal: controller.signal,
-    })
-      .then(async (response) => {
-        if (!response.ok) return null;
-        return parseVisitorResponse(await response.json());
-      })
-      .then((ip) => {
-        if (ip) setIdentity(ip);
-      })
-      .catch(() => {
-        // The neutral visitor label is the deliberate failure state.
-      })
-      .finally(() => window.clearTimeout(timeout));
-
-    return () => {
-      window.clearTimeout(timeout);
-      controller.abort();
-    };
-  }, []);
 
   function addEntry(
     command: string,
@@ -233,7 +204,6 @@ export function TerminalSession({
           <div className={styles.terminalPrompt}>
             {hydrated ? (
               <TerminalPrompt
-                identity={identity}
                 pathname={pathname}
                 value={input}
                 onChange={changeInput}
@@ -245,7 +215,7 @@ export function TerminalSession({
               />
             ) : (
               <span className={styles.promptPlaceholder} aria-hidden="true">
-                visitor@yasinghasemi.com: {pathname} $
+                yasinghasemi.com: {pathname} $
               </span>
             )}
           </div>

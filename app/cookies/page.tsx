@@ -25,10 +25,9 @@ export default function CookiesPage() {
       </p>
       <h2>Browser memory</h2>
       <p>
-        Terminal commands, output, and the displayed visitor address remain in
-        application memory for the current tab session. They are not written to
-        cookies, local storage, or session storage. Reloading the page resets
-        them.
+        Terminal commands and output remain in application memory for the
+        current tab session. They are not written to cookies, local storage, or
+        session storage. Reloading the page resets them.
       </p>
       <h2>Hosting and security systems</h2>
       <p>

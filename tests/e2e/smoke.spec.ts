@@ -424,9 +424,7 @@ test("runs terminal information and navigation commands safely", async ({
   await input.fill("cd blog");
   await input.press("Enter");
   await expect(page).toHaveURL(/\/blog$/);
-  await expect(
-    page.getByText("visitor@yasinghasemi.com: /blog $"),
-  ).toBeVisible();
+  await expect(page.getByText("yasinghasemi.com: /blog $")).toBeVisible();
   await expect(input).toBeFocused();
 
   await input.fill("ls");
@@ -532,13 +530,11 @@ test("tracks browser history in the prompt and previous directory", async ({
 }) => {
   await page.goto("/");
   await page.getByRole("link", { name: "/about" }).click();
-  await expect(
-    page.getByText("visitor@yasinghasemi.com: /about $"),
-  ).toBeVisible();
+  await expect(page.getByText("yasinghasemi.com: /about $")).toBeVisible();
 
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText("visitor@yasinghasemi.com: / $")).toBeVisible();
+  await expect(page.getByText("yasinghasemi.com: / $")).toBeVisible();
 
   const input = page.getByRole("textbox", {
     name: "Website navigation command",
@@ -549,9 +545,7 @@ test("tracks browser history in the prompt and previous directory", async ({
 
   await page.goBack();
   await page.goForward();
-  await expect(
-    page.getByText("visitor@yasinghasemi.com: /about $"),
-  ).toBeVisible();
+  await expect(page.getByText("yasinghasemi.com: /about $")).toBeVisible();
 });
 
 test("recovers from an unknown direct route through the shell", async ({
@@ -559,7 +553,7 @@ test("recovers from an unknown direct route through the shell", async ({
 }) => {
   await page.goto("/not-a-public-route");
   await expect(
-    page.getByText("visitor@yasinghasemi.com: /not-a-public-route $"),
+    page.getByText("yasinghasemi.com: /not-a-public-route $"),
   ).toBeVisible();
 
   const input = page.getByRole("textbox", {
@@ -685,69 +679,13 @@ test("contact contains exactly the requested destinations", async ({
   ).toHaveAttribute("href", "mailto:y@yasinassemi.com");
 });
 
-test("visitor endpoint is minimal, uncached, and cookieless by default", async ({
-  request,
-}) => {
-  const response = await request.get("/api/visitor");
-
-  expect(response.status()).toBe(200);
-  expect(await response.json()).toEqual({ ip: null });
-  expect(response.headers()["cache-control"]).toBe(
-    "private, no-store, max-age=0",
-  );
-  expect(response.headers()["set-cookie"]).toBeUndefined();
-  expect(response.headers()["access-control-allow-origin"]).toBeUndefined();
-});
-
-test("isolates trusted visitor identities and ignores forged generic headers", async ({
-  browser,
-  request,
-}) => {
-  const forged = await request.get("/api/visitor", {
-    headers: {
-      "cf-connecting-ip": "203.0.113.99",
-      "x-forwarded-for": "203.0.113.99",
-      "x-real-ip": "203.0.113.99",
-    },
-  });
-  expect(await forged.json()).toEqual({ ip: null });
-
-  const firstContext = await browser.newContext({
-    extraHTTPHeaders: { "x-yasinghasemi-client-ip": "192.0.2.10" },
-  });
-  const secondContext = await browser.newContext({
-    extraHTTPHeaders: { "x-yasinghasemi-client-ip": "2001:db8::20" },
-  });
-  const firstPage = await firstContext.newPage();
-  const secondPage = await secondContext.newPage();
-
-  await Promise.all([firstPage.goto("/"), secondPage.goto("/")]);
-  await expect(
-    firstPage.getByText(/192\.0\.2\.10@yasinghasemi\.com/),
-  ).toBeVisible();
-  await expect(
-    secondPage.getByText(/2001:db8::20@yasinghasemi\.com/),
-  ).toBeVisible();
-  await Promise.all([firstPage.reload(), secondPage.reload()]);
-  await expect(
-    firstPage.getByText(/192\.0\.2\.10@yasinghasemi\.com/),
-  ).toBeVisible();
-  await expect(
-    secondPage.getByText(/2001:db8::20@yasinghasemi\.com/),
-  ).toBeVisible();
-  expect(await firstContext.cookies()).toEqual([]);
-  expect(await secondContext.cookies()).toEqual([]);
-
-  await Promise.all([firstContext.close(), secondContext.close()]);
-});
-
 test("privacy policy describes implemented and unverified data handling", async ({
   page,
 }) => {
   await page.goto("/privacy");
 
   await expect(page.getByText(/no user accounts/)).toBeVisible();
-  await expect(page.getByText(/only in memory/)).toBeVisible();
+  await expect(page.getByText(/memory for the current browser tab/)).toBeVisible();
   await expect(page.getByText(/may keep operational logs/)).toBeVisible();
   await expect(page.getByText(/have not been verified here/)).toBeVisible();
 });
@@ -778,53 +716,4 @@ test("cookie management reflects the storage audit without fake controls", async
   await expect(page.locator("main button, main input, main form")).toHaveCount(
     0,
   );
-});
-
-test("hydrates a validated first-party visitor identity without persistence", async ({
-  page,
-  context,
-}) => {
-  await page.route("**/api/visitor", (route) =>
-    route.fulfill({ json: { ip: "2001:db8::42" } }),
-  );
-  await page.goto("/");
-
-  await expect(page.getByText(/2001:db8::42@yasinghasemi\.com/)).toBeVisible();
-  expect(await context.cookies()).toEqual([]);
-  expect(
-    await page.evaluate(() => ({
-      local: { ...localStorage },
-      session: { ...sessionStorage },
-    })),
-  ).toEqual({ local: {}, session: {} });
-});
-
-test("keeps the visitor fallback for an invalid endpoint response", async ({
-  page,
-}) => {
-  await page.route("**/api/visitor", (route) =>
-    route.fulfill({ json: { ip: "not-an-ip", extra: "not allowed" } }),
-  );
-  await page.goto("/");
-
-  await expect(page.getByText(/visitor@yasinghasemi\.com/)).toBeVisible();
-});
-
-test("keeps navigation usable when visitor lookup times out", async ({
-  page,
-}) => {
-  await page.route("**/api/visitor", async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 3_250));
-    await route.abort("timedout").catch(() => undefined);
-  });
-  await page.goto("/");
-  await page.waitForTimeout(3_100);
-  await expect(page.getByText(/visitor@yasinghasemi\.com/)).toBeVisible();
-
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await input.fill("cd /blog");
-  await input.press("Enter");
-  await expect(page).toHaveURL(/\/blog$/);
 });

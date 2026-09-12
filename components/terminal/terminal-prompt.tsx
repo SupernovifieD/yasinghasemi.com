@@ -15,7 +15,6 @@ import { MAX_COMMAND_LENGTH } from "@/lib/terminal/tokenize";
 import styles from "./terminal.module.css";
 
 export function TerminalPrompt({
-  identity,
   pathname,
   value,
   onChange,
@@ -25,7 +24,6 @@ export function TerminalPrompt({
   disabled = false,
   onRejectedPaste,
 }: {
-  identity: string;
   pathname: string;
   value: string;
   onChange: (value: string) => void;
@@ -54,7 +52,7 @@ export function TerminalPrompt({
     <form className={styles.prompt} onSubmit={submit}>
       <span className={styles.location}>
         <Link href="/" aria-label="Home">
-          {identity}@yasinghasemi.com
+          yasinghasemi.com
         </Link>
         : <bdi>{pathname}</bdi> $
       </span>

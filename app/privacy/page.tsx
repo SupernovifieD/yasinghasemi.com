@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site-config";
 export const metadata: Metadata = createPageMetadata({
   title: "Privacy Policy",
   description:
-    "How this personal blog handles terminal state, visitor addresses, and hosting data.",
+    "How this personal blog handles terminal state and hosting data.",
   path: "/privacy",
 });
 
@@ -19,19 +19,12 @@ export default function PrivacyPage() {
         This is a personal publishing website. It has no user accounts, contact
         form, comments, advertising, analytics, or tracking pixels.
       </p>
-      <h2>Terminal and visitor address</h2>
+      <h2>Terminal state</h2>
       <p>
         The navigation terminal keeps its command history and visible output in
         memory for the current browser tab. It does not save that history to
         cookies, local storage, a database, or analytics, and a full page reload
         resets it.
-      </p>
-      <p>
-        After the page loads, the site makes one same-origin request to display
-        the network address visible to a verified site ingress. That address may
-        belong to a VPN, proxy, or shared connection. When a trusted ingress is
-        unavailable, the prompt shows <code>visitor</code> instead. Application
-        code holds a returned address only in memory and does not persist it.
       </p>
       <h2>Hosting and security logs</h2>
       <p>

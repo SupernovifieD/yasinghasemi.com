@@ -66,7 +66,7 @@ describe("resolvePublicPath", () => {
   });
 
   it("does not expose utility routes or server paths", () => {
-    expect(resolvePublicPath(registry, "/", "/api/visitor").ok).toBe(false);
+    expect(resolvePublicPath(registry, "/", "/api/private").ok).toBe(false);
     expect(resolvePublicPath(registry, "/", "/etc/passwd").ok).toBe(false);
   });
 
