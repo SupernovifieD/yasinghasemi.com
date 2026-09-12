@@ -2,6 +2,7 @@
 AGENTS.md
 CLAUDE.md
 coverage
+content/posts/*.md
 node_modules
 playwright-report
 test-results
