@@ -51,6 +51,49 @@ test("moves keyboard focus from the skip link to main content", async ({
   await expect(page.locator("#main-content")).toBeFocused();
 });
 
+test("keeps core reading and navigation available without JavaScript", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+
+  await page.goto("/");
+  await expect(
+    page.getByText(/Shell commands require JavaScript/),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("textbox", { name: "Website navigation command" }),
+  ).toHaveCount(0);
+  await page.getByRole("link", { name: "/blog" }).click();
+  await expect(page).toHaveURL(/\/blog$/);
+  await page
+    .getByRole("link", {
+      name: "Three Fast Weeks and a First Taste of Paid Programming",
+    })
+    .click();
+  await expect(
+    page.getByRole("heading", {
+      level: 1,
+      name: "Three Fast Weeks and a First Taste of Paid Programming",
+    }),
+  ).toBeVisible();
+
+  await context.close();
+});
+
+test("disables smooth scrolling when reduced motion is requested", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  expect(
+    await page.evaluate(
+      () => getComputedStyle(document.documentElement).scrollBehavior,
+    ),
+  ).toBe("auto");
+});
+
 test("lists every published post newest first without categories", async ({
   page,
 }) => {
