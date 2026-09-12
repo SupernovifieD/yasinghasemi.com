@@ -494,6 +494,74 @@ test("uses link navigation for cd - history without forcing command focus", asyn
   await expect(page).toHaveURL(/\/about$/);
 });
 
+test("tracks browser history in the prompt and previous directory", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "/about" }).click();
+  await expect(
+    page.getByText("visitor@yasinghasemi.com: /about $"),
+  ).toBeVisible();
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
+  await expect(page.getByText("visitor@yasinghasemi.com: / $")).toBeVisible();
+
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await input.fill("cd -");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/about$/);
+
+  await page.goBack();
+  await page.goForward();
+  await expect(
+    page.getByText("visitor@yasinghasemi.com: /about $"),
+  ).toBeVisible();
+});
+
+test("recovers from an unknown direct route through the shell", async ({
+  page,
+}) => {
+  await page.goto("/not-a-public-route");
+  await expect(
+    page.getByText("visitor@yasinghasemi.com: /not-a-public-route $"),
+  ).toBeVisible();
+
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await input.fill("cd /");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/$/);
+  await expect(
+    page.getByRole("heading", { name: "Hello, I'm Yasin Ghasemi." }),
+  ).toBeVisible();
+});
+
+test("clear preserves recall history and the current route", async ({
+  page,
+}) => {
+  await page.goto("/about");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await input.fill("pwd");
+  await input.press("Enter");
+  await input.fill("clear");
+  await input.press("Enter");
+
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toHaveCount(0);
+  await expect(page).toHaveURL(/\/about$/);
+  await input.press("ArrowUp");
+  await expect(input).toHaveValue("clear");
+  await input.press("ArrowUp");
+  await expect(input).toHaveValue("pwd");
+});
+
 test("rejects multiline paste and composition Enter", async ({ page }) => {
   await page.goto("/");
   const input = page.getByRole("textbox", {
