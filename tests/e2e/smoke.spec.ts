@@ -23,3 +23,12 @@ for (const [path, heading] of [
     ).toBeVisible();
   });
 }
+
+test("marks the current primary navigation item", async ({ page }) => {
+  await page.goto("/blog");
+
+  await expect(page.getByRole("link", { name: "/blog" })).toHaveAttribute(
+    "aria-current",
+    "page",
+  );
+});

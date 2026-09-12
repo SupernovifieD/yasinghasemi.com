@@ -44,12 +44,56 @@
   display: flex;
   min-height: 5rem;
   align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-8);
+  flex-wrap: wrap;
 }
 
 .identity {
+  min-width: 0;
   font-size: 0.9375rem;
   font-weight: 500;
   text-decoration: none;
+}
+
+.navigation {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+  gap: clamp(var(--space-3), 2.2vw, var(--space-6));
+  list-style: none;
+}
+
+.navigationLink {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--color-body);
+  font-size: 0.9375rem;
+  text-decoration: none;
+}
+
+.navigationLink::after {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0.35rem;
+  height: 1px;
+  background: currentColor;
+  content: "";
+  scale: 0 1;
+  transform-origin: center;
+}
+
+.navigationLink:hover,
+.navigationLink[aria-current="page"] {
+  color: var(--color-text);
+}
+
+.navigationLink:hover::after,
+.navigationLink[aria-current="page"]::after {
+  scale: 1 1;
 }
 
 .main {
