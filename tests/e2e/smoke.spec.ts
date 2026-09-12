@@ -4,7 +4,12 @@ test("serves the root page", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.locator("main")).toBeVisible();
-  await expect(page).toHaveTitle(/Create Next App/);
+  await expect(
+    page.getByRole("heading", { name: "Hello, I'm Yasin Ghasemi." }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: /Read the blog/ }),
+  ).toHaveAttribute("href", "/blog");
 });
 
 for (const [path, heading] of [
