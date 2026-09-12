@@ -299,6 +299,75 @@ test("keeps failed terminal navigation on the current route", async ({
   ).toContainText("Try cd /blog.");
 });
 
+test("recalls terminal history and restores the in-progress draft", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  for (const command of ["pwd", "help"]) {
+    await input.fill(command);
+    await input.press("Enter");
+  }
+
+  await input.fill("unfinished draft");
+  await input.press("ArrowUp");
+  await expect(input).toHaveValue("help");
+  await input.press("ArrowUp");
+  await expect(input).toHaveValue("pwd");
+  await input.press("ArrowDown");
+  await expect(input).toHaveValue("help");
+  await input.press("ArrowDown");
+  await expect(input).toHaveValue("unfinished draft");
+  await input.press("Escape");
+  await expect(input).toHaveValue("");
+});
+
+test("uses link navigation for cd - history without forcing command focus", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: "/about" }).click();
+  await expect(page).toHaveURL(/\/about$/);
+
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  await expect(input).not.toBeFocused();
+  await input.fill("cd -");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/$/);
+  await input.fill("cd -");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/about$/);
+});
+
+test("rejects multiline paste and composition Enter", async ({ page }) => {
+  await page.goto("/");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+
+  await input.evaluate((element) => {
+    const data = new DataTransfer();
+    data.setData("text", "pwd\ncd /blog");
+    element.dispatchEvent(
+      new ClipboardEvent("paste", { bubbles: true, clipboardData: data }),
+    );
+  });
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toContainText("submit one single-line command");
+  await expect(page).toHaveURL(/\/$/);
+
+  await input.fill("cd /blog");
+  await input.dispatchEvent("compositionstart");
+  await input.press("Enter");
+  await expect(page).toHaveURL(/\/$/);
+  await input.dispatchEvent("compositionend");
+});
+
 test("about preserves verified biography without the retired desktop framing", async ({
   page,
 }) => {

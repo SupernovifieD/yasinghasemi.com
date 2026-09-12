@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import {
+  type ClipboardEvent,
   type RefObject,
   useId,
+  useRef,
   type FormEvent,
   type KeyboardEvent,
 } from "react";
@@ -21,6 +23,7 @@ export function TerminalPrompt({
   onKeyDown,
   inputRef,
   disabled = false,
+  onRejectedPaste,
 }: {
   identity: string;
   pathname: string;
@@ -30,12 +33,21 @@ export function TerminalPrompt({
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
   inputRef?: RefObject<HTMLInputElement | null>;
   disabled?: boolean;
+  onRejectedPaste?: () => void;
 }) {
   const inputId = useId();
+  const composing = useRef(false);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (composing.current) return;
     onSubmit(value);
+  }
+
+  function paste(event: ClipboardEvent<HTMLInputElement>) {
+    if (!/[\r\n]/.test(event.clipboardData.getData("text"))) return;
+    event.preventDefault();
+    onRejectedPaste?.();
   }
 
   return (
@@ -63,6 +75,13 @@ export function TerminalPrompt({
         enterKeyHint="go"
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={onKeyDown}
+        onPaste={paste}
+        onCompositionStart={() => {
+          composing.current = true;
+        }}
+        onCompositionEnd={() => {
+          composing.current = false;
+        }}
         disabled={disabled}
       />
       <button

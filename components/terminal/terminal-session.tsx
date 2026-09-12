@@ -1,7 +1,13 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+} from "react";
 
 import { SiteNavigation } from "@/components/site-navigation";
 import styles from "@/components/site-shell.module.css";
@@ -39,6 +45,8 @@ export function TerminalSession({
   const inputRef = useRef<HTMLInputElement>(null);
   const entryId = useRef(0);
   const history = useRef<string[]>([]);
+  const historyIndex = useRef(0);
+  const historyDraft = useRef("");
   const previousDirectory = useRef<string | null>(null);
   const lastCanonicalDirectory = useRef<string | null>(
     isPublicPath(registry, pathname) ? pathname : null,
@@ -103,6 +111,8 @@ export function TerminalSession({
 
     const command = rawInput.trim();
     history.current = appendCommandHistory(history.current, command);
+    historyIndex.current = history.current.length;
+    historyDraft.current = "";
     setInput("");
 
     if (result.kind === "clear") {
@@ -140,6 +150,53 @@ export function TerminalSession({
     router.push(result.href);
   }
 
+  function changeInput(value: string) {
+    setInput(value);
+    if (historyIndex.current === history.current.length) {
+      historyDraft.current = value;
+    }
+  }
+
+  function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.nativeEvent.isComposing) return;
+
+    if (event.key === "Escape") {
+      event.preventDefault();
+      historyIndex.current = history.current.length;
+      historyDraft.current = "";
+      setInput("");
+      return;
+    }
+
+    if (event.key === "ArrowUp") {
+      if (history.current.length === 0) return;
+      event.preventDefault();
+      if (historyIndex.current === history.current.length) {
+        historyDraft.current = input;
+      }
+      historyIndex.current = Math.max(0, historyIndex.current - 1);
+      setInput(history.current[historyIndex.current]);
+      return;
+    }
+
+    if (event.key === "ArrowDown") {
+      if (historyIndex.current >= history.current.length) return;
+      event.preventDefault();
+      historyIndex.current += 1;
+      setInput(
+        historyIndex.current === history.current.length
+          ? historyDraft.current
+          : history.current[historyIndex.current],
+      );
+    }
+  }
+
+  function rejectMultilinePaste() {
+    const message = "Paste rejected: submit one single-line command.";
+    addEntry("[multiline paste]", "error", [{ text: message }]);
+    setAnnouncement(message);
+  }
+
   return (
     <>
       <header className={styles.header}>
@@ -150,8 +207,10 @@ export function TerminalSession({
                 identity="visitor"
                 pathname={pathname}
                 value={input}
-                onChange={setInput}
+                onChange={changeInput}
                 onSubmit={submitCommand}
+                onKeyDown={handleKeyDown}
+                onRejectedPaste={rejectMultilinePaste}
                 inputRef={inputRef}
                 disabled={navigationPending}
               />
