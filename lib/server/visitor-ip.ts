@@ -1,6 +1,6 @@
 import "server-only";
 
-import { isIP } from "node:net";
+import { isValidVisitorIp } from "@/lib/visitor-ip";
 
 export const VERIFIED_CLIENT_IP_HEADER = "x-yasinghasemi-client-ip";
 export const TRUSTED_PROXY_MODE = "trusted-proxy";
@@ -17,7 +17,7 @@ export function readVisitorIp(
     candidate.length > 64 ||
     candidate.includes(",") ||
     candidate.includes("%") ||
-    isIP(candidate) === 0
+    !isValidVisitorIp(candidate)
   ) {
     return null;
   }

@@ -446,3 +446,33 @@ test("visitor endpoint is minimal, uncached, and cookieless by default", async (
   expect(response.headers()["set-cookie"]).toBeUndefined();
   expect(response.headers()["access-control-allow-origin"]).toBeUndefined();
 });
+
+test("hydrates a validated first-party visitor identity without persistence", async ({
+  page,
+  context,
+}) => {
+  await page.route("**/api/visitor", (route) =>
+    route.fulfill({ json: { ip: "2001:db8::42" } }),
+  );
+  await page.goto("/");
+
+  await expect(page.getByText(/2001:db8::42@yasinghasemi\.com/)).toBeVisible();
+  expect(await context.cookies()).toEqual([]);
+  expect(
+    await page.evaluate(() => ({
+      local: { ...localStorage },
+      session: { ...sessionStorage },
+    })),
+  ).toEqual({ local: {}, session: {} });
+});
+
+test("keeps the visitor fallback for an invalid endpoint response", async ({
+  page,
+}) => {
+  await page.route("**/api/visitor", (route) =>
+    route.fulfill({ json: { ip: "not-an-ip", extra: "not allowed" } }),
+  );
+  await page.goto("/");
+
+  await expect(page.getByText(/visitor@yasinghasemi\.com/)).toBeVisible();
+});
