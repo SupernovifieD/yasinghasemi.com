@@ -11,6 +11,12 @@ export type TerminalOutputLine = {
 
 export type TerminalEvaluation =
   | { kind: "output"; lines: TerminalOutputLine[] }
+  | {
+      kind: "navigate";
+      href: string;
+      changed: boolean;
+      lines: TerminalOutputLine[];
+    }
   | { kind: "error"; message: string };
 
 function usage(command: "pwd" | "ls" | "help") {
@@ -20,6 +26,60 @@ function usage(command: "pwd" | "ls" | "help") {
     help: "help",
   }[command];
   return { kind: "error", message: `usage: ${syntax}` } as const;
+}
+
+export function evaluateCdCommand(
+  tokens: string[],
+  cwd: string,
+  previousDirectory: string | null,
+  registry: PublicRouteRegistry,
+): TerminalEvaluation | null {
+  const [command, ...args] = tokens;
+  if (command !== "cd") return null;
+  if (args.length > 1) {
+    return { kind: "error", message: "usage: cd [path]" };
+  }
+  if (args[0]?.startsWith("-") && args[0] !== "-") {
+    return { kind: "error", message: "cd: flags are not supported" };
+  }
+
+  if (args[0] === "-") {
+    if (!previousDirectory) {
+      return { kind: "error", message: "cd: previous directory not set" };
+    }
+    return {
+      kind: "navigate",
+      href: previousDirectory,
+      changed: previousDirectory !== cwd,
+      lines: [{ text: previousDirectory }],
+    };
+  }
+
+  if (args[0] === "") {
+    return { kind: "error", message: "cd: no such directory" };
+  }
+
+  const target = args[0] ?? "/";
+  const resolution = resolvePublicPath(registry, cwd, target);
+  if (!resolution.ok) {
+    const suggestion =
+      !target.includes("/") &&
+      registry.paths.includes(`/${target}`) &&
+      cwd !== "/"
+        ? ` Try cd /${target}.`
+        : "";
+    return {
+      kind: "error",
+      message: `cd: ${resolution.message}.${suggestion}`,
+    };
+  }
+
+  return {
+    kind: "navigate",
+    href: resolution.path,
+    changed: resolution.changed,
+    lines: [],
+  };
 }
 
 export function evaluateInformationCommand(
