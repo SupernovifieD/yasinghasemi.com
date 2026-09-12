@@ -146,6 +146,23 @@
 @media (max-width: 40rem) {
   .headerInner {
     min-height: 4.25rem;
+    padding-block: var(--space-2);
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .primaryNavigation {
+    order: -1;
+  }
+
+  .navigation {
+    justify-content: space-between;
+  }
+
+  .identity {
+    display: flex;
+    min-height: 2.75rem;
+    align-items: center;
   }
 
   .main {

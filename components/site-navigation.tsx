@@ -16,7 +16,7 @@ export function SiteNavigation() {
   const pathname = usePathname();
 
   return (
-    <nav aria-label="Primary navigation">
+    <nav className={styles.primaryNavigation} aria-label="Primary navigation">
       <ul className={styles.navigation}>
         {primaryNavigation.map(({ href, label }) => {
           const active = isActivePath(pathname, href);

@@ -50,3 +50,32 @@ test("footer exposes every policy route", async ({ page }) => {
     footer.getByRole("link", { name: "Cookie Management" }),
   ).toHaveAttribute("href", "/cookies");
 });
+
+test("keeps mobile navigation and the site identity on separate rows", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto("/blog");
+
+  const identity = page.getByRole("link", { name: "Home" });
+  const navigation = page.getByRole("navigation", {
+    name: "Primary navigation",
+  });
+  const [identityBox, navigationBox] = await Promise.all([
+    identity.boundingBox(),
+    navigation.boundingBox(),
+  ]);
+
+  expect(identityBox).not.toBeNull();
+  expect(navigationBox).not.toBeNull();
+  expect(navigationBox!.y + navigationBox!.height).toBeLessThanOrEqual(
+    identityBox!.y,
+  );
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth,
+    ),
+  ).toBe(true);
+});
