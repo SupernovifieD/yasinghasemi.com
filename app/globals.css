@@ -19,9 +19,9 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
   --space-16: 4rem;
-  --outer-width: 72rem;
+  --outer-width: 100rem;
   --reading-width: 70ch;
-  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --gutter: clamp(1.25rem, 3vw, 2.5rem);
   --focus-ring: 2px solid var(--color-focus);
   --font-label: 0.875rem;
   --font-body: 0.9375rem;

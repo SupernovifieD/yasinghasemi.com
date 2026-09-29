@@ -2,7 +2,6 @@
   display: flex;
   width: 100%;
   align-items: center;
-  padding-inline: clamp(0rem, 5vw, 4rem);
 }
 
 .contact h1 {
@@ -33,6 +32,5 @@
 @media (max-width: 40rem), (max-height: 42rem) {
   .contact {
     align-items: flex-start;
-    padding-inline: 0;
   }
 }

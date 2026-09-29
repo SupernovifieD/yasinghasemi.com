@@ -136,7 +136,7 @@ The palette is strictly achromatic; contrast and typography, not hue, communicat
 
 ## Layout
 
-The outer shell is a normal-flow column with a 72rem maximum width, fluid 1.25–4rem gutters, and a footer pushed to the bottom only when content is short. Reading pages use a centered 70ch column. The blog index occupies up to 82ch at the left of the outer container. Home and Contact use a center-left block inset by up to 4rem and vertically center only when viewport height permits.
+The outer shell is a normal-flow column with a 100rem maximum width, fluid 1.25–2.5rem gutters, and a footer pushed to the bottom only when content is short. Reading pages use a centered 70ch column. The blog index occupies up to 82ch at the left of the outer container. Home and Contact align with the shell's inner left edge and vertically center only when viewport height permits.
 
 At 40rem and below, primary navigation becomes the first full-width row and the terminal prompt follows beneath it. Header input and path content use intrinsic sizing and wrapping rather than clipped overflow. Code, tables, and the transcript may scroll inside their own bounded containers; the document itself must not scroll horizontally.
 
