@@ -59,29 +59,31 @@ export function TerminalPrompt({
       <label className={styles.visuallyHidden} htmlFor={inputId}>
         Website navigation command
       </label>
-      <input
-        ref={inputRef}
-        id={inputId}
-        className={styles.input}
-        type="text"
-        value={value}
-        maxLength={MAX_COMMAND_LENGTH}
-        autoComplete="off"
-        autoCorrect="off"
-        autoCapitalize="none"
-        spellCheck={false}
-        enterKeyHint="go"
-        onChange={(event) => onChange(event.target.value)}
-        onKeyDown={onKeyDown}
-        onPaste={paste}
-        onCompositionStart={() => {
-          composing.current = true;
-        }}
-        onCompositionEnd={() => {
-          composing.current = false;
-        }}
-        disabled={disabled}
-      />
+      <span className={styles.inputArea} data-idle={!value && !disabled}>
+        <input
+          ref={inputRef}
+          id={inputId}
+          className={styles.input}
+          type="text"
+          value={value}
+          maxLength={MAX_COMMAND_LENGTH}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck={false}
+          enterKeyHint="go"
+          onChange={(event) => onChange(event.target.value)}
+          onKeyDown={onKeyDown}
+          onPaste={paste}
+          onCompositionStart={() => {
+            composing.current = true;
+          }}
+          onCompositionEnd={() => {
+            composing.current = false;
+          }}
+          disabled={disabled}
+        />
+      </span>
       <button
         className={styles.submit}
         type="submit"

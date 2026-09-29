@@ -380,6 +380,72 @@ test("keeps mobile navigation and the site identity on separate rows", async ({
   ).toBe(true);
 });
 
+test("idle terminal cursor yields to native editing and respects reduced motion", async ({
+  browserName,
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  const idleCursor = () =>
+    input.evaluate((element) => {
+      const style = getComputedStyle(element.parentElement!, "::after");
+      return { content: style.content, animation: style.animationName };
+    });
+
+  await expect(input).not.toBeFocused();
+  await expect(page.getByRole("button", { name: "Run command" })).toBeHidden();
+  await expect(input).toHaveCSS("border-bottom-width", "0px");
+  expect((await idleCursor()).content).toBe('""');
+  expect((await idleCursor()).animation).not.toBe("none");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  expect((await idleCursor()).animation).toBe("none");
+  expect((await idleCursor()).content).toBe('""');
+
+  await input.focus();
+  expect((await idleCursor()).content).toBe("none");
+  await expect(input).toHaveCSS("caret-color", "rgb(255, 255, 255)");
+  await input.fill("pwd");
+  await input.press("ControlOrMeta+A");
+  expect(
+    await input.evaluate((element: HTMLInputElement) =>
+      element.value.slice(element.selectionStart!, element.selectionEnd!),
+    ),
+  ).toBe("pwd");
+  await input.press("Enter");
+  await expect(
+    page.getByRole("region", { name: "Terminal command output" }),
+  ).toContainText("/");
+  await expect(input).toBeFocused();
+  await input.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
+  await expect(
+    page.getByRole("link", { name: "/about", exact: true }),
+  ).toBeFocused();
+});
+
+test("narrow terminal keeps a usable touch submit control", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  const submit = page.getByRole("button", { name: "Run command" });
+  await expect(input).toHaveCSS("font-size", "16px");
+  await expect(submit).toBeVisible();
+  const bounds = await submit.boundingBox();
+  expect(bounds!.width).toBeGreaterThanOrEqual(44);
+  expect(bounds!.height).toBeGreaterThanOrEqual(44);
+  await input.fill("cd /about");
+  await submit.click();
+  await expect(page).toHaveURL(/\/about$/);
+  await expect(input).toBeFocused();
+});
+
 test("runs terminal information and navigation commands safely", async ({
   page,
 }) => {

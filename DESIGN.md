@@ -162,9 +162,10 @@ Controls and bounded content use square corners. One-pixel rules, underlines, an
 
 ### Inputs / Fields
 
-- **Style:** Native editable text input on a transparent ground with a restrained bottom rule and a visible white caret.
+- **Style:** Borderless native text input on a transparent ground. An empty, unfocused prompt shows a blinking white block; focusing or typing removes that decoration and preserves the native editing caret. Reduced motion keeps the idle block still.
 - **Focus:** The shared white focus outline remains visible; native selection and editing behavior are preserved.
 - **Error / Disabled:** Errors appear as selectable transcript text. Pending navigation temporarily disables the field and return control.
+- **Submission:** Enter submits on desktop. Narrow screens and touch devices also expose a borderless 2.75rem return control; touch input stays at 1rem to avoid mobile zoom.
 
 ### Navigation
 
