@@ -1,5 +1,52 @@
 # Terminal blog refresh verification
 
+## Compact UI follow-up — 2026-09-29
+
+Started from `6c807f06da02ede3c8dca4f5528559d18b5a0bfe` on `main`. Each change was
+verified locally, committed independently, pushed to `origin/main`, and checked
+against the remote branch and Pages workflow:
+
+| Commit    | Change                                                                | Push / deployment result                                         |
+| --------- | --------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| `e548f4a` | Smaller shared typography                                             | Pushed; CI exposed an existing Google-font loader build failure. |
+| `5a9d9ef` | Bundled JetBrains Mono 400/500/700 under its existing license         | Pushed; build and deployment passed (`36616203831`).             |
+| `be7bf50` | 1,600px shell, 20–40px gutters, no extra short-page inset             | Pushed; build and deployment passed (`36616332861`).             |
+| `3f1e87f` | Shared About/Contact placement and `/about` heading                   | Pushed; build and deployment passed (`36616741405`).             |
+| `ebb0595` | Borderless prompt, idle block cursor, native editing and touch submit | Pushed; build and deployment passed (`36617261568`).             |
+
+The failed run (`36615746226`) reported a Turbopack `next/font/google` query
+resolution error. Loading the same family from local WOFF2 assets removed that
+build-time dependency; no framework upgrade or workflow bypass was needed.
+
+Final runtime verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`,
+`pnpm test` (150 tests), `pnpm build`, and `pnpm test:e2e` (123 tests across
+Chromium, Firefox, and WebKit, 2.1 minutes) all passed. The browser suite includes
+no-JavaScript navigation, native selection and Tab traversal, command history,
+IME/paste handling, reduced-motion cursor behavior, and touch submission.
+Impeccable's detector returned an empty issue list for the changed UI.
+
+An independent browser inspection checked eight routes at 320, 390, 768, 1024,
+1440, and 1920px, short landscape layouts, and 200% root text enlargement. No
+document overflow or footer overlap was observed. Prompt checks at all six
+widths covered idle, focused, long input/path, error, listing, bounded transcript,
+and cleared states, with zero console/page errors. A 390×350 viewport verified
+that focused input and touch submit remain visible; a physical mobile keyboard
+and literal browser 400% zoom were not tested.
+
+Screenshots and geometry data are outside the checkout at `/tmp/yasin-ui-final/`;
+the prior typography, width, and short-page passes are in the corresponding
+`/tmp/yasin-ui-*` directories. Representative screenshots were visually inspected. Still
+captures use reduced motion so the idle block remains visible.
+
+After deployment, the live About heading measured 28px with a 40px left gutter
+at 1440px; terminal navigation to Contact and the exact email link worked. The
+390px live viewport measured `scrollWidth === clientWidth`, with no page errors.
+No manual deployment or DNS change was performed. CI still reports upstream
+Action Node-runtime and upcoming Ubuntu runner migration notices; all checks
+pass. Earlier Lighthouse scores below were not remeasured for this follow-up.
+
+## Original refresh record
+
 Verified on 2026-09-12 from `/Users/yasin/yasinghasemi.com`. The GitHub Pages
 conversion recorded below supersedes the original runtime-specific deployment
 notes from earlier the same day.
