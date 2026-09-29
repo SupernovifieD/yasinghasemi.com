@@ -14,23 +14,23 @@ colors:
 typography:
   display:
     fontFamily: "JetBrains Mono, ui-monospace, DejaVu Sans Mono, Liberation Mono, monospace"
-    fontSize: "clamp(1.875rem, 4vw, 2.5rem)"
+    fontSize: "clamp(1.5rem, 1.35rem + 0.6vw, 1.75rem)"
     fontWeight: 700
     lineHeight: 1.2
     letterSpacing: "-0.025em"
   headline:
     fontFamily: "JetBrains Mono, ui-monospace, DejaVu Sans Mono, Liberation Mono, monospace"
-    fontSize: "clamp(1.35rem, 1.2rem + 0.55vw, 1.65rem)"
+    fontSize: "1.25rem"
     fontWeight: 700
     lineHeight: 1.22
   title:
     fontFamily: "JetBrains Mono, ui-monospace, DejaVu Sans Mono, Liberation Mono, monospace"
-    fontSize: "clamp(1.2rem, 1.08rem + 0.45vw, 1.5rem)"
+    fontSize: "clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem)"
     fontWeight: 700
     lineHeight: 1.35
   body:
     fontFamily: "JetBrains Mono, ui-monospace, DejaVu Sans Mono, Liberation Mono, monospace"
-    fontSize: "clamp(1rem, 0.95rem + 0.2vw, 1.0625rem)"
+    fontSize: "1rem"
     fontWeight: 400
     lineHeight: 1.78
   label:
@@ -124,10 +124,10 @@ The palette is strictly achromatic; contrast and typography, not hue, communicat
 
 ### Hierarchy
 
-- **Display** (700, fluid 1.875–2.5rem, 1.2): Homepage, Contact, and primary page headings.
-- **Headline** (700, fluid 1.35–1.65rem, 1.22): Long-form section headings.
-- **Title** (700, fluid 1.2–1.5rem, 1.35): Blog result titles.
-- **Body** (400, fluid 1–1.0625rem, 1.78): Reading columns constrained to about 70 characters.
+- **Display** (700, fluid 1.5–1.75rem, 1.2): Homepage, Contact, and primary page headings.
+- **Headline** (700, 1.25rem, 1.22): Long-form section headings.
+- **Title** (700, fluid 1.125–1.25rem, 1.35): Blog result titles.
+- **Body** (400, 1rem, 1.78): Reading columns constrained to about 70 characters. Short-page copy uses 0.9375rem.
 - **Label** (400, 0.875rem, 1.55): Terminal output, hints, and footer metadata.
 
 ### Named Rules

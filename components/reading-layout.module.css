@@ -2,11 +2,12 @@
   max-width: var(--reading-width);
   margin-inline: auto;
   align-self: flex-start;
+  font-size: var(--font-reading);
 }
 
 .prose {
   color: var(--color-body);
-  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.0625rem);
+  font-size: var(--font-reading);
   line-height: 1.78;
 }
 
@@ -21,13 +22,13 @@
 .prose h1 {
   max-width: 30ch;
   margin: 0 0 var(--space-8);
-  font-size: clamp(1.8rem, 1.45rem + 1.4vw, 2.5rem);
+  font-size: var(--font-heading);
   letter-spacing: -0.025em;
 }
 
 .prose h2 {
   margin: var(--space-12) 0 var(--space-4);
-  font-size: clamp(1.35rem, 1.2rem + 0.55vw, 1.65rem);
+  font-size: var(--font-section);
 }
 
 .prose h3 {

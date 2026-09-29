@@ -9,7 +9,7 @@
 .location {
   min-width: 0;
   color: var(--color-body);
-  font-size: 0.9375rem;
+  font-size: var(--font-label);
   overflow-wrap: anywhere;
   unicode-bidi: isolate;
 }

@@ -23,6 +23,12 @@
   --reading-width: 70ch;
   --gutter: clamp(1.25rem, 4vw, 4rem);
   --focus-ring: 2px solid var(--color-focus);
+  --font-label: 0.875rem;
+  --font-body: 0.9375rem;
+  --font-reading: 1rem;
+  --font-heading: clamp(1.5rem, 1.35rem + 0.6vw, 1.75rem);
+  --font-section: 1.25rem;
+  --font-result: clamp(1.125rem, 1.05rem + 0.3vw, 1.25rem);
 }
 
 *,
@@ -48,7 +54,7 @@ body {
     var(--font-terminal), ui-monospace, "DejaVu Sans Mono", "Liberation Mono",
     monospace;
   font-variant-ligatures: none;
-  font-size: 1rem;
+  font-size: var(--font-body);
   line-height: 1.7;
   text-rendering: optimizeLegibility;
 }

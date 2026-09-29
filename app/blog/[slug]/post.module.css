@@ -2,14 +2,14 @@
   display: inline-block;
   margin-block-end: var(--space-8);
   color: var(--color-muted);
-  font-size: 0.9375rem;
+  font-size: var(--font-label);
 }
 
 .date {
   display: block;
   margin-block: calc(var(--space-8) * -0.5) var(--space-10);
   color: var(--color-muted);
-  font-size: 0.9375rem;
+  font-size: var(--font-label);
 }
 
 .body {

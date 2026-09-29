@@ -6,7 +6,7 @@
 .blog h1 {
   margin: 0 0 var(--space-10);
   color: var(--color-text);
-  font-size: clamp(1.8rem, 1.45rem + 1.4vw, 2.5rem);
+  font-size: var(--font-heading);
   line-height: 1.2;
   letter-spacing: -0.025em;
 }
@@ -23,7 +23,7 @@
   max-width: 40ch;
   margin: 0 0 var(--space-3);
   color: var(--color-text);
-  font-size: clamp(1.2rem, 1.08rem + 0.45vw, 1.5rem);
+  font-size: var(--font-result);
   line-height: 1.35;
   text-wrap: pretty;
 }
@@ -38,5 +38,5 @@
 .result time,
 .empty {
   color: var(--color-muted);
-  font-size: 0.9375rem;
+  font-size: var(--font-label);
 }
