@@ -164,6 +164,7 @@ Controls and bounded content use square corners. One-pixel rules, underlines, an
 
 - **Style:** Borderless native text input on a transparent ground. An empty, unfocused prompt shows a blinking white block; focusing or typing removes that decoration and preserves the native editing caret. Reduced motion keeps the idle block still.
 - **Focus:** The shared white focus outline remains visible; native selection and editing behavior are preserved.
+- **Arrival:** After hydration, attempt input focus once on all devices without scrolling or overriding existing focus/selection. Mobile browsers control whether the keyboard opens. Ordinary link navigation never forces focus back to the prompt.
 - **Error / Disabled:** Errors appear as selectable transcript text. Pending navigation temporarily disables the field and return control.
 - **Submission:** Enter submits on desktop. Narrow screens and touch devices also expose a borderless 2.75rem return control; touch input stays at 1rem to avoid mobile zoom.
 

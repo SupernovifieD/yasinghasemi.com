@@ -43,6 +43,7 @@ export function TerminalSession({
   const [announcement, setAnnouncement] = useState("");
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const initialFocusAttempted = useRef(false);
   const entryId = useRef(0);
   const history = useRef<string[]>([]);
   const historyIndex = useRef(0);
@@ -57,6 +58,23 @@ export function TerminalSession({
     lines: TerminalOutputLine[];
   } | null>(null);
   const navigationPending = pendingHref !== null && pendingHref !== pathname;
+
+  useEffect(() => {
+    if (!hydrated || initialFocusAttempted.current) return;
+    initialFocusAttempted.current = true;
+
+    // Respect focus or text selection made while the static page was loading.
+    const activeElement = document.activeElement;
+    if (
+      (activeElement &&
+        activeElement !== document.body &&
+        activeElement !== document.documentElement) ||
+      window.getSelection()?.isCollapsed === false
+    ) {
+      return;
+    }
+    inputRef.current?.focus({ preventScroll: true });
+  }, [hydrated]);
 
   function addEntry(
     command: string,

@@ -57,7 +57,10 @@ test("moves keyboard focus from the skip link to main content", async ({
   page,
 }) => {
   await page.goto("/");
-  await page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
+  await expect(page.getByRole("textbox")).toBeFocused();
+  const backwardsTab = browserName === "webkit" ? "Alt+Shift+Tab" : "Shift+Tab";
+  await page.keyboard.press(backwardsTab);
+  await page.keyboard.press(backwardsTab);
 
   const skipLink = page.getByRole("link", { name: "Skip to content" });
   await expect(skipLink).toBeFocused();
@@ -380,6 +383,51 @@ test("keeps mobile navigation and the site identity on separate rows", async ({
   ).toBe(true);
 });
 
+for (const width of [390, 1440]) {
+  test(`accepts typing on arrival without clicking at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    for (const path of ["/", "/blog/the-story-of-this-blog"]) {
+      await page.goto(path);
+      const input = page.getByRole("textbox", {
+        name: "Website navigation command",
+      });
+      await expect(input).toBeFocused();
+      expect(await page.evaluate(() => scrollY)).toBe(0);
+      await page.keyboard.type("pwd");
+      await expect(input).toHaveValue("pwd");
+      await page.keyboard.press("Enter");
+      await expect(
+        page.getByRole("region", { name: "Terminal command output" }),
+      ).toContainText(path);
+    }
+  });
+}
+
+test("initial focus respects a link focused before hydration", async ({
+  page,
+}) => {
+  let releaseScripts!: () => void;
+  const scriptsReady = new Promise<void>((resolve) => {
+    releaseScripts = resolve;
+  });
+  await page.route("**/_next/static/**/*.js", async (route) => {
+    await scriptsReady;
+    await route.continue();
+  });
+  try {
+    await page.goto("/", { waitUntil: "commit" });
+    const skipLink = page.getByRole("link", { name: "Skip to content" });
+    await skipLink.focus();
+    releaseScripts();
+    await expect(page.getByRole("textbox")).toBeVisible();
+    await expect(skipLink).toBeFocused();
+  } finally {
+    releaseScripts();
+  }
+});
+
 test("idle terminal cursor yields to native editing and respects reduced motion", async ({
   browserName,
   page,
@@ -395,7 +443,8 @@ test("idle terminal cursor yields to native editing and respects reduced motion"
       return { content: style.content, animation: style.animationName };
     });
 
-  await expect(input).not.toBeFocused();
+  await expect(input).toBeFocused();
+  await input.blur();
   await expect(page.getByRole("button", { name: "Run command" })).toBeHidden();
   await expect(input).toHaveCSS("border-bottom-width", "0px");
   expect((await idleCursor()).content).toBe('""');
@@ -453,7 +502,7 @@ test("runs terminal information and navigation commands safely", async ({
   const input = page.getByRole("textbox", {
     name: "Website navigation command",
   });
-  await expect(input).not.toBeFocused();
+  await expect(input).toBeFocused();
 
   await input.fill("pwd");
   await input.press("Enter");
