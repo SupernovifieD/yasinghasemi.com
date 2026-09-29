@@ -813,6 +813,53 @@ for (const viewport of [
   });
 }
 
+for (const width of [320, 390, 768, 1024, 1440, 1920]) {
+  test(`aligns short pages with the article column at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");
+    await page.evaluate(() => document.fonts.ready);
+    const article = (await page.locator("main").boundingBox())!;
+    for (const route of ["/about", "/contact"]) {
+      await page.goto(route);
+      await page.evaluate(() => document.fonts.ready);
+      const main = (await page.locator("main").boundingBox())!;
+      const content = (await page.locator("main > div").boundingBox())!;
+      const heading = (await page.locator("h1").boundingBox())!;
+      expect(Math.abs(main.x - article.x)).toBeLessThan(1);
+      expect(Math.abs(main.width - article.width)).toBeLessThan(1);
+      expect(Math.abs(main.x + main.width / 2 - width / 2)).toBeLessThan(1);
+      expect(Math.abs(heading.x - article.x)).toBeLessThan(1);
+      await expect(page.locator("main > div")).toHaveCSS("font-size", "15px");
+      if (width > 640) {
+        expect(
+          Math.abs(content.y + content.height / 2 - (main.y + main.height / 2)),
+        ).toBeLessThan(1);
+      } else {
+        expect(Math.abs(content.y - main.y)).toBeLessThan(1);
+      }
+      expect(
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
+      ).toBe(true);
+    }
+  });
+}
+
+test("top-aligns short pages on short screens", async ({ page }) => {
+  await page.setViewportSize({ width: 768, height: 420 });
+  for (const route of ["/about", "/contact"]) {
+    await page.goto(route);
+    const main = (await page.locator("main").boundingBox())!;
+    const content = (await page.locator("main > div").boundingBox())!;
+    expect(Math.abs(content.y - main.y)).toBeLessThan(1);
+    const footer = (await page.locator("footer").boundingBox())!;
+    expect(footer.y).toBeGreaterThanOrEqual(content.y + content.height);
+  }
+});
+
 test("about preserves verified biography without the retired desktop framing", async ({
   page,
 }) => {

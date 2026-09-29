@@ -1,3 +1,10 @@
+.shortPage,
+.reading {
+  max-width: var(--reading-width);
+  margin-inline: auto;
+  font-size: var(--font-reading);
+}
+
 .shortPage {
   display: flex;
   width: 100%;
@@ -5,7 +12,7 @@
 }
 
 .shortContent {
-  width: min(100%, 66ch);
+  width: 100%;
   font-size: var(--font-body);
 }
 
@@ -33,10 +40,7 @@
 }
 
 .reading {
-  max-width: var(--reading-width);
-  margin-inline: auto;
   align-self: flex-start;
-  font-size: var(--font-reading);
 }
 
 .prose {
