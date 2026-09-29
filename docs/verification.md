@@ -1,5 +1,80 @@
 # Terminal blog refresh verification
 
+## Terminal and centered-page follow-up — 2026-09-29
+
+Repository: `https://github.com/SupernovifieD/yasinghasemi.com`, branch `main`.
+Started clean at `651d625244205a4942dab0319078a2d541f2ab2f`; the final runtime
+commit is `48597114f9b5ec583184e239727cd0a1eebd2f6f`. Each increment was checked,
+committed, pushed separately to `origin/main`, confirmed with `git ls-remote`,
+and its existing Pages workflow completed before the next increment began.
+This section supersedes earlier focus, transcript, and page-alignment behavior.
+
+| Commit    | Conventional commit message                              | Pages build / deployment  |
+| --------- | -------------------------------------------------------- | ------------------------- |
+| `73864e4` | `feat(terminal): focus command input on initial arrival` | Passed, run `36619422341` |
+| `2779363` | `fix(terminal): display only the latest command result`  | Passed, run `36620302625` |
+| `e8454e8` | `style(pages): center about and contact reading columns` | Passed, run `36620755235` |
+| `4859711` | `style(blog): center results and use the route heading`  | Passed, run `36621953752` |
+
+Changed surfaces: terminal session/output components and their CSS, the pure
+output-state helper, the shared reading stylesheet, and the Blog page/stylesheet.
+Focused unit/browser tests and `DESIGN.md` changed alongside each concern.
+No dependencies, article copy, contact destinations, policy text, hosting, or
+workflow configuration changed.
+Next.js 16.3.5, React 19.2.8, and pnpm 10.7.1 remain pinned as before; local
+verification used Node 26.7.0, and Actions used its existing Node 24 setup.
+
+The command input attempts focus once after hydration on every device without
+scrolling or overriding existing focus/selection. Ordinary link navigation does
+not force prompt focus. Only the latest result/error is displayed; empty results
+collapse the region, blank input leaves it unchanged, and Up/Down recall remains
+in memory. The output region resets its own scroll position for each new result.
+About and Contact retain vertical centering on spacious screens; the Blog index
+stays top-aligned under `/blog`. All three share the article column horizontally,
+with left-aligned text and unchanged compact typography. Homepage content and
+placement are unchanged.
+
+Final checks passed: `pnpm install --frozen-lockfile`, `pnpm format:check`,
+`pnpm lint`, `pnpm typecheck`, `pnpm test` (152 tests), `pnpm build`, and
+`pnpm test:e2e` (168 tests across Chromium, Firefox, and WebKit, 3.5 minutes).
+Each Actions run also installed into a fresh checkout and passed its build gates.
+Focused browser runs passed before earlier commits: 27 focus checks, 45 terminal
+checks plus 12 checks after the observed output-scroll correction, and 27
+About/Contact checks. `git diff --check` passed before every commit.
+
+An initial full browser run had three failures in a new 320px assertion that
+incorrectly compared absolute page-top positions across differently wrapped
+headers. The corrected test waits for hydration and compares spacing below each
+header, retaining column-width/alignment assertions. The complete rerun passed;
+no application workaround or suppressed check was used.
+
+Independent production-export inspection covered eight routes at 320, 390, 768,
+1024, 1440, and 1920px (48 geometry checks), plus 768×420 and 390×350 short views
+and 200% text enlargement. Output/error/listing/help/clear states were checked at
+all six widths. No horizontal document overflow, footer overlap, console errors,
+or page errors were observed. At 1440px, About, Contact, Blog, and the representative
+article each measured 672px wide with the same 384px left edge. The Impeccable
+pass preserved the monochrome identity and native controls; its detector reported
+no findings in the changed UI files.
+
+Screenshots and geometry evidence are outside the checkout at
+`/tmp/yasin-terminal-followup/`, with `focus`, `results`, `results-confirm`,
+`short-pages`, and `final` subdirectories. Representative desktop, phone,
+short-height, output, legal, and enlarged-text screenshots were visually inspected.
+Automated keyboard, no-JavaScript, reduced-motion, IME, recall, legacy-link, and
+all-post journeys passed. Physical mobile keyboards, manual screen-reader use,
+literal 400% browser zoom, and new Lighthouse scores were not tested; 320px reflow
+was tested directly. Mobile browsers may restrict automatic keyboard opening.
+
+The live site was checked after run `36621953752`: `/blog`, initial typing,
+results-only `pwd`, command navigation to Contact, the exact
+`mailto:y@yasinghasemi.com` link, and the centered 672px desktop column all passed.
+At 390px, live About had equal document/client widths and no page errors.
+No manual deployment, DNS change, or new deployment automation was performed.
+Existing Actions Node-runtime/Ubuntu migration notices and local terminal-color
+warnings remain informational; no checks were bypassed. pnpm's update notice was
+not acted on because dependency/toolchain upgrades are outside this UI change.
+
 ## Compact UI follow-up — 2026-09-29
 
 Started from `6c807f06da02ede3c8dca4f5528559d18b5a0bfe` on `main`. Each change was
