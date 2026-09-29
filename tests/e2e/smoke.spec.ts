@@ -27,7 +27,7 @@ test("hydrates terminal behavior from the static export", async ({ page }) => {
 });
 
 for (const [path, heading] of [
-  ["/about", "About"],
+  ["/about", "/about"],
   ["/contact", "/contact"],
   ["/blog", "Blog"],
   ["/privacy", "Privacy Policy"],

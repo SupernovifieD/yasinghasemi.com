@@ -12,8 +12,8 @@ export const metadata: Metadata = createPageMetadata({
 
 export default function AboutPage() {
   return (
-    <ReadingLayout>
-      <h1>About</h1>
+    <ReadingLayout placement="short">
+      <h1>/about</h1>
       <p>
         I&apos;m Yasin Ghasemi, an engineer with a deep interest in creating,
         building, and understanding technology in its many forms.

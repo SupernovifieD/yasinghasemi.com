@@ -1,36 +1,15 @@
-.contact {
-  display: flex;
-  width: 100%;
-  align-items: center;
-}
-
-.contact h1 {
-  margin: 0 0 var(--space-6);
-  color: var(--color-text);
-  font-size: var(--font-heading);
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.2;
-}
-
-.contact ul {
+.destinations {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.contact li + li {
+.destinations li + li {
   margin-block-start: var(--space-1);
 }
 
-.contact a {
+.destinations a {
   display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
-}
-
-@media (max-width: 40rem), (max-height: 42rem) {
-  .contact {
-    align-items: flex-start;
-  }
 }
