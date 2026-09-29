@@ -551,6 +551,7 @@ test("keeps failed terminal navigation on the current route", async ({
 
 test("serializes rapid terminal navigation submissions", async ({ page }) => {
   await page.goto("/");
+  const historyLength = await page.evaluate(() => history.length);
   const input = page.getByRole("textbox", {
     name: "Website navigation command",
   });
@@ -569,8 +570,79 @@ test("serializes rapid terminal navigation submissions", async ({ page }) => {
   const transcript = page.getByRole("region", {
     name: "Terminal command output",
   });
-  await expect(transcript).toContainText("cd /blog");
-  await expect(transcript.getByText(/cd \/blog/)).toHaveCount(1);
+  await expect(input).toBeFocused();
+  await expect(transcript).toHaveCount(0);
+  expect(await page.evaluate(() => history.length)).toBe(historyLength + 1);
+});
+
+test("shows only the latest result without command echoes", async ({
+  page,
+}) => {
+  await page.goto("/about");
+  const input = page.getByRole("textbox", {
+    name: "Website navigation command",
+  });
+  const output = page.getByRole("region", { name: "Terminal command output" });
+  async function command(value: string) {
+    await input.fill(value);
+    await input.press("Enter");
+  }
+
+  await command("ls /blog");
+  await expect(output.getByRole("link")).toHaveCount(5);
+  await expect(output).not.toContainText("ls /blog");
+  await command("help");
+  await expect(output.locator("p")).toHaveCount(8);
+  await expect(output.getByRole("link")).toHaveCount(0);
+  await command("pwd");
+  await expect(output).toHaveText("/about");
+  await command("   ");
+  await expect(output).toHaveText("/about");
+  await input.press("ArrowUp");
+  await expect(input).toHaveValue("pwd");
+  await command("unknown");
+  await expect(output).toHaveText(
+    "unknown: command not found. Type help for available commands.",
+  );
+  await command("ls");
+  await expect(output).toHaveCount(0);
+  await expect(page.getByRole("status")).toHaveText("No entries.");
+  await command("help");
+  await command("cd .");
+  await expect(output).toHaveCount(0);
+  await command("help");
+  await command("cd /blog");
+  await expect(page).toHaveURL(/\/blog$/);
+  await expect(output).toHaveCount(0);
+  await expect(input).toBeFocused();
+  await command("cd -");
+  await expect(page).toHaveURL(/\/about$/);
+  await expect(output).toHaveText("/about");
+});
+
+test("starts the latest result at the top of its scroll region", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const input = page.getByRole("textbox");
+  const output = page.getByRole("region", { name: "Terminal command output" });
+  await input.fill("x".repeat(1024));
+  await input.press("Enter");
+  await output.evaluate((element) => {
+    element.scrollTop = element.scrollHeight;
+  });
+  expect(await output.evaluate((element) => element.scrollTop)).toBeGreaterThan(
+    0,
+  );
+  await input.fill("help");
+  await input.press("Enter");
+  await expect(output).toContainText("This is a navigation shell");
+  await expect
+    .poll(() => output.evaluate((element) => element.scrollTop))
+    .toBe(0);
+  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await expect(input).toBeFocused();
 });
 
 test("recalls terminal history and restores the in-progress draft", async ({

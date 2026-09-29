@@ -108,24 +108,14 @@
   overflow-wrap: anywhere;
 }
 
-.transcriptEntry + .transcriptEntry {
-  margin-block-start: var(--space-3);
-}
-
-.command,
 .outputLine,
 .errorLine {
   margin: 0;
   white-space: pre-wrap;
 }
 
-.command,
 .errorLine {
   color: var(--color-muted);
-}
-
-.outputLine {
-  padding-inline-start: var(--space-4);
 }
 
 .outputLine a {

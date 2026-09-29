@@ -105,7 +105,7 @@ The palette is strictly achromatic; contrast and typography, not hue, communicat
 - **Hover Black:** Quiet hover fill on compact controls.
 - **Divider Gray:** Decorative rules and resting control borders; never the sole control indicator.
 - **Body Gray:** Long-form copy and normal shell text.
-- **Muted Gray:** Dates, hints, transcript commands, and footer copy.
+- **Muted Gray:** Dates, hints, terminal errors, and footer copy.
 - **Outline Gray:** Interactive control borders when stronger definition is needed.
 
 ### Named Rules
@@ -174,7 +174,7 @@ Primary navigation is a row of literal route links. Hover and active states brig
 
 ### Terminal Transcript
 
-The transcript is an in-flow, selectable region below the header. It collapses when empty and caps its height at the lesser of 14rem or 35svh. Long output wraps, while the region itself remains keyboard-focusable and vertically scrollable.
+The output is an in-flow, selectable region below the header showing only the latest result or error, never submitted-command echoes. Commands with no output collapse it; blank input leaves it unchanged. Its height is capped at the lesser of 14rem or 35svh and its content at 200 lines. Long output wraps, while the region remains keyboard-focusable and vertically scrollable. Up/Down command recall stays in memory separately, including after `clear`.
 
 ### Reading Results
 

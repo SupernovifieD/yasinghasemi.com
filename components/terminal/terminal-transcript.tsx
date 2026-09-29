@@ -1,47 +1,46 @@
-import Link from "next/link";
+"use client";
 
-import type { TranscriptEntry } from "@/lib/terminal/session";
+import Link from "next/link";
+import { useEffect, useRef } from "react";
+
+import type { TerminalOutput } from "@/lib/terminal/session";
 
 import styles from "./terminal.module.css";
 
 export function TerminalTranscript({
-  entries,
+  output,
   announcement,
 }: {
-  entries: TranscriptEntry[];
+  output: TerminalOutput | null;
   announcement: string;
 }) {
+  const outputRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (outputRef.current) outputRef.current.scrollTop = 0;
+  }, [output]);
+
   return (
     <>
-      {entries.length ? (
+      {output ? (
         <section
+          ref={outputRef}
           className={styles.transcript}
           aria-label="Terminal command output"
           tabIndex={0}
         >
-          {entries.map((entry) => (
-            <div className={styles.transcriptEntry} key={entry.id}>
-              <p className={styles.command}>
-                <span aria-hidden="true">$ </span>
-                {entry.command}
-              </p>
-              {entry.lines.map((line, index) => (
-                <p
-                  className={
-                    entry.tone === "error"
-                      ? styles.errorLine
-                      : styles.outputLine
-                  }
-                  key={`${entry.id}-${index}`}
-                >
-                  {line.href ? (
-                    <Link href={line.href}>{line.text}</Link>
-                  ) : (
-                    line.text
-                  )}
-                </p>
-              ))}
-            </div>
+          {output.lines.map((line, index) => (
+            <p
+              className={
+                output.tone === "error" ? styles.errorLine : styles.outputLine
+              }
+              key={index}
+            >
+              {line.href ? (
+                <Link href={line.href}>{line.text}</Link>
+              ) : (
+                line.text
+              )}
+            </p>
           ))}
         </section>
       ) : null}

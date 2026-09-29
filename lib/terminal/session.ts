@@ -1,39 +1,20 @@
 import type { TerminalOutputLine } from "@/lib/terminal/evaluate";
 
 export const MAX_COMMAND_HISTORY = 100;
-export const MAX_TRANSCRIPT_LINES = 200;
+export const MAX_OUTPUT_LINES = 200;
 
-export type TranscriptEntry = {
-  id: number;
-  command: string;
+export type TerminalOutput = {
   tone: "output" | "error";
   lines: TerminalOutputLine[];
 };
 
-export function appendTranscript(
-  entries: TranscriptEntry[],
-  entry: TranscriptEntry,
-) {
-  const combined = [...entries, entry];
-  const bounded: TranscriptEntry[] = [];
-  let remaining = MAX_TRANSCRIPT_LINES;
-
-  for (
-    let index = combined.length - 1;
-    index >= 0 && remaining > 0;
-    index -= 1
-  ) {
-    const current = combined[index];
-    const lineBudget = Math.max(remaining - 1, 0);
-    const lines =
-      current.lines.length > lineBudget
-        ? current.lines.slice(current.lines.length - lineBudget)
-        : current.lines;
-    bounded.unshift({ ...current, lines });
-    remaining -= 1 + lines.length;
-  }
-
-  return bounded;
+export function createTerminalOutput(
+  tone: TerminalOutput["tone"],
+  lines: TerminalOutput["lines"],
+): TerminalOutput | null {
+  return lines.length
+    ? { tone, lines: lines.slice(0, MAX_OUTPUT_LINES) }
+    : null;
 }
 
 export function appendCommandHistory(history: string[], command: string) {

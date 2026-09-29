@@ -20,8 +20,8 @@ import {
 import { isPublicPath, type PublicRouteRegistry } from "@/lib/terminal/routes";
 import {
   appendCommandHistory,
-  appendTranscript,
-  type TranscriptEntry,
+  createTerminalOutput,
+  type TerminalOutput,
 } from "@/lib/terminal/session";
 
 const subscribeToNothing = () => () => {};
@@ -39,12 +39,11 @@ export function TerminalSession({
     () => false,
   );
   const [input, setInput] = useState("");
-  const [entries, setEntries] = useState<TranscriptEntry[]>([]);
+  const [output, setOutput] = useState<TerminalOutput | null>(null);
   const [announcement, setAnnouncement] = useState("");
   const [pendingHref, setPendingHref] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const initialFocusAttempted = useRef(false);
-  const entryId = useRef(0);
   const history = useRef<string[]>([]);
   const historyIndex = useRef(0);
   const historyDraft = useRef("");
@@ -54,7 +53,6 @@ export function TerminalSession({
   );
   const pendingNavigation = useRef<{
     href: string;
-    command: string;
     lines: TerminalOutputLine[];
   } | null>(null);
   const navigationPending = pendingHref !== null && pendingHref !== pathname;
@@ -76,20 +74,11 @@ export function TerminalSession({
     inputRef.current?.focus({ preventScroll: true });
   }, [hydrated]);
 
-  function addEntry(
-    command: string,
-    tone: TranscriptEntry["tone"],
-    lines: TranscriptEntry["lines"],
+  function showOutput(
+    tone: TerminalOutput["tone"],
+    lines: TerminalOutput["lines"],
   ) {
-    entryId.current += 1;
-    setEntries((current) =>
-      appendTranscript(current, {
-        id: entryId.current,
-        command,
-        tone,
-        lines,
-      }),
-    );
+    setOutput(createTerminalOutput(tone, lines));
   }
 
   useEffect(() => {
@@ -105,7 +94,7 @@ export function TerminalSession({
 
     pendingNavigation.current = null;
     const frame = window.requestAnimationFrame(() => {
-      addEntry(pending.command, "output", pending.lines);
+      showOutput("output", pending.lines);
       setAnnouncement(`Navigated to ${pathname}.`);
       setPendingHref(null);
       inputRef.current?.focus();
@@ -134,17 +123,17 @@ export function TerminalSession({
     setInput("");
 
     if (result.kind === "clear") {
-      setEntries([]);
+      setOutput(null);
       setAnnouncement("Terminal output cleared.");
       return;
     }
     if (result.kind === "error") {
-      addEntry(command, "error", [{ text: result.message }]);
+      showOutput("error", [{ text: result.message }]);
       setAnnouncement(result.message);
       return;
     }
     if (result.kind === "output") {
-      addEntry(command, "output", result.lines);
+      showOutput("output", result.lines);
       setAnnouncement(
         result.lines.length
           ? result.lines.map(({ text }) => text).join(". ")
@@ -154,14 +143,13 @@ export function TerminalSession({
     }
 
     if (!result.changed) {
-      addEntry(command, "output", result.lines);
+      showOutput("output", result.lines);
       setAnnouncement(`Already at ${pathname}.`);
       return;
     }
 
     pendingNavigation.current = {
       href: result.href,
-      command,
       lines: result.lines,
     };
     setPendingHref(result.href);
@@ -211,7 +199,7 @@ export function TerminalSession({
 
   function rejectMultilinePaste() {
     const message = "Paste rejected: submit one single-line command.";
-    addEntry("[multiline paste]", "error", [{ text: message }]);
+    showOutput("error", [{ text: message }]);
     setAnnouncement(message);
   }
 
@@ -246,7 +234,7 @@ export function TerminalSession({
           </p>
         </noscript>
       </header>
-      <TerminalTranscript entries={entries} announcement={announcement} />
+      <TerminalTranscript output={output} announcement={announcement} />
     </>
   );
 }
