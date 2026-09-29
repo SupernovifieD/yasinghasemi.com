@@ -23,7 +23,7 @@ export default function BlogPage() {
 
   return (
     <main id="main-content" className={styles.blog} tabIndex={-1}>
-      <h1>Blog</h1>
+      <h1>/blog</h1>
       {posts.length === 0 ? (
         <p className={styles.empty}>No posts have been published yet.</p>
       ) : (

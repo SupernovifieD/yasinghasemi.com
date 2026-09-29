@@ -87,7 +87,7 @@ The writing is always the product. Layout, controls, and responsive behavior pro
 - Absolute black ground with a neutral gray-to-white hierarchy.
 - One self-hosted monospace family and no decorative type pairing.
 - Flat, square, line-based controls without cards or ornamental surfaces.
-- Distinct center-left, left-index, and centered-reading geometries.
+- A center-left welcome block and shared centered reading columns.
 - Progressive enhancement: conventional links remain complete without the shell.
 
 ## Colors
@@ -136,7 +136,7 @@ The palette is strictly achromatic; contrast and typography, not hue, communicat
 
 ## Layout
 
-The outer shell is a normal-flow column with a 100rem maximum width, fluid 1.25–2.5rem gutters, and a footer pushed to the bottom only when content is short. Articles, policy pages, About, and Contact share a centered 70ch column measured at the reading font size. The blog index occupies up to 82ch at the left of the outer container. Home aligns with the shell's inner left edge and vertically centers only when viewport height permits. About and Contact share the same vertically centered short-page layout with a route-name heading above left-aligned compact content; both top-align on phones and short screens.
+The outer shell is a normal-flow column with a 100rem maximum width, fluid 1.25–2.5rem gutters, and a footer pushed to the bottom only when content is short. Articles, policy pages, About, Contact, and the blog index share a centered 70ch column measured at the reading font size. The blog index stays top-aligned with a `/blog` heading and left-aligned results. Home aligns with the shell's inner left edge and vertically centers only when viewport height permits. About and Contact share the same vertically centered short-page layout with a route-name heading above left-aligned compact content; both top-align on phones and short screens.
 
 At 40rem and below, primary navigation becomes the first full-width row and the terminal prompt follows beneath it. Header input and path content use intrinsic sizing and wrapping rather than clipped overflow. Code, tables, and the transcript may scroll inside their own bounded containers; the document itself must not scroll horizontally.
 
@@ -185,7 +185,7 @@ Blog results are a plain vertical list with title, excerpt, and date—never car
 ### Do:
 
 - **Do** keep the page ground pitch black and use only the documented neutral hierarchy.
-- **Do** preserve the distinct home, index, and article alignments.
+- **Do** preserve the center-left homepage and centered columns on other pages.
 - **Do** use semantic document elements and native controls.
 - **Do** keep standalone interactive targets near 2.75rem and show a two-pixel white focus outline.
 - **Do** test 320px reflow, long prompt paths, and long article slugs.

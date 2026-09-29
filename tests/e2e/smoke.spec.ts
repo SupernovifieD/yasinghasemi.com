@@ -29,7 +29,7 @@ test("hydrates terminal behavior from the static export", async ({ page }) => {
 for (const [path, heading] of [
   ["/about", "/about"],
   ["/contact", "/contact"],
-  ["/blog", "Blog"],
+  ["/blog", "/blog"],
   ["/privacy", "Privacy Policy"],
   ["/terms", "Terms of Service"],
   ["/cookies", "Cookie Management"],
@@ -140,6 +140,49 @@ test("lists every published post newest first without categories", async ({
   ]);
   await expect(page.getByText(/categor(y|ies)/i)).toHaveCount(0);
 });
+
+for (const width of [320, 1440, 1920]) {
+  test(`centers the blog results on the article column at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");
+    await expect(page.getByRole("textbox")).toBeFocused();
+    await page.evaluate(() => document.fonts.ready);
+    const article = (await page.locator("main").boundingBox())!;
+    const articleHeader = (await page.locator("header").boundingBox())!;
+    await page.goto("/blog");
+    await expect(page.getByRole("textbox")).toBeFocused();
+    await page.evaluate(() => document.fonts.ready);
+    const index = (await page.locator("main").boundingBox())!;
+    const indexHeader = (await page.locator("header").boundingBox())!;
+    const heading = page.getByRole("heading", { level: 1, name: "/blog" });
+    await expect(heading).toBeVisible();
+    expect(Math.abs(index.x - article.x)).toBeLessThan(1);
+    expect(Math.abs(index.width - article.width)).toBeLessThan(1);
+    // Long post paths wrap in the mobile header; compare the gap below it.
+    const articleGap = article.y - (articleHeader.y + articleHeader.height);
+    const indexGap = index.y - (indexHeader.y + indexHeader.height);
+    expect(Math.abs(indexGap - articleGap)).toBeLessThan(1);
+    for (const element of [
+      heading,
+      ...(await page.locator("main article").all()),
+    ]) {
+      expect(Math.abs((await element.boundingBox())!.x - index.x)).toBeLessThan(
+        1,
+      );
+    }
+    await expect(page.locator("main article p").first()).toHaveCSS(
+      "font-size",
+      "15px",
+    );
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+  });
+}
 
 test("serves canonical page and article metadata", async ({ page }) => {
   await page.goto("/about");
