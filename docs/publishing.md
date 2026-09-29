@@ -71,6 +71,11 @@ adding a second route list in a client component.
 
 ## Static preview and deployment
 
+JetBrains Mono v2.304 is bundled in `app/fonts/` (Regular, Medium, and Bold WOFF2)
+from the [official release](https://github.com/JetBrains/JetBrainsMono/tree/v2.304/fonts/webfonts).
+Its SIL Open Font License is retained alongside the files. `next/font/local`
+serves these assets from the site, so builds require no Google Fonts fetch.
+
 `pnpm build` creates the complete static site in `out/` and then adds five exact
 legacy HTML redirect documents. `pnpm start` serves that generated directory for
 local production-style review; rebuild after changing application or content

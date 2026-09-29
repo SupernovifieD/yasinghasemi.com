@@ -1,15 +1,31 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
 import { SiteShell } from "@/components/site-shell";
 import { siteConfig } from "@/lib/site-config";
 
 import "./globals.css";
 
-const jetBrainsMono = JetBrains_Mono({
+const jetBrainsMono = localFont({
   variable: "--font-terminal",
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  src: [
+    {
+      path: "./fonts/JetBrainsMono-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "./fonts/JetBrainsMono-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "./fonts/JetBrainsMono-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  adjustFontFallback: false,
   display: "swap",
   fallback: ["ui-monospace", "DejaVu Sans Mono", "Liberation Mono"],
 });
