@@ -39,6 +39,18 @@ async function hash(locator: Locator) {
     .digest("hex");
 }
 
+/** Hash of the canvas once it has stopped changing (fades and loads done). */
+async function settledHash(locator: Locator) {
+  let previous = await hash(locator);
+  for (let attempt = 0; attempt < 20; attempt++) {
+    await locator.page().waitForTimeout(350);
+    const next = await hash(locator);
+    if (next === previous) return next;
+    previous = next;
+  }
+  throw new Error("The canvas never settled");
+}
+
 test("shows nothing until a link is hovered", async ({ page }) => {
   await page.goto("/");
 
@@ -258,7 +270,7 @@ test("the about preview draws a portrait that scatters and springs back", async 
   const box = (await canvas.boundingBox())!;
   expect(box.width).toBeGreaterThan(200);
 
-  const rest = await hash(canvas);
+  const rest = await settledHash(canvas);
   const cx = box.x + box.width / 2;
   const cy = box.y + box.height * 0.45;
   await page.mouse.move(cx - 100, cy - 30);
@@ -356,7 +368,7 @@ test.describe("reduced motion", () => {
     await expect(canvas).toHaveAttribute("data-ready", "");
     await page.waitForTimeout(500);
 
-    const rest = await hash(canvas);
+    const rest = await settledHash(canvas);
     const box = (await canvas.boundingBox())!;
     for (let i = 0; i < 20; i++) {
       await page.mouse.move(box.x + 100 + i * 12, box.y + 200 + i * 5, {
