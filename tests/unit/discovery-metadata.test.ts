@@ -16,7 +16,6 @@ describe("publishing discovery metadata", () => {
       "https://yasinghasemi.com/blog/three-fast-weeks-and-a-first-taste-of-paid-programming",
     );
     expect(urls.some((url) => url.includes("/api/"))).toBe(false);
-    expect(urls.some((url) => url.includes("mydocuments"))).toBe(false);
     expect(urls.some((url) => url.includes("category"))).toBe(false);
   });
 

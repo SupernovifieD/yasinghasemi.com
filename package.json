@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && tsx scripts/write-static-redirects.ts",
+    "build": "next build",
     "start": "tsx scripts/serve-static-export.ts",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
@@ -12,8 +12,7 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test",
-    "migrate:legacy": "tsx scripts/migrate-legacy-posts.ts"
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
@@ -23,6 +22,7 @@
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
+    "three": "^0.187.0",
     "zod": "^4.6.2"
   },
   "devDependencies": {
@@ -30,16 +30,13 @@
     "@types/node": "^24.13.4",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/turndown": "^5.0.6",
-    "cheerio": "^1.2.0",
+    "@types/three": "^0.187.0",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.3.5",
     "eslint-config-prettier": "^10.1.8",
-    "jszip": "^3.10.2",
-    "marked": "^18.0.12",
     "prettier": "^3.9.6",
+    "sharp": "^0.35.5",
     "tsx": "^4.23.13",
-    "turndown": "^7.2.4",
     "typescript": "^5",
     "vitest": "^5.0.0"
   },
