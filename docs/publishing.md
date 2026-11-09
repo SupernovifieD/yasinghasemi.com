@@ -47,6 +47,30 @@ Check the article directly, its position on `/blog`, its metadata, its mobile
 reflow, and every link. Newest-first order comes from `publishedAt`, with slug as
 the deterministic tie-breaker.
 
+## Add or revise a project
+
+Projects live in one array, `lib/projects.ts`; the Projects page lists, the hover
+descriptions, each `/projects/<slug>` page, the technology rows, and the sitemap
+all read from it. To add one, add an entry with:
+
+- `slug` (lowercase, hyphenated; it is the URL and the screenshot name), `name`
+  (the label shown), and `category` (`software` or `web`). Order in the array is
+  display order within its category.
+- `tagline`: one line of at most 48 characters, shown on hover.
+- `summary`: the page's meta description (up to 170 characters).
+- `tech`: ids from `lib/tech.ts`. To add a technology, import its logo from
+  `simple-icons` there; if a brand color is black or too dark to read on the
+  black page, give it an override (the unit test fails below 3:1 contrast).
+- `sections`: first-person headings and paragraphs, `url` (live site) and `links`
+  (documentation, package, source), and `status` for an unlaunched project.
+
+If the project has a website, capture its screenshot with
+`pnpm exec tsx scripts/capture-project-screenshots.ts url <slug> <url>` (it is
+cropped to the shared `--shot-aspect` and saved to `assets/projects/<slug>.webp`),
+import it in `components/projects/project-shots.ts`, and a unit test confirms
+every project with a website has one. Without a website, the hover panel shows a
+"Work in progress" placeholder instead.
+
 ## Static preview and deployment
 
 JetBrains Mono v2.304 is bundled in `app/fonts/` (Regular, Medium, and Bold WOFF2)

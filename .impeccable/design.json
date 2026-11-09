@@ -190,6 +190,20 @@
       "css": ".ds-stage { position: relative; display: grid; width: min(100%, 34rem); aspect-ratio: 1; place-items: center; background: radial-gradient(closest-side, rgb(255 255 255 / .24), rgb(255 255 255 / .1) 55%, transparent); color: #d4d4d4; font: 400 .9375rem/1.8 \"JetBrains Mono\", monospace; } .ds-stage-text { margin: 0; }"
     },
     {
+      "name": "Project Category Toggle",
+      "kind": "button",
+      "description": "A 4.4rem icon on a small gray glow with only the category name beneath; a real button with aria-expanded that opens an animated project list.",
+      "html": "<button class=\"ds-toggle\" type=\"button\" aria-expanded=\"true\"><span class=\"ds-icon\"></span><span class=\"ds-label\">Software &amp; Apps</span></button>",
+      "css": ".ds-toggle { display: flex; flex-direction: column; align-items: center; gap: .25rem; padding: .5rem; border: 0; background: none; color: #f5f5f5; font: 400 .875rem/1.55 \"JetBrains Mono\", monospace; cursor: pointer; } .ds-icon { width: 4.4rem; height: 4.4rem; border: 2px solid #f5f5f5; box-shadow: none; background: radial-gradient(closest-side, rgb(255 255 255 / .24), transparent); } .ds-label { text-decoration: underline; text-underline-offset: .35em; text-decoration-thickness: 1px; } .ds-toggle:focus-visible { outline: 2px solid #fff; outline-offset: .25rem; }"
+    },
+    {
+      "name": "Technology Row",
+      "kind": "custom",
+      "description": "A quiet row of small logos in readable colors with their names; never badges.",
+      "html": "<div class=\"ds-tech\"><span>Next.js</span><span>Redis</span></div>",
+      "css": ".ds-tech { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; background: #000; color: #a3a3a3; font: 400 .875rem/1.4 \"JetBrains Mono\", monospace; }"
+    },
+    {
       "name": "Blog Result",
       "kind": "custom",
       "description": "Flat title, excerpt, and date hierarchy for the chronological index.",
@@ -238,6 +252,11 @@
       {
         "name": "The Preview Stage Rule",
         "body": "A flat gray radial glow, canvas drawing, and WebGL are allowed only inside the home page's desktop preview stage and the About page's portrait stage, never elsewhere, always gray (the shared --glow-gradient), and always reduced or removed under prefers-reduced-motion.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Category Glow Exception",
+        "body": "The two Projects category icons may sit on a small gray glow (the shared --glow-gradient) and drift very slowly; both are subtle and removed under prefers-reduced-motion.",
         "section": "elevation"
       }
     ],

@@ -28,8 +28,9 @@ Visitors arrive through direct links, search results, or current navigation. The
 
 ## Capabilities and Constraints
 
-- Required public routes are `/`, `/about`, `/contact`, `/projects`, `/blog`, published `/blog/[slug]` pages, `/privacy`, and `/terms`.
+- Required public routes are `/`, `/about`, `/contact`, `/projects`, a page per project at `/projects/[slug]`, `/blog`, published `/blog/[slug]` pages, `/privacy`, and `/terms`.
 - Each published post is its own static page at `/blog/[slug]`.
+- Projects are data-driven: one structured source holds each project's text, technologies, links, and hover line. A project without a website yet is marked work in progress with its launch note.
 - The home page has no header at any width; the other pages share one header. The About page ends with a decorative ASCII portrait that reacts to a fine pointer and is still on touch screens and under reduced motion.
 - Home hover previews are enhancements for fine-pointer desktop only. They never evaluate input, expose drafts, or replace a link.
 - There are no categories, accounts, comments, CMS, database, analytics, contact form, payments, or search service.

@@ -130,6 +130,8 @@ The home page has no header at any width: it carries its own links, one per line
 
 From 64rem the home page is one centered group of two columns (33rem and 34rem, 1rem apart): the welcome note with its links on the left, and the preview stage on the right, so the note sits close to the stage instead of at the far-left edge. Below 64rem it is one column with the same links and no stage; there the text block is vertically centered and, where it fits the viewport (phones about 640px tall and up), the page does not scroll. On shorter screens it scrolls rather than clipping.
 
+The Projects page is top-aligned like the blog index, with a centered `/projects` heading and one-line subtitle, so the heading never moves when a list opens. The project pages share the blog post layout.
+
 ## Elevation & Depth
 
 The system is flat and uses no shadows, glow, blur, or simulated glass. Hierarchy comes from black surface steps and one-pixel neutral dividers.
@@ -139,6 +141,8 @@ The system is flat and uses no shadows, glow, blur, or simulated glass. Hierarch
 **The Flat Document Rule.** A new surface must earn its boundary through content or interaction; never add card elevation as decoration. The one exception is the Preview Stage.
 
 **The Preview Stage Rule.** A flat gray radial glow, canvas drawing, and WebGL are allowed only inside the home page's desktop preview stage and the About page's portrait stage, and nowhere else. The glow is the shared `--glow-gradient` (gray, never colored). In the home stage it is the same size for every link and appears on the first hover and then stays; on the About page it sits behind the portrait. Every animation inside either stage is reduced or removed under `prefers-reduced-motion`.
+
+**The Category Glow Exception.** The two category icons on the Projects page may sit on a small version of the same gray glow (an 8.5rem square using `--glow-gradient`), and may drift very slowly (about 3px over 8–9.5 seconds). Both are gray, subtle, and removed under `prefers-reduced-motion`.
 
 ## Shapes
 
@@ -164,6 +168,16 @@ On fine-pointer desktop only, hovering or focusing a home link shows that link's
 - **/blog:** one randomly chosen post (picked on the first hover) with its title and an excerpt that fades into the black; both are one link to the post.
 - **/about:** the portrait as dense ASCII on a canvas; glyphs are pushed away from the pointer and spring back when it leaves. The whole face, chin, and a short stretch of neck are in the frame.
 - **/contact:** three slowly floating 3D logos (GitHub, email, LinkedIn), each a real link.
+
+### Projects Directory
+
+Two category buttons (Software & Apps, Web Development) sit side by side under the centered title, each a 4.4rem Bootstrap Icons glyph (the home contact icon size) on a small glow with only the category name beneath. They are real buttons with `aria-expanded` and `aria-controls`; the open one gets a brighter icon and glow and a thin underline. A category opens its project list with a height animation (`grid-template-rows` from 0fr to 1fr plus a fade); the open one closes when clicked again, and clicking the other switches. Closed lists are `inert`.
+
+Projects are listed one per line with a slash, styled like the navigation links (`/BluLexi`). On fine-pointer desktops, hovering or focusing a project opens a one-line description directly under it in its own 0fr to 1fr row, so the items below slide down and back; a small hover-intent delay keeps a quick sweep calm. A small screenshot (the shared `--shot-width` and `--shot-aspect` tokens, also used by the home marquee) fades in to the right of the list. A project that is not launched shows a small WIP badge and, instead of a screenshot, a quiet "Work in progress" panel with its launch note. Touch and narrow screens show every description inline, no screenshot, and navigate on tap.
+
+### Project Page
+
+Each project has its own page laid out exactly like a blog post: the back link, the title, then a quiet technology row (a 1rem logo in a color that reads on black, then the name, never badges or bold; black brand colors become white and Django uses its lighter green; MkDocs is text only), a work-in-progress notice where it applies, sectioned first-person text, and links to the live site, documentation, package, or source.
 
 ### About Portrait
 
