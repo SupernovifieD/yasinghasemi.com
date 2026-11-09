@@ -28,7 +28,7 @@ Visitors arrive through direct links, search results, or current navigation. The
 
 ## Capabilities and Constraints
 
-- Required public routes are `/`, `/about`, `/contact`, `/projects`, `/blog`, published `/blog/[slug]` pages, `/privacy`, `/terms`, and `/cookies`.
+- Required public routes are `/`, `/about`, `/contact`, `/projects`, `/blog`, published `/blog/[slug]` pages, `/privacy`, and `/terms`.
 - Each published post is its own static page at `/blog/[slug]`.
 - Home hover previews are enhancements for fine-pointer desktop only. They never evaluate input, expose drafts, or replace a link.
 - There are no categories, accounts, comments, CMS, database, analytics, contact form, payments, or search service.

@@ -22,5 +22,4 @@ export const primaryNavigation = [
 export const policyNavigation = [
   { href: "/privacy", label: "Privacy Policy" },
   { href: "/terms", label: "Terms of Service" },
-  { href: "/cookies", label: "Cookie Management" },
 ] as const;

@@ -12,7 +12,6 @@ const publicPagePaths = [
   "/blog",
   "/privacy",
   "/terms",
-  "/cookies",
 ] as const;
 
 export default function sitemap(): MetadataRoute.Sitemap {

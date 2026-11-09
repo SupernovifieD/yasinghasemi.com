@@ -9,7 +9,7 @@ describe("publishing discovery metadata", () => {
   it("includes canonical pages and every published post only", () => {
     const urls = sitemap().map(({ url }) => url);
 
-    expect(urls).toHaveLength(12);
+    expect(urls).toHaveLength(11);
     expect(urls).toContain("https://yasinghasemi.com/");
     expect(urls).toContain("https://yasinghasemi.com/blog");
     expect(urls).toContain(

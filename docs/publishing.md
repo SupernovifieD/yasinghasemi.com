@@ -71,7 +71,8 @@ custom `next.config.ts` response headers.
 ## Storage and policy changes
 
 The baseline application sets no cookies and keeps no persistent client state.
-Before adding analytics, optional storage, external assets, or
-another processor, update the actual controls and the Privacy Policy and Cookie
-Management page together. Never add a banner or preference toggle that does not
-control real behavior.
+Before adding analytics, optional storage, external assets, or another
+processor, update the actual controls and the Privacy Policy together, and add a
+cookie page and a footer link only once there is real behavior for it to
+describe. Never add a banner or preference toggle that does not control real
+behavior.
