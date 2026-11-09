@@ -1,11 +1,11 @@
-import Link from "next/link";
-
 import styles from "@/app/home.module.css";
+import { HomeStage } from "@/components/home/home-stage";
+import { getBlogPreviewPosts } from "@/lib/posts";
 
 export default function HomePage() {
   return (
     <main className={styles.home} id="main-content" tabIndex={-1}>
-      <div className={styles.introduction}>
+      <HomeStage posts={getBlogPreviewPosts()}>
         <h1>Hello, I&apos;m Yasin Ghasemi.</h1>
         <div className={styles.copy}>
           <p>I build things and write about the process.</p>
@@ -14,13 +14,7 @@ export default function HomePage() {
             them, and what I learn along the way.
           </p>
         </div>
-        <Link className={styles.blogLink} href="/blog">
-          Read the blog <span aria-hidden="true">→</span>
-        </Link>
-        <p className={styles.hint}>
-          Try <code>cd blog</code> or type <code>help</code>.
-        </p>
-      </div>
+      </HomeStage>
     </main>
   );
 }

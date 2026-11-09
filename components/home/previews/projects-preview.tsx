@@ -1,0 +1,91 @@
+import NextImage from "next/image";
+import type { CSSProperties } from "react";
+
+import { projectShots } from "@/components/home/previews/project-shots";
+import styles from "@/components/home/previews/projects-preview.module.css";
+import type { PreviewProps } from "@/components/home/previews/types";
+import { projects, type Project } from "@/lib/projects";
+
+// A set must be taller than the visible band, so short project lists are
+// repeated up to this many tiles. The track holds two sets and loops by
+// moving exactly one set.
+const MIN_SET_TILES = 6;
+
+/** Warm the browser cache for the preview's images ahead of the first hover. */
+export function preloadProjectImages() {
+  for (const { src } of Object.values(projectShots)) {
+    const image = new Image();
+    image.src = src;
+  }
+}
+
+function rotate<T>(items: readonly T[], by: number) {
+  return [...items.slice(by), ...items.slice(0, by)];
+}
+
+function Tile({ project }: { project: Project }) {
+  const shot = projectShots[project.slug];
+
+  return (
+    <div className={styles.tile}>
+      {shot ? (
+        <NextImage
+          className={styles.shot}
+          src={shot}
+          alt=""
+          sizes="12rem"
+          loading="eager"
+          draggable={false}
+        />
+      ) : (
+        <div className={styles.placeholder} />
+      )}
+    </div>
+  );
+}
+
+function Band({
+  order,
+  direction,
+}: {
+  order: readonly Project[];
+  direction: "up" | "down";
+}) {
+  const repeats = Math.max(1, Math.ceil(MIN_SET_TILES / order.length));
+  const set = Array.from({ length: repeats }, () => order).flat();
+
+  return (
+    <div className={styles.band}>
+      <div
+        className={styles.track}
+        data-direction={direction}
+        // Scroll speed stays constant however many projects there are.
+        style={{ "--set-tiles": set.length } as CSSProperties}
+      >
+        {[...set, ...set].map((project, index) => (
+          <Tile key={`${project.slug}-${index}`} project={project} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Two opposing, seamlessly looping bands of small project screenshots. Purely
+ * decorative: the projects themselves are reachable through /projects.
+ */
+export default function ProjectsPreview({ active }: PreviewProps) {
+  return (
+    <div
+      className={styles.bands}
+      data-paused={active ? undefined : ""}
+      aria-hidden="true"
+    >
+      <Band order={projects} direction="up" />
+      <Band
+        order={rotate(projects, Math.floor(projects.length / 2))}
+        direction="down"
+      />
+    </div>
+  );
+}

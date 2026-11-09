@@ -4,10 +4,12 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 import {
+  comparePostsNewestFirst,
   parsePostSource,
   publishedSummaries,
   type Post,
 } from "@/lib/posts/catalog";
+import { createBodyExcerpt, type BlogPreviewPost } from "@/lib/posts/excerpt";
 import { validatePostCollection } from "@/lib/posts/schema";
 
 const postsDirectory = join(process.cwd(), "content", "posts");
@@ -39,6 +41,18 @@ function loadPostFiles(): Post[] {
 
 export function getPublishedPosts() {
   return publishedSummaries(loadPostFiles());
+}
+
+/** Published posts with a plain-text body excerpt, newest first. */
+export function getBlogPreviewPosts(): BlogPreviewPost[] {
+  return loadPostFiles()
+    .filter((post) => !post.draft)
+    .sort(comparePostsNewestFirst)
+    .map(({ slug, title, body }) => ({
+      slug,
+      title,
+      excerpt: createBodyExcerpt(body),
+    }));
 }
 
 export function getPublishedPostBySlug(slug: string) {

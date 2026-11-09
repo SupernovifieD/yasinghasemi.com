@@ -1,0 +1,87 @@
+.bands {
+  /* The one place the screenshot aspect ratio is defined. The capture script
+     reads this value, so tiles and images can never drift apart. */
+  --shot-aspect: 16 / 9;
+  --tile-width: 11.5rem;
+  --tile-gap: 1rem;
+
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.band {
+  width: var(--tile-width);
+  height: 100%;
+  overflow: hidden;
+  /* Screenshots fade into the background at the top and bottom edges. */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 24%,
+    #000 76%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent,
+    #000 24%,
+    #000 76%,
+    transparent
+  );
+}
+
+.track {
+  display: flex;
+  flex-direction: column;
+  animation: scroll calc(var(--set-tiles) * 7s) linear infinite;
+  will-change: transform;
+}
+
+.track[data-direction="down"] {
+  animation-direction: reverse;
+  animation-duration: calc(var(--set-tiles) * 8s);
+}
+
+.bands[data-paused] .track {
+  animation-play-state: paused;
+}
+
+.tile {
+  /* A margin (not a flex gap) keeps the track exactly two sets tall, so
+     moving it by 50% lands precisely on the start of the second set. */
+  margin-block-end: var(--tile-gap);
+  flex: none;
+}
+
+.shot,
+.placeholder {
+  display: block;
+  width: var(--tile-width);
+  height: auto;
+  aspect-ratio: var(--shot-aspect);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  object-fit: cover;
+}
+
+.shot {
+  opacity: 0.88;
+}
+
+.placeholder {
+  background: rgb(255 255 255 / 0.07);
+}
+
+@keyframes scroll {
+  to {
+    transform: translateY(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+  }
+}

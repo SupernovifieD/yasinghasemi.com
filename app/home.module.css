@@ -4,11 +4,7 @@
   align-items: center;
 }
 
-.introduction {
-  width: min(100%, 66ch);
-}
-
-.introduction h1 {
+.home h1 {
   max-width: 18ch;
   margin: 0 0 var(--space-6);
   color: var(--color-text);
@@ -32,25 +28,6 @@
 
 .copy p + p {
   margin-block-start: var(--space-2);
-}
-
-.blogLink {
-  display: inline-flex;
-  min-height: 2.75rem;
-  margin-block-start: var(--space-8);
-  align-items: center;
-  gap: var(--space-2);
-  font-weight: 500;
-}
-
-.hint {
-  margin: var(--space-6) 0 0;
-  color: var(--color-muted);
-  font-size: 0.875rem;
-}
-
-.hint code {
-  color: var(--color-body);
 }
 
 @media (max-width: 40rem), (max-height: 42rem) {

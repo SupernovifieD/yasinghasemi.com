@@ -1,0 +1,60 @@
+.panel {
+  display: none;
+}
+
+.stage {
+  position: relative;
+  width: min(100%, 34rem);
+  aspect-ratio: 1;
+}
+
+.glow {
+  position: absolute;
+  /* Extends past the stage, but never further than the page gutter, so it
+     cannot create horizontal scroll on narrower desktops. */
+  inset: calc(-1 * min(12%, var(--gutter)));
+  background: radial-gradient(
+    closest-side,
+    rgb(255 255 255 / 0.24),
+    rgb(255 255 255 / 0.1) 55%,
+    transparent
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms ease;
+}
+
+.glow[data-armed] {
+  opacity: 1;
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition:
+    opacity 350ms ease,
+    visibility 0s linear 350ms;
+  visibility: hidden;
+}
+
+.layer[data-active] {
+  opacity: 1;
+  transition-delay: 0s;
+  visibility: visible;
+}
+
+@media (min-width: 64rem) {
+  .panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glow,
+  .layer {
+    transition: none;
+  }
+}
