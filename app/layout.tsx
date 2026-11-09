@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import { SiteShell } from "@/components/site-shell";
+import { socialImageDescriptor } from "@/lib/metadata";
+import { defaultSocialImage } from "@/lib/og-images";
 import { siteConfig } from "@/lib/site-config";
 
 import "./globals.css";
@@ -46,12 +48,14 @@ export const metadata: Metadata = {
     description:
       "Notes on software projects, the decisions behind them, and lessons learned along the way.",
     url: siteConfig.origin,
+    images: [socialImageDescriptor(defaultSocialImage)],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Yasin Ghasemi",
     description:
       "Notes on software projects, the decisions behind them, and lessons learned along the way.",
+    images: [socialImageDescriptor(defaultSocialImage)],
   },
 };
 

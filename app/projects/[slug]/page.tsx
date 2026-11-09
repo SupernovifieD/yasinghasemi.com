@@ -26,30 +26,18 @@ export async function generateMetadata({
   const project = getProject(slug);
   if (!project) notFound();
 
-  const metadata = createPageMetadata({
+  // A project without a website yet has no screenshot, so it shares the
+  // landing card.
+  const shot = projectShots[project.slug];
+
+  return createPageMetadata({
     title: project.name,
     description: project.summary,
     path: `/projects/${project.slug}`,
+    image: shot
+      ? { image: shot, alt: `Screenshot of ${project.name}` }
+      : undefined,
   });
-  const shot = projectShots[project.slug];
-  if (!shot) return metadata;
-
-  const image = {
-    url: shot.src,
-    width: shot.width,
-    height: shot.height,
-    alt: `Screenshot of ${project.name}`,
-  };
-
-  return {
-    ...metadata,
-    openGraph: { ...metadata.openGraph, images: [image] },
-    twitter: {
-      ...metadata.twitter,
-      card: "summary_large_image",
-      images: [image],
-    },
-  };
 }
 
 export default async function ProjectPage({
