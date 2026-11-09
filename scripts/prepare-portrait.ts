@@ -40,6 +40,13 @@ type Target = {
   levels: { black: number; white: number } | "auto";
   /** Midtone lift applied after the stretch: below 1 brightens. */
   gamma: number;
+  /**
+   * Below `row` (a fraction of the crop's height), copy the `from` side of the
+   * body onto the other side wherever the other side kept less (mirrored about
+   * the crop's centre line). For a white shirt on a white wall, where the
+   * matte can only tell one shoulder from the wall.
+   */
+  mirror?: { row: number; from: "left" | "right" };
   matte:
     | { kind: "backdrop" }
     | {
@@ -60,6 +67,7 @@ const TARGETS: Record<string, Target> = {
     oval: { cx: 0.5, cy: 0.46, rx: 0.4, ry: 0.78 },
     levels: { black: 20, white: 225 },
     gamma: 1,
+    mirror: { row: 0.7, from: "left" },
     matte: { kind: "backdrop" },
   },
   // An outdoor photo on yellow foliage: skin and hair are orange-red and dark,
@@ -270,6 +278,32 @@ async function skinMatte(rgb: Uint8Array, core: Ellipse, prior: Ellipse) {
   return Float64Array.from(clean, (value) => value / 255);
 }
 
+/**
+ * Make the body below row `row` (a fraction of the crop) left-right symmetric:
+ * wherever the `from` side has more subject than its mirror image, the mirror
+ * image takes its coverage and tone. The other side is never changed, so a
+ * stray fragment on it cannot spread back.
+ */
+function fillByMirror(
+  subject: Float64Array,
+  tone: Uint8Array,
+  row: number,
+  from: "left" | "right",
+) {
+  for (let y = Math.round(row * SIZE); y < SIZE; y++) {
+    for (let x = 0; x < SIZE / 2; x++) {
+      const side = y * SIZE + x;
+      const other = y * SIZE + (SIZE - 1 - x);
+      const [source, target] = from === "left" ? [side, other] : [other, side];
+
+      if (subject[source] > subject[target]) {
+        subject[target] = subject[source];
+        tone[target] = tone[source];
+      }
+    }
+  }
+}
+
 /** The level below which `fraction` of the subject's pixels fall. */
 function percentile(
   values: Uint8Array,
@@ -341,6 +375,10 @@ async function main() {
       .sharpen({ sigma: 1.4, m1: 0.8, m2: 2 })
       .gamma(1.15),
   );
+
+  if (target.mirror) {
+    fillByMirror(subject, enhanced, target.mirror.row, target.mirror.from);
+  }
 
   const range =
     levels === "auto"
