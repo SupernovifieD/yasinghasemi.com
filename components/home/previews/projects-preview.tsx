@@ -7,7 +7,7 @@ import {
   createRateController,
   HOVER_RATE,
 } from "@/components/home/previews/band-speed";
-import { projectShots } from "@/components/home/previews/project-shots";
+import { projectShots } from "@/components/projects/project-shots";
 import styles from "@/components/home/previews/projects-preview.module.css";
 import type { PreviewProps } from "@/components/home/previews/types";
 import { projects, type Project } from "@/lib/projects";

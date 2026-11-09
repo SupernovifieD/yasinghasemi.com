@@ -3,6 +3,7 @@
   --icon-size: 4.4rem;
   --glow-size: 8.5rem;
   --list-width: 24rem;
+  --panel-gap: 2rem;
 }
 
 .toggles {
@@ -233,6 +234,70 @@
   white-space: nowrap;
 }
 
+/* The hover screenshot sits in the free space to the right of the list: small,
+   in the shared screenshot size and ratio, and only where there is room and a
+   pointer to hover with. It fades between projects. */
+.shotPanel {
+  display: none;
+}
+
+@media (min-width: 64rem) and (hover: hover) and (pointer: fine) {
+  .shotPanel {
+    position: absolute;
+    display: block;
+    inset-block-start: var(--space-4);
+    inset-inline-start: calc(50% + var(--list-width) / 2 + var(--panel-gap));
+    width: var(--shot-width);
+    aspect-ratio: var(--shot-aspect);
+    pointer-events: none;
+  }
+}
+
+.shot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.shot[data-active] {
+  opacity: 1;
+}
+
+.shotImage,
+.placeholder {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid rgb(255 255 255 / 0.14);
+}
+
+.shotImage {
+  object-fit: cover;
+  opacity: 0.88;
+}
+
+/* For a project with no website yet: a quiet panel, like the home tiles. */
+.placeholder {
+  display: flex;
+  padding: var(--space-3);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  background: rgb(255 255 255 / 0.07);
+  color: var(--color-muted);
+  font-size: var(--font-label);
+  line-height: 1.4;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.placeholder strong {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
 @keyframes drift {
   from {
     translate: 0 -2px;
@@ -256,6 +321,7 @@
   .panel[data-open],
   .description,
   .item[data-active] .description,
+  .shot,
   .link::after {
     transition: none;
   }

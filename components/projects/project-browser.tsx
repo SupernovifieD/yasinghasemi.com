@@ -1,14 +1,17 @@
 "use client";
 
+import NextImage from "next/image";
 import Link from "next/link";
 import { useId, useState } from "react";
 
 import { BootstrapIcon } from "@/components/icons/bootstrap-icon";
 import type { BootstrapGlyphName } from "@/components/icons/bootstrap-icons";
 import styles from "@/components/projects/project-browser.module.css";
+import { projectShots } from "@/components/projects/project-shots";
 import { useActiveItem } from "@/components/projects/use-active-item";
 import {
   projectCategories,
+  projects,
   projectsInCategory,
   type ProjectCategory,
 } from "@/lib/projects";
@@ -25,6 +28,7 @@ const categoryIcons: Record<ProjectCategory, BootstrapGlyphName> = {
  */
 export function ProjectBrowser() {
   const [open, setOpen] = useState<ProjectCategory | null>(null);
+  const [primed, setPrimed] = useState(false);
   const { active, enter, leave, reset } = useActiveItem();
   const uid = useId();
   const toggleId = (id: ProjectCategory) => `${uid}-toggle-${id}`;
@@ -47,6 +51,7 @@ export function ProjectBrowser() {
             aria-controls={panelId(id)}
             onClick={() => {
               reset();
+              setPrimed(true);
               setOpen((current) => (current === id ? null : id));
             }}
           >
@@ -120,6 +125,41 @@ export function ProjectBrowser() {
             </div>
           </div>
         ))}
+
+        {/* Hover screenshots, to the right of the list. They are mounted only
+            once a category has been opened, so nothing loads before that. */}
+        {primed ? (
+          <div className={styles.shotPanel} aria-hidden="true">
+            {projects.map((project) => {
+              const shot = projectShots[project.slug];
+              if (!shot && !project.status) return null;
+
+              return (
+                <div
+                  key={project.slug}
+                  className={styles.shot}
+                  data-active={active === project.slug ? "" : undefined}
+                >
+                  {shot ? (
+                    <NextImage
+                      className={styles.shotImage}
+                      src={shot}
+                      alt=""
+                      sizes="12rem"
+                      loading="lazy"
+                      draggable={false}
+                    />
+                  ) : (
+                    <div className={styles.placeholder}>
+                      <strong>Work in progress</strong>
+                      <span>{project.status?.note}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
     </div>
   );
