@@ -7,7 +7,7 @@ import { siteConfig } from "@/lib/site-config";
 import "./globals.css";
 
 const jetBrainsMono = localFont({
-  variable: "--font-terminal",
+  variable: "--font-mono",
   src: [
     {
       path: "./fonts/JetBrainsMono-Regular.woff2",

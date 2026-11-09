@@ -51,7 +51,7 @@ body {
   background: var(--color-page);
   color: var(--color-body);
   font-family:
-    var(--font-terminal), ui-monospace, "DejaVu Sans Mono", "Liberation Mono",
+    var(--font-mono), ui-monospace, "DejaVu Sans Mono", "Liberation Mono",
     monospace;
   font-variant-ligatures: none;
   font-size: var(--font-body);

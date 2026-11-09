@@ -6,8 +6,7 @@ import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Privacy Policy",
-  description:
-    "How this personal blog handles terminal state and hosting data.",
+  description: "How this personal blog handles in-page state and hosting data.",
   path: "/privacy",
 });
 
@@ -19,12 +18,12 @@ export default function PrivacyPage() {
         This is a personal publishing website. It has no user accounts, contact
         form, comments, advertising, analytics, or tracking pixels.
       </p>
-      <h2>Terminal state</h2>
+      <h2>In-page state</h2>
       <p>
-        The navigation terminal keeps its command history and visible output in
-        memory for the current browser tab. It does not save that history to
-        cookies, local storage, a database, or analytics, and a full page reload
-        resets it.
+        The home page keeps the link you last hovered and the post it chose to
+        preview in memory for the current browser tab. It does not save either
+        to cookies, local storage, a database, or analytics, and a full page
+        reload resets them.
       </p>
       <h2>Hosting and security logs</h2>
       <p>

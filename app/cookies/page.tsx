@@ -15,7 +15,7 @@ export default function CookiesPage() {
       <h1>Cookie Management</h1>
       <p>
         This application does not set cookies. It also does not use optional
-        analytics, advertising, tracking pixels, or persistent command history.
+        analytics, advertising, tracking pixels, or persistent page state.
       </p>
       <h2>No optional preferences</h2>
       <p>
@@ -25,9 +25,9 @@ export default function CookiesPage() {
       </p>
       <h2>Browser memory</h2>
       <p>
-        Terminal commands and output remain in application memory for the
-        current tab session. They are not written to cookies, local storage, or
-        session storage. Reloading the page resets them.
+        The home page&apos;s hover state remains in application memory for the
+        current tab session. It is not written to cookies, local storage, or
+        session storage. Reloading the page resets it.
       </p>
       <h2>Hosting and security systems</h2>
       <p>
