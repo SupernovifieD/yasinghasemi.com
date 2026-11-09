@@ -62,10 +62,10 @@ test.describe("desktop header", () => {
 test.describe("mobile header", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("shows the site name and a hamburger on every page, home included", async ({
+  test("shows the site name and a hamburger on every inner page", async ({
     page,
   }) => {
-    for (const path of ["/", "/projects", "/blog", "/about", "/contact"]) {
+    for (const path of ["/projects", "/blog", "/about", "/contact"]) {
       await page.goto(path);
 
       const header = page.locator("header");
@@ -81,8 +81,21 @@ test.describe("mobile header", () => {
     }
   });
 
+  test("has no header on the home page at any width", async ({ page }) => {
+    for (const width of [320, 390, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/");
+
+      await expect(page.locator("header")).toBeHidden();
+      // The welcome note's own links are the way around the site.
+      await expect(
+        page.getByRole("navigation", { name: "Sections" }).getByRole("link"),
+      ).toHaveText(NAV_LABELS);
+    }
+  });
+
   test("opens a menu with the four links centered", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/about");
 
     const header = page.locator("header");
     await header.locator("summary").click();
@@ -102,7 +115,7 @@ test.describe("mobile header", () => {
   test("closes on Escape, on an outside press, and after choosing a link", async ({
     page,
   }) => {
-    await page.goto("/");
+    await page.goto("/about");
     const details = page.locator("header details");
     const summary = details.locator("summary");
 
@@ -118,8 +131,8 @@ test.describe("mobile header", () => {
     await expect(details).toHaveJSProperty("open", false);
 
     await summary.click();
-    await details.getByRole("link", { name: "/about" }).click();
-    await expect(page).toHaveURL(/\/about$/);
+    await details.getByRole("link", { name: "/contact" }).click();
+    await expect(page).toHaveURL(/\/contact$/);
     await expect(page.locator("header details")).toHaveJSProperty(
       "open",
       false,

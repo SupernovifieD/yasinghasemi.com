@@ -25,7 +25,6 @@ for (const [path, heading] of [
   ["/blog", "/blog"],
   ["/privacy", "Privacy Policy"],
   ["/terms", "Terms of Service"],
-  ["/cookies", "Cookie Management"],
 ] as const) {
   test(`serves ${path}`, async ({ page }) => {
     await page.goto(path);
@@ -278,7 +277,39 @@ test("long article content does not overflow the page", async ({ page }) => {
   await expect(page.locator("article p")).toHaveCount(7);
 });
 
-test("footer exposes every policy route", async ({ page }) => {
+test("the footer strip is centered on phones", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/about");
+
+  const footer = page.getByRole("contentinfo");
+  const items = [
+    footer.getByText("All rights reserved"),
+    ...(await footer.getByRole("link", { name: /Privacy|Terms/ }).all()),
+  ];
+  const rows: number[] = [];
+  for (const item of items) {
+    const box = (await item.boundingBox())!;
+    rows.push(Math.round(box.y));
+  }
+  // The copyright line and the policy links stack, each row centered.
+  const copyright = (await items[0].boundingBox())!;
+  expect(Math.abs(copyright.x + copyright.width / 2 - 195)).toBeLessThan(12);
+  const policy = (await footer.getByRole("navigation").boundingBox())!;
+  expect(Math.abs(policy.x + policy.width / 2 - 195)).toBeLessThan(2);
+  expect(policy.y).toBeGreaterThan(copyright.y + copyright.height - 1);
+});
+
+test("header and footer text is one notch smaller", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/about");
+
+  for (const selector of ["header a", "footer"]) {
+    await expect(page.locator(selector).first()).toHaveCSS("font-size", "13px");
+  }
+  expect((await page.locator("header").boundingBox())!.height).toBeLessThan(70);
+});
+
+test("footer exposes the policy routes", async ({ page }) => {
   await page.goto("/");
 
   const footer = page.getByRole("contentinfo");
@@ -291,9 +322,7 @@ test("footer exposes every policy route", async ({ page }) => {
   await expect(
     footer.getByRole("link", { name: "Terms of Service" }),
   ).toHaveAttribute("href", "/terms");
-  await expect(
-    footer.getByRole("link", { name: "Cookie Management" }),
-  ).toHaveAttribute("href", "/cookies");
+  await expect(footer.getByRole("link")).toHaveCount(3);
 });
 
 for (const width of [320, 390, 768, 1024, 1440, 1920]) {
@@ -315,19 +344,50 @@ for (const width of [320, 390, 768, 1024, 1440, 1920]) {
       expect(Math.abs(main.x + main.width / 2 - width / 2)).toBeLessThan(1);
       expect(Math.abs(heading.x - article.x)).toBeLessThan(1);
       await expect(page.locator("main > div")).toHaveCSS("font-size", "15px");
-      if (width > 640) {
-        expect(
-          Math.abs(content.y + content.height / 2 - (main.y + main.height / 2)),
-        ).toBeLessThan(1);
-      } else {
-        expect(Math.abs(content.y - main.y)).toBeLessThan(1);
-      }
+      // Centered on phones too (the block grows the page if it is taller).
+      expect(
+        Math.abs(content.y + content.height / 2 - (main.y + main.height / 2)),
+      ).toBeLessThan(1);
       expect(
         await page.evaluate(
           () => document.documentElement.scrollWidth <= innerWidth,
         ),
       ).toBe(true);
     }
+  });
+}
+
+for (const viewport of [
+  { width: 375, height: 667 },
+  { width: 390, height: 844 },
+  { width: 430, height: 932 },
+]) {
+  test(`mobile home is centered and does not scroll at ${viewport.width}x${viewport.height}`, async ({
+    page,
+  }) => {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await page.evaluate(() => document.fonts.ready);
+
+    expect(
+      await page.evaluate(
+        () =>
+          document.documentElement.scrollHeight <=
+          document.documentElement.clientHeight,
+      ),
+    ).toBe(true);
+
+    const main = (await page.locator("main").boundingBox())!;
+    const heading = (await page
+      .getByRole("heading", { level: 1 })
+      .boundingBox())!;
+    const lastLink = (await page
+      .getByRole("navigation", { name: "Sections" })
+      .getByRole("link")
+      .last()
+      .boundingBox())!;
+    const blockCenter = (heading.y + lastLink.y + lastLink.height) / 2;
+    expect(Math.abs(blockCenter - (main.y + main.height / 2))).toBeLessThan(12);
   });
 }
 
@@ -397,19 +457,4 @@ test("terms describe a personal publishing site without product terms", async ({
   await expect(
     page.getByText(/subscription|payment|refund|account/i),
   ).toHaveCount(0);
-});
-
-test("cookie management reflects the storage audit without fake controls", async ({
-  page,
-}) => {
-  await page.goto("/cookies");
-
-  await expect(page.getByText(/does not set cookies/)).toBeVisible();
-  await expect(page.getByText(/no optional cookies/)).toBeVisible();
-  await expect(
-    page.getByText(/hosting chain has not been verified/),
-  ).toBeVisible();
-  await expect(page.locator("main button, main input, main form")).toHaveCount(
-    0,
-  );
 });
