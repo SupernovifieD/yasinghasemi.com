@@ -216,6 +216,13 @@
       "description": "Centered long-form prose with comfortable measure and rhythm.",
       "html": "<article class=\"ds-reading\"><h1>Article title</h1><p>Readable long-form content stays left aligned inside the centered column.</p></article>",
       "css": ".ds-reading { max-width: 70ch; margin-inline: auto; background: #000; color: #d4d4d4; font: 400 clamp(1rem,.95rem + .2vw,1.0625rem)/1.78 \"JetBrains Mono\", monospace; } .ds-reading h1 { max-width: 30ch; margin: 0 0 2rem; color: #f5f5f5; font-size: clamp(1.8rem,1.45rem + 1.4vw,2.5rem); line-height: 1.22; letter-spacing: -.025em; }"
+    },
+    {
+      "name": "Keep Reading",
+      "kind": "custom",
+      "description": "A one-pixel divider with a small centered slash, a quiet label, and plain linked rows (title and one line), never cards.",
+      "html": "<section class=\"ds-more\"><div class=\"ds-rule\">/</div><h2>Keep reading</h2><a class=\"ds-row\" href=\"/blog/example\"><span>A complete article title</span><span>One line about it.</span></a></section>",
+      "css": ".ds-more { max-width: 70ch; background: #000; color: #d4d4d4; font: 400 .9375rem/1.65 \"JetBrains Mono\", monospace; } .ds-rule { display: flex; align-items: center; gap: 1rem; color: #a3a3a3; font-size: .875rem; } .ds-rule::before, .ds-rule::after { flex: 1; height: 1px; background: #262626; content: \"\"; } .ds-more h2 { margin: 2rem 0 .5rem; color: #a3a3a3; font-size: .875rem; font-weight: 400; } .ds-row { display: block; padding-block: 1rem; color: inherit; text-decoration: none; } .ds-row span:first-child { display: block; color: #f5f5f5; font-size: 1.125rem; font-weight: 700; text-decoration: underline; text-decoration-color: #a3a3a3; text-underline-offset: .25em; } .ds-row span:last-child { display: block; margin-top: .5rem; } .ds-row:focus-visible { outline: 2px solid #fff; outline-offset: .25rem; }"
     }
   ],
   "narrative": {

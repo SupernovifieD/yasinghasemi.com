@@ -31,6 +31,7 @@ Visitors arrive through direct links, search results, or current navigation. The
 - Required public routes are `/`, `/about`, `/contact`, `/projects`, a page per project at `/projects/[slug]`, `/blog`, published `/blog/[slug]` pages, `/privacy`, and `/terms`.
 - Each published post is its own static page at `/blog/[slug]`.
 - Projects are data-driven: one structured source holds each project's text, technologies, links, and hover line. A project without a website yet is marked work in progress with its launch note.
+- Blog posts and project pages end with three related pages to read next: the next published posts, or other projects in the same category. Every page has a social sharing image: a shared landing card, a card per post, or a project's screenshot.
 - The home page has no header at any width; the other pages share one header. The About page ends with a decorative ASCII portrait that reacts to a fine pointer and is still on touch screens and under reduced motion.
 - Home hover previews are enhancements for fine-pointer desktop only. They never evaluate input, expose drafts, or replace a link.
 - There are no categories, accounts, comments, CMS, database, analytics, contact form, payments, or search service.

@@ -164,20 +164,34 @@ Primary navigation is a row of literal route links. Hover and active states brig
 
 On fine-pointer desktop only, hovering or focusing a home link shows that link's preview in a square stage; the last hovered link stays selected until another is hovered or the page reloads. Previews load lazily on first use, crossfade, and pause while inactive. Touch devices and narrow screens get plain links.
 
-- **/projects:** two opposing, seamlessly looping bands of small project screenshots, faded into the background at their top and bottom edges. Hovering a band eases it to a crawl (0.1x) while the other keeps moving; leaving restores it.
-- **/blog:** one randomly chosen post (picked on the first hover) with its title and an excerpt that fades into the black; both are one link to the post.
-- **/about:** the portrait as dense ASCII on a canvas; glyphs are pushed away from the pointer and spring back when it leaves. The whole face, chin, and a short stretch of neck are in the frame.
+- **/projects:** two opposing, seamlessly looping bands of small project screenshots, faded into the background at their top and bottom edges. Hovering a band eases it to a crawl (0.1x) while the other keeps moving; leaving restores it. Each screenshot is a link to its project's page, and a focused one slows its band the same way. Only projects that have a screenshot appear; one without a website yet (Karmania) is left out.
+- **/blog:** one randomly chosen post (picked on the first hover) with its title and an excerpt that fades into the black; both, and a "Read more →" label under the fade, are one link to the post. The label takes the title's underline fade on hover and focus; the arrow does not move.
+- **/about:** the portrait as dense ASCII on a canvas; glyphs are pushed away from the pointer and spring back when it leaves. The whole face, chin, a short stretch of neck, and both shoulders are in the frame (the right one mirrors the left, since the white shirt cannot be told from the white wall).
 - **/contact:** three slowly floating 3D logos (GitHub, email, LinkedIn), each a real link.
 
 ### Projects Directory
 
 Two category buttons (Software & Apps, Web Development) sit side by side under the centered title, each a 4.4rem Bootstrap Icons glyph (the home contact icon size) on a small glow with only the category name beneath. They are real buttons with `aria-expanded` and `aria-controls`; the open one gets a brighter icon and glow and a thin underline. A category opens its project list with a height animation (`grid-template-rows` from 0fr to 1fr plus a fade); the open one closes when clicked again, and clicking the other switches. Closed lists are `inert`.
 
-Projects are listed one per line with a slash, styled like the navigation links (`/BluLexi`). On fine-pointer desktops, hovering or focusing a project opens a one-line description directly under it in its own 0fr to 1fr row, so the items below slide down and back; a small hover-intent delay keeps a quick sweep calm. A small screenshot (the shared `--shot-width` and `--shot-aspect` tokens, also used by the home marquee) fades in to the right of the list. A project that is not launched shows a small WIP badge and, instead of a screenshot, a quiet "Work in progress" panel with its launch note. Touch and narrow screens show every description inline, no screenshot, and navigate on tap.
+Projects are listed one per line with a slash, styled like the navigation links (`/BluLexi`). On fine-pointer desktops, hovering or focusing a project opens a one-line description directly under it in its own 0fr to 1fr row, so the items below slide down and back; a small hover-intent delay keeps a quick sweep calm. A small screenshot (the shared `--shot-width` and `--shot-aspect` tokens, also used by the home marquee) fades in beside the list.
+
+From 64rem up the two categories mirror each other: each list opens under its own toggle (Software & Apps on the left, Web Development on the right) with its text centered on that toggle, and its screenshot on the side facing the middle of the page. Both lists share one grid cell, so switching crossfades in place. Below 64rem there is one centered list. A project that is not launched shows a small WIP badge and, instead of a screenshot, a quiet "Work in progress" panel with its launch note. Touch and narrow screens show every description inline, no screenshot, and navigate on tap.
 
 ### Project Page
 
-Each project has its own page laid out exactly like a blog post: the back link, the title, then a quiet technology row (a 1rem logo in a color that reads on black, then the name, never badges or bold; black brand colors become white and Django uses its lighter green; MkDocs is text only), a work-in-progress notice where it applies, sectioned first-person text, and links to the live site, documentation, package, or source.
+Each project has its own page laid out exactly like a blog post: the back link, the title, then a quiet technology row (a 1rem logo in a color that reads on black, then the name, never badges or bold; black brand colors become white and Django uses its lighter green; MkDocs is text only), a work-in-progress notice where it applies, sectioned first-person text, and links to the live site, documentation, package, or source, centered as a group (one per line on phones). The page ends with the Keep Reading section.
+
+### Keep Reading
+
+The end of every blog post and project page: a one-pixel Divider Gray rule with a small centered `/`, a quiet label heading ("Keep reading" on posts, "More projects" on projects), then three plain linked rows (the title in the result size, one line of excerpt or tagline beneath), separated by hairlines. Never cards. The three are the next ones after the current page in list order, wrapping at the end: newest-first posts, or the same category's projects. Nothing is random, so a built page never changes, yet the picks differ from page to page.
+
+### Page Subtitle
+
+`/projects` centers a one-line subtitle under its title; `/blog` and `/contact` put one under their left-aligned titles, in the body color and size, never containing a link.
+
+### Social Cards
+
+The image shown when a page is shared is 1200 by 630: black, the site's JetBrains Mono, and the gray radial glow. It is an image, not interface, so the Preview Stage Rule does not apply to it. The landing card (name, site, one line) is shared by every page without an image of its own; each blog post has a card with its title and excerpt; projects with a website use their screenshot. All are made by `scripts/generate-og-images.ts` and committed.
 
 ### About Portrait
 
