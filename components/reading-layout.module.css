@@ -33,7 +33,7 @@
   margin-block-end: 0;
 }
 
-@media (max-width: 40rem), (max-height: 42rem) {
+@media (max-height: 42rem) {
   .shortPage {
     align-items: flex-start;
   }
