@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 
 import { getPublishedPosts } from "@/lib/posts";
+import { projects } from "@/lib/projects";
 import { siteConfig } from "@/lib/site-config";
 
 export const dynamic = "force-static";
@@ -10,6 +11,7 @@ const publicPagePaths = [
   "/about",
   "/contact",
   "/blog",
+  "/projects",
   "/privacy",
   "/terms",
 ] as const;
@@ -23,5 +25,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: post.updatedAt ?? post.publishedAt,
   }));
 
-  return [...pages, ...posts];
+  const projectPages = projects.map(({ slug }) => ({
+    url: new URL(`/projects/${slug}`, siteConfig.origin).toString(),
+  }));
+
+  return [...pages, ...projectPages, ...posts];
 }
