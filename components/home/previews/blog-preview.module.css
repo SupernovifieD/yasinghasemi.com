@@ -30,7 +30,9 @@
 }
 
 .post:hover .title,
-.post:focus-visible .title {
+.post:focus-visible .title,
+.post:hover .more,
+.post:focus-visible .more {
   text-decoration-color: currentColor;
 }
 
@@ -42,6 +44,19 @@
   /* Fade the text into the black background so it reads as unfinished. */
   -webkit-mask-image: linear-gradient(to bottom, #000 25%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 25%, transparent 100%);
+}
+
+/* Sits after the fade, at full strength, and takes the title's hover underline. */
+.more {
+  display: inline-block;
+  margin-block-start: var(--space-4);
+  color: var(--color-text);
+  font-size: var(--font-body);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color 200ms ease;
 }
 
 @keyframes enter {
@@ -56,7 +71,8 @@
     animation: none;
   }
 
-  .title {
+  .title,
+  .more {
     transition: none;
   }
 }

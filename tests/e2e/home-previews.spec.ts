@@ -335,6 +335,37 @@ test("the blog preview picks one post, keeps it, and links to it", async ({
   ).toBeVisible();
 });
 
+test("the blog preview ends with a Read more label that underlines on hover", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await hoverLink(page, "/blog");
+
+  const link = layer(page, "blog").getByRole("link");
+  const more = link.getByText("Read more", { exact: false }).last();
+  await expect(more).toBeVisible();
+  await expect(more).toContainText("→");
+
+  // After the excerpt, outside its fade, and not another paragraph.
+  expect(await more.evaluate((el) => el.tagName)).toBe("SPAN");
+  expect(await more.evaluate((el) => getComputedStyle(el).maskImage)).toBe(
+    "none",
+  );
+  const [excerptBox, moreBox] = [
+    (await link.locator("p").boundingBox())!,
+    (await more.boundingBox())!,
+  ];
+  expect(moreBox.y).toBeGreaterThanOrEqual(excerptBox.y + excerptBox.height);
+
+  // The underline is the title's: transparent at rest, shown on hover.
+  const underline = () =>
+    more.evaluate((el) => getComputedStyle(el).textDecorationColor);
+  await page.mouse.move(20, 20);
+  await expect.poll(underline).toMatch(/rgba\(0, 0, 0, 0\)|transparent/);
+  await link.hover();
+  await expect.poll(underline).not.toMatch(/rgba\(0, 0, 0, 0\)|transparent/);
+});
+
 test("the blog pick follows Math.random, evaluated at hover time", async ({
   page,
 }) => {
