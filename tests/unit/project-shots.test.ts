@@ -3,7 +3,7 @@ import { join } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { projectShots } from "@/components/home/previews/project-shots";
+import { projectShots } from "@/components/projects/project-shots";
 import { projects } from "@/lib/projects";
 
 const directory = join(process.cwd(), "assets", "projects");
