@@ -2,10 +2,15 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { BackLink } from "@/components/back-link";
+import { KeepReading } from "@/components/keep-reading";
 import { PostBody } from "@/components/post-body";
 import { ReadingLayout } from "@/components/reading-layout";
 import { createPageMetadata } from "@/lib/metadata";
-import { getPublishedPostBySlug, getPublishedPosts } from "@/lib/posts";
+import {
+  getPublishedPostBySlug,
+  getPublishedPosts,
+  getRelatedPosts,
+} from "@/lib/posts";
 
 import styles from "./post.module.css";
 
@@ -67,6 +72,14 @@ export default async function PostPage({
           <PostBody>{post.body}</PostBody>
         </div>
       </article>
+      <KeepReading
+        heading="Keep reading"
+        items={getRelatedPosts(post.slug).map(({ slug, title, excerpt }) => ({
+          href: `/blog/${slug}`,
+          title,
+          description: excerpt,
+        }))}
+      />
     </ReadingLayout>
   );
 }

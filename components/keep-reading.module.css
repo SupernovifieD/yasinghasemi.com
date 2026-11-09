@@ -1,0 +1,76 @@
+.keepReading {
+  margin-block-start: var(--space-16);
+}
+
+/* A hairline with a slash in the middle, like the site's own names. */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-block-end: var(--space-8);
+  color: var(--color-muted);
+  font-size: var(--font-label);
+  line-height: 1;
+}
+
+.divider::before,
+.divider::after {
+  height: 1px;
+  background: var(--color-divider);
+  content: "";
+  flex: 1;
+}
+
+/* Two classes, so this beats the reading layout's ".prose h2" rule. */
+.keepReading .heading {
+  margin: 0 0 var(--space-2);
+  color: var(--color-muted);
+  font-size: var(--font-label);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.item + .item {
+  border-block-start: 1px solid var(--color-divider);
+}
+
+.link {
+  display: block;
+  padding-block: var(--space-4);
+  color: inherit;
+  text-decoration: none;
+}
+
+.title {
+  display: block;
+  color: var(--color-text);
+  font-size: var(--font-result);
+  font-weight: 700;
+  line-height: 1.35;
+  text-decoration: underline;
+  text-decoration-color: var(--color-muted);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  text-wrap: pretty;
+  transition: text-decoration-color 200ms ease;
+}
+
+.link:hover .title,
+.link:focus-visible .title {
+  text-decoration-color: currentColor;
+}
+
+.description {
+  display: block;
+  margin-block-start: var(--space-2);
+  color: var(--color-body);
+  font-size: var(--font-body);
+  line-height: 1.65;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title {
+    transition: none;
+  }
+}

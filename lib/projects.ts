@@ -1,3 +1,4 @@
+import { itemsAfter } from "@/lib/related";
 import type { TechId } from "@/lib/tech";
 
 export type ProjectCategory = "software" | "web";
@@ -335,4 +336,13 @@ export function getProject(slug: string) {
 
 export function projectsInCategory(category: ProjectCategory) {
   return projects.filter((project) => project.category === category);
+}
+
+/** Up to three other projects from the same category, for "more projects". */
+export function relatedProjects(slug: string, count = 3) {
+  const project = getProject(slug);
+  if (!project) return [];
+
+  const peers = projectsInCategory(project.category);
+  return itemsAfter(peers, peers.indexOf(project), count);
 }

@@ -1,6 +1,7 @@
 import matter from "gray-matter";
 
 import { parsePostFrontmatter, type PostFrontmatter } from "@/lib/posts/schema";
+import { itemsAfter } from "@/lib/related";
 
 export type Post = PostFrontmatter & {
   body: string;
@@ -44,4 +45,17 @@ export function publishedSummaries(posts: Post[]) {
     .filter((post) => !post.draft)
     .map(toPostSummary)
     .sort(comparePostsNewestFirst);
+}
+
+/** The posts after `slug` in a newest-first list, wrapping around the end. */
+export function relatedPosts(
+  posts: readonly PostSummary[],
+  slug: string,
+  count = 3,
+) {
+  return itemsAfter(
+    posts,
+    posts.findIndex((post) => post.slug === slug),
+    count,
+  );
 }

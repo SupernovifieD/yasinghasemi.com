@@ -247,6 +247,46 @@ test("renders every published article directly with one title", async ({
   }
 });
 
+test("every post ends with a divider and three other posts to read", async ({
+  page,
+}) => {
+  await page.goto("/blog");
+  const all = await page
+    .locator("main article h2 a")
+    .evaluateAll((links) => links.map((link) => link.getAttribute("href")!));
+  expect(all.length).toBeGreaterThan(3);
+
+  for (const href of all) {
+    await page.goto(href);
+    const more = page.getByRole("region", { name: "Keep reading" });
+    const links = more.getByRole("link");
+    await expect(links).toHaveCount(3);
+
+    const targets = await links.evaluateAll((items) =>
+      items.map((item) => item.getAttribute("href")!),
+    );
+    expect(new Set(targets).size).toBe(3);
+    expect(targets).not.toContain(href);
+    for (const target of targets) expect(all).toContain(target);
+
+    // After the article, with a decorative divider above the heading.
+    const [article, section] = [
+      (await page.locator("main article").boundingBox())!,
+      (await more.boundingBox())!,
+    ];
+    expect(section.y).toBeGreaterThan(article.y + article.height);
+    await expect(more.locator('[aria-hidden="true"]')).toHaveCount(1);
+    await expect(more.getByRole("heading", { level: 2 })).toHaveText(
+      "Keep reading",
+    );
+
+    // Each row is a title and the post's excerpt.
+    for (const link of await links.all()) {
+      expect((await link.innerText()).split("\n").length).toBeGreaterThan(1);
+    }
+  }
+});
+
 test("unknown post slugs return not found", async ({ page }) => {
   const response = await page.goto("/blog/not-a-published-post");
 

@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { BackLink } from "@/components/back-link";
+import { KeepReading } from "@/components/keep-reading";
 import { projectShots } from "@/components/projects/project-shots";
 import { ReadingLayout } from "@/components/reading-layout";
 import { TechRow } from "@/components/projects/tech-row";
 import { createPageMetadata } from "@/lib/metadata";
-import { getProject, projects } from "@/lib/projects";
+import { getProject, projects, relatedProjects } from "@/lib/projects";
 
 import styles from "./project.module.css";
 
@@ -103,6 +104,14 @@ export default async function ProjectPage({
           </div>
         ) : null}
       </article>
+      <KeepReading
+        heading="More projects"
+        items={relatedProjects(project.slug).map(({ slug, name, tagline }) => ({
+          href: `/projects/${slug}`,
+          title: name,
+          description: tagline,
+        }))}
+      />
     </ReadingLayout>
   );
 }

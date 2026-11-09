@@ -7,6 +7,7 @@ import {
   comparePostsNewestFirst,
   parsePostSource,
   publishedSummaries,
+  relatedPosts,
   type Post,
 } from "@/lib/posts/catalog";
 import { createBodyExcerpt, type BlogPreviewPost } from "@/lib/posts/excerpt";
@@ -41,6 +42,11 @@ function loadPostFiles(): Post[] {
 
 export function getPublishedPosts() {
   return publishedSummaries(loadPostFiles());
+}
+
+/** Up to three other published posts to read after this one. */
+export function getRelatedPosts(slug: string) {
+  return relatedPosts(getPublishedPosts(), slug);
 }
 
 /** Published posts with a plain-text body excerpt, newest first. */

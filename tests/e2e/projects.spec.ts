@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-import { projectsInCategory, projects } from "@/lib/projects";
+import { projectsInCategory, projects, relatedProjects } from "@/lib/projects";
 import { getTech } from "@/lib/tech";
 
 const SOFTWARE = "Software & Apps";
@@ -537,6 +537,32 @@ test.describe("project pages", () => {
         "href",
         `https://yasinghasemi.com/projects/${project.slug}`,
       );
+
+      // The end of the page: a divider, then three other projects from the
+      // same category, each as a name and its one-line description.
+      const more = page.getByRole("region", { name: "More projects" });
+      const expected = relatedProjects(project.slug);
+      expect(expected).toHaveLength(3);
+      const links = more.getByRole("link");
+      await expect(links).toHaveCount(3);
+      expect(
+        await links.evaluateAll((items) =>
+          items.map((item) => item.getAttribute("href")),
+        ),
+      ).toEqual(expected.map(({ slug }) => `/projects/${slug}`));
+      for (const other of expected) {
+        expect(other.slug).not.toBe(project.slug);
+        expect(other.category).toBe(project.category);
+        await expect(
+          more.getByRole("link", { name: new RegExp(`^${other.name}`) }),
+        ).toContainText(other.tagline);
+      }
+      await expect(more.locator('[aria-hidden="true"]')).toHaveCount(1);
+      const [article, section] = [
+        (await page.locator("main article").boundingBox())!,
+        (await more.boundingBox())!,
+      ];
+      expect(section.y).toBeGreaterThan(article.y + article.height);
     });
   }
 
