@@ -2,6 +2,8 @@ import { createHash } from "node:crypto";
 
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
+import { projects } from "@/lib/projects";
+
 test.use({ viewport: { width: 1440, height: 900 } });
 
 const PREVIEWS = ["projects", "blog", "about", "contact"] as const;
@@ -194,6 +196,23 @@ test("screenshots share one aspect ratio defined by a single CSS variable", asyn
   for (const tile of await layer(page, "projects").locator("img").all()) {
     const box = (await tile.boundingBox())!;
     expect(box.width / box.height).toBeCloseTo(16 / 9, 1);
+  }
+});
+
+test("every tile is a screenshot; a project with no site yet is left out", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await hoverLink(page, "/projects");
+
+  // Projects with a website have a screenshot (a unit test keeps those in
+  // step); each track holds its set twice.
+  const withSites = projects.filter(({ url }) => url).length;
+  for (const track of await layer(page, "projects")
+    .locator("[data-direction]")
+    .all()) {
+    await expect(track.locator("> *")).toHaveCount(withSites * 2);
+    await expect(track.locator("img")).toHaveCount(withSites * 2);
   }
 });
 

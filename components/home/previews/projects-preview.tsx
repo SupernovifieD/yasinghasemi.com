@@ -29,23 +29,21 @@ function rotate<T>(items: readonly T[], by: number) {
   return [...items.slice(by), ...items.slice(0, by)];
 }
 
-function Tile({ project }: { project: Project }) {
-  const shot = projectShots[project.slug];
+// Only projects with a screenshot are shown. One without a website yet
+// (Karmania) keeps its place on /projects but stays out of this preview.
+const showcased = projects.filter(({ slug }) => slug in projectShots);
 
+function Tile({ project }: { project: Project }) {
   return (
     <div className={styles.tile}>
-      {shot ? (
-        <NextImage
-          className={styles.shot}
-          src={shot}
-          alt=""
-          sizes="12rem"
-          loading="eager"
-          draggable={false}
-        />
-      ) : (
-        <div className={styles.placeholder} />
-      )}
+      <NextImage
+        className={styles.shot}
+        src={projectShots[project.slug]}
+        alt=""
+        sizes="12rem"
+        loading="eager"
+        draggable={false}
+      />
     </div>
   );
 }
@@ -116,9 +114,9 @@ export default function ProjectsPreview({ active }: PreviewProps) {
       data-paused={active ? undefined : ""}
       aria-hidden="true"
     >
-      <Band order={projects} direction="up" active={active} />
+      <Band order={showcased} direction="up" active={active} />
       <Band
-        order={rotate(projects, Math.floor(projects.length / 2))}
+        order={rotate(showcased, Math.floor(showcased.length / 2))}
         direction="down"
         active={active}
       />
