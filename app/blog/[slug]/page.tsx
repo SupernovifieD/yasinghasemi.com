@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { BackLink } from "@/components/back-link";
 import { PostBody } from "@/components/post-body";
 import { ReadingLayout } from "@/components/reading-layout";
 import { createPageMetadata } from "@/lib/metadata";
@@ -58,9 +58,7 @@ export default async function PostPage({
   return (
     <ReadingLayout>
       <article>
-        <Link href="/blog" className={styles.backLink}>
-          ← Back to /blog
-        </Link>
+        <BackLink href="/blog">Back to /blog</BackLink>
         <h1>{post.title}</h1>
         <time className={styles.date} dateTime={post.publishedAt}>
           {publicationDate.format(new Date(`${post.publishedAt}T00:00:00Z`))}

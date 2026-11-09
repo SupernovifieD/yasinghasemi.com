@@ -1,0 +1,6 @@
+.backLink {
+  display: inline-block;
+  margin-block-end: var(--space-8);
+  color: var(--color-muted);
+  font-size: var(--font-label);
+}
