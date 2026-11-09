@@ -23,7 +23,12 @@ export default function BlogPage() {
 
   return (
     <main id="main-content" className={styles.blog} tabIndex={-1}>
-      <h1>/blog</h1>
+      <div className={styles.heading}>
+        <h1>/blog</h1>
+        <p className={styles.subtitle}>
+          Notes on my projects, the decisions behind them, and what I learned.
+        </p>
+      </div>
       {posts.length === 0 ? (
         <p className={styles.empty}>No posts have been published yet.</p>
       ) : (

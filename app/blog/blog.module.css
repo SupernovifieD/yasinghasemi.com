@@ -5,12 +5,24 @@
   font-size: var(--font-reading);
 }
 
-.blog h1 {
+.heading {
   margin: 0 0 var(--space-10);
+}
+
+.heading h1 {
+  margin: 0 0 var(--space-3);
   color: var(--color-text);
   font-size: var(--font-heading);
   line-height: 1.2;
   letter-spacing: -0.025em;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--color-body);
+  font-size: var(--font-body);
+  line-height: 1.7;
+  text-wrap: balance;
 }
 
 .results {

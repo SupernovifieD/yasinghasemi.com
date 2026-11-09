@@ -1,3 +1,15 @@
+/* The title and its subtitle. "div.heading" is one point more specific than the
+   layout's ".shortContent h1", so the tighter title margin wins. */
+div.heading h1 {
+  margin-block-end: var(--space-3);
+}
+
+.subtitle {
+  color: var(--color-body);
+  line-height: 1.7;
+  text-wrap: balance;
+}
+
 .destinations {
   margin: 0;
   padding: 0;

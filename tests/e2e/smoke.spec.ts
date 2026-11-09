@@ -434,6 +434,31 @@ test("contact contains exactly the requested destinations", async ({
   ).toHaveAttribute("href", "mailto:y@yasinghasemi.com");
 });
 
+for (const route of ["/blog", "/contact"]) {
+  test(`${route} has a short subtitle under its title`, async ({ page }) => {
+    await page.goto(route);
+    await page.evaluate(() => document.fonts.ready);
+
+    const subtitle = page.locator("main h1 + p");
+    await expect(subtitle).toHaveCount(1);
+    const text = await subtitle.innerText();
+    expect(text.length).toBeGreaterThan(20);
+    expect(text).not.toMatch(/categor(y|ies)/i);
+    await expect(subtitle.getByRole("link")).toHaveCount(0);
+
+    // Directly under the title, left-aligned with it, and short enough to sit
+    // on one or two lines.
+    const [title, sub] = [
+      (await page.locator("h1").boundingBox())!,
+      (await subtitle.boundingBox())!,
+    ];
+    expect(sub.y).toBeGreaterThanOrEqual(title.y + title.height);
+    expect(sub.y - (title.y + title.height)).toBeLessThan(24);
+    expect(Math.abs(sub.x - title.x)).toBeLessThan(1);
+    expect(sub.height).toBeLessThan(60);
+  });
+}
+
 test("privacy policy describes implemented and unverified data handling", async ({
   page,
 }) => {

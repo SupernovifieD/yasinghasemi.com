@@ -14,7 +14,12 @@ export const metadata: Metadata = createPageMetadata({
 export default function ContactPage() {
   return (
     <ReadingLayout placement="short">
-      <h1>/contact</h1>
+      <div className={styles.heading}>
+        <h1>/contact</h1>
+        <p className={styles.subtitle}>
+          Reach me by email, or find me on GitHub and LinkedIn.
+        </p>
+      </div>
       <ul className={styles.destinations}>
         <li>
           <a href={siteConfig.social.github}>GitHub</a>
