@@ -303,7 +303,8 @@ test("header and footer text is one notch smaller", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/about");
 
-  for (const selector of ["header a", "footer"]) {
+  // The footer element inherits the body size; its strip and links set 13px.
+  for (const selector of ["header a", "footer a"]) {
     await expect(page.locator(selector).first()).toHaveCSS("font-size", "13px");
   }
   expect((await page.locator("header").boundingBox())!.height).toBeLessThan(70);
