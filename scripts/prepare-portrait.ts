@@ -38,6 +38,8 @@ type Target = {
    * auto-levels for photos whose skin is darker.
    */
   levels: { black: number; white: number } | "auto";
+  /** Midtone lift applied after the stretch: below 1 brightens. */
+  gamma: number;
   matte:
     | { kind: "backdrop" }
     | {
@@ -57,6 +59,7 @@ const TARGETS: Record<string, Target> = {
     fade: { start: 0.8, end: 0.94 },
     oval: { cx: 0.5, cy: 0.46, rx: 0.4, ry: 0.78 },
     levels: { black: 20, white: 225 },
+    gamma: 1,
     matte: { kind: "backdrop" },
   },
   // An outdoor photo on yellow foliage: skin and hair are orange-red and dark,
@@ -67,6 +70,8 @@ const TARGETS: Record<string, Target> = {
     fade: { start: 0.8, end: 0.95 },
     oval: { cx: 0.5, cy: 0.47, rx: 0.34, ry: 0.5 },
     levels: "auto",
+    // Darker skin and black hair would sink into the black page otherwise.
+    gamma: 0.62,
     matte: {
       kind: "skin",
       core: { cx: 0.5, cy: 0.43, rx: 0.22, ry: 0.29 },
@@ -304,7 +309,7 @@ async function main() {
   const height = (sideways ? meta.width : meta.height) ?? 0;
   if (!width || !height) throw new Error("Unreadable source image");
 
-  const { crop, fade, oval, levels, matte } = target;
+  const { crop, fade, oval, levels, gamma, matte } = target;
   const base = sharp(source)
     .rotate()
     .extract({
@@ -351,13 +356,14 @@ async function main() {
 
     for (let x = 0; x < SIZE; x++) {
       const index = y * SIZE + x;
-      const tone = Math.min(
+      const stretched = Math.min(
         1,
         Math.max(
           0,
           (enhanced[index] - range.black) / (range.white - range.black),
         ),
       );
+      const tone = stretched ** gamma;
 
       output[index] = Math.round(
         255 * tone * subject[index] * vertical * ellipseWeight(x, y, oval, 0.4),
