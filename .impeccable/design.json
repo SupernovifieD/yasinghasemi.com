@@ -178,14 +178,14 @@
       "name": "Primary Route Navigation",
       "kind": "nav",
       "refersTo": "navigation-link",
-      "description": "Literal route links with monochrome active treatment. Below 64rem they collapse into a hamburger disclosure whose panel centers the four links.",
+      "description": "Literal route links with monochrome active treatment. Below 64rem they collapse into a hamburger disclosure whose panel centers the four links. The home page has no header at any width.",
       "html": "<nav class=\"ds-nav\" aria-label=\"Primary navigation\"><a href=\"/projects\">/projects</a><a aria-current=\"page\" href=\"/blog\">/blog</a><a href=\"/about\">/about</a><a href=\"/contact\">/contact</a></nav>",
       "css": ".ds-nav { display: flex; gap: 1.5rem; background: #000; font: 400 .9375rem/1.7 \"JetBrains Mono\", monospace; } .ds-nav a { display: inline-flex; min-height: 2.75rem; align-items: center; color: #d4d4d4; text-decoration: none; } .ds-nav a:hover, .ds-nav a[aria-current=\"page\"] { color: #f5f5f5; text-decoration: underline; text-underline-offset: .35rem; } .ds-nav a:focus-visible { outline: 2px solid #fff; outline-offset: .25rem; }"
     },
     {
       "name": "Home Preview Stage",
       "kind": "custom",
-      "description": "Desktop-only hover preview: one flat gray radial glow, the same size for every link, behind the previewed content. The only place a gradient, canvas, or WebGL is allowed.",
+      "description": "Desktop-only hover preview: one flat gray radial glow, the same size for every link, behind the previewed content. With the About page portrait stage it is the only place a gradient, canvas, or WebGL is allowed.",
       "html": "<div class=\"ds-stage\"><p class=\"ds-stage-text\">Preview content</p></div>",
       "css": ".ds-stage { position: relative; display: grid; width: min(100%, 34rem); aspect-ratio: 1; place-items: center; background: radial-gradient(closest-side, rgb(255 255 255 / .24), rgb(255 255 255 / .1) 55%, transparent); color: #d4d4d4; font: 400 .9375rem/1.8 \"JetBrains Mono\", monospace; } .ds-stage-text { margin: 0; }"
     },
@@ -211,7 +211,7 @@
       "Absolute black ground with a neutral gray-to-white hierarchy.",
       "One self-hosted monospace family and no decorative type pairing.",
       "Flat, square, line-based controls without cards or ornamental surfaces.",
-      "A two-column home (welcome and links left, hover preview right on desktop) beside centered reading columns.",
+      "A centered two-column home (welcome and links left, hover preview right on desktop) beside centered reading columns, with no header on the home page.",
       "Progressive enhancement: plain links and a native disclosure menu work without JavaScript."
     ],
     "rules": [
@@ -232,12 +232,12 @@
       },
       {
         "name": "The Flat Document Rule",
-        "body": "A new surface must earn its boundary through content or interaction; never add card elevation as decoration. The only exception is the Preview Stage.",
+        "body": "A new surface must earn its boundary through content or interaction; never add card elevation as decoration. The only exceptions are the preview and portrait stages.",
         "section": "elevation"
       },
       {
         "name": "The Preview Stage Rule",
-        "body": "A flat gray radial glow, canvas drawing, and WebGL are allowed only inside the home page's desktop preview stage, never elsewhere, always gray, and always reduced or removed under prefers-reduced-motion.",
+        "body": "A flat gray radial glow, canvas drawing, and WebGL are allowed only inside the home page's desktop preview stage and the About page's portrait stage, never elsewhere, always gray (the shared --glow-gradient), and always reduced or removed under prefers-reduced-motion.",
         "section": "elevation"
       }
     ],
@@ -250,7 +250,7 @@
       "Do keep every preview optional: each destination stays a plain link."
     ],
     "donts": [
-      "Don't introduce colored accents, or gradients, glows, textures, scanlines, and 3D outside the home preview stage.",
+      "Don't introduce colored accents, or gradients, glows, textures, scanlines, and 3D outside the home preview stage and the About portrait stage.",
       "Don't add cards, dashboard modules, fake window controls, or decorative chrome.",
       "Don't center paragraph text or vertically center long reading pages.",
       "Don't hide layout defects with global overflow clipping.",

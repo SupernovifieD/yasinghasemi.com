@@ -124,11 +124,11 @@ The palette is strictly achromatic; contrast and typography, not hue, communicat
 
 ## Layout
 
-The outer shell is a normal-flow column with a 100rem maximum width, fluid 1.25–2.5rem gutters, and a footer pushed to the bottom only when content is short. Articles, policy pages, About, Contact, and the blog index share a centered 70ch column measured at the reading font size. The blog index stays top-aligned with a `/blog` heading and left-aligned results. About, Contact, and Projects share the same vertically centered short-page layout with a route-name heading above left-aligned compact content; all top-align on phones and short screens.
+The outer shell is a normal-flow column with a 100rem maximum width, fluid 1.25–2.5rem gutters, and a footer pushed to the bottom only when content is short. Articles, policy pages, About, Contact, and the blog index share a centered 70ch column measured at the reading font size. The blog index stays top-aligned with a `/blog` heading and left-aligned results. About, Contact, and Projects share the same vertically centered short-page layout with a route-name heading above left-aligned compact content, centered at every width; only short screens (under 42rem tall) top-align, so a block taller than the viewport flows from the top. The About page ends with an ASCII portrait on the gray glow.
 
-At 64rem and wider the header is the site name at the left and the four route links (`/projects`, `/blog`, `/about`, `/contact`) at the right, on every page except the home page, which has no header and carries its own navigation. Below 64rem every page, including home, shows the site name with a hamburger button; its panel lists the four links centered. Code and tables may scroll inside their own bounded containers; the document itself must not scroll horizontally.
+The home page has no header at any width: it carries its own links, one per line under the welcome note. On every other page the header is the site name at the left and, from 64rem, the four route links (`/projects`, `/blog`, `/about`, `/contact`) at the right; below 64rem the links move into a hamburger button whose panel lists them centered. The header and footer text is 0.8125rem and their bars are compact (header 4rem desktop, 3.5rem phones; footer 3.75rem); touch targets stay at least 2.75rem. On phones the footer strip stacks and centers. The footer carries the privacy and terms links only. Code and tables may scroll inside their own bounded containers; the document itself must not scroll horizontally.
 
-The home page is two columns from 64rem: the welcome note with the four links below it, one per line, on the left, and the preview stage on the right. Below 64rem it is one column with the same links and no stage.
+From 64rem the home page is one centered group of two columns (33rem and 34rem, 1rem apart): the welcome note with its links on the left, and the preview stage on the right, so the note sits close to the stage instead of at the far-left edge. Below 64rem it is one column with the same links and no stage; there the text block is vertically centered and, where it fits the viewport (phones about 640px tall and up), the page does not scroll. On shorter screens it scrolls rather than clipping.
 
 ## Elevation & Depth
 
@@ -138,7 +138,7 @@ The system is flat and uses no shadows, glow, blur, or simulated glass. Hierarch
 
 **The Flat Document Rule.** A new surface must earn its boundary through content or interaction; never add card elevation as decoration. The one exception is the Preview Stage.
 
-**The Preview Stage Rule.** A flat gray radial glow, canvas drawing, and WebGL are allowed only inside the home page's desktop preview stage, and nowhere else. The glow is gray (never colored), the same size for every link, and appears on the first hover and then stays. Every animation inside it is reduced or removed under `prefers-reduced-motion`.
+**The Preview Stage Rule.** A flat gray radial glow, canvas drawing, and WebGL are allowed only inside the home page's desktop preview stage and the About page's portrait stage, and nowhere else. The glow is the shared `--glow-gradient` (gray, never colored). In the home stage it is the same size for every link and appears on the first hover and then stays; on the About page it sits behind the portrait. Every animation inside either stage is reduced or removed under `prefers-reduced-motion`.
 
 ## Shapes
 
@@ -160,10 +160,14 @@ Primary navigation is a row of literal route links. Hover and active states brig
 
 On fine-pointer desktop only, hovering or focusing a home link shows that link's preview in a square stage; the last hovered link stays selected until another is hovered or the page reloads. Previews load lazily on first use, crossfade, and pause while inactive. Touch devices and narrow screens get plain links.
 
-- **/projects:** two opposing, seamlessly looping bands of small project screenshots, faded into the background at their top and bottom edges.
+- **/projects:** two opposing, seamlessly looping bands of small project screenshots, faded into the background at their top and bottom edges. Hovering a band eases it to a crawl (0.1x) while the other keeps moving; leaving restores it.
 - **/blog:** one randomly chosen post (picked on the first hover) with its title and an excerpt that fades into the black; both are one link to the post.
-- **/about:** the portrait as dense ASCII on a canvas; glyphs are pushed away from the pointer and spring back when it leaves.
+- **/about:** the portrait as dense ASCII on a canvas; glyphs are pushed away from the pointer and spring back when it leaves. The whole face, chin, and a short stretch of neck are in the frame.
 - **/contact:** three slowly floating 3D logos (GitHub, email, LinkedIn), each a real link.
+
+### About Portrait
+
+Below the About text, on phones and desktop, a second photo is drawn as dense ASCII on the shared gray glow (a 34rem-wide square, never wider than the column). Fine pointers push the glyphs away and they spring back; touch screens and reduced motion get the still portrait. The image is prepared offline by `scripts/prepare-portrait.ts`; originals are not stored in the repository.
 
 ### Reading Results
 

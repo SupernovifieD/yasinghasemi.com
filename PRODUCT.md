@@ -30,6 +30,7 @@ Visitors arrive through direct links, search results, or current navigation. The
 
 - Required public routes are `/`, `/about`, `/contact`, `/projects`, `/blog`, published `/blog/[slug]` pages, `/privacy`, and `/terms`.
 - Each published post is its own static page at `/blog/[slug]`.
+- The home page has no header at any width; the other pages share one header. The About page ends with a decorative ASCII portrait that reacts to a fine pointer and is still on touch screens and under reduced motion.
 - Home hover previews are enhancements for fine-pointer desktop only. They never evaluate input, expose drafts, or replace a link.
 - There are no categories, accounts, comments, CMS, database, analytics, contact form, payments, or search service.
 - Contact destinations are GitHub, LinkedIn, and `y@yasinghasemi.com` for both the displayed address and mail link.
