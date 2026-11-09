@@ -158,39 +158,39 @@
         "purpose": "Articles and policy prose."
       },
       "label": {
-        "displayName": "Shell Label",
-        "purpose": "Navigation, metadata, hints, and transcript output."
+        "displayName": "Label",
+        "purpose": "Navigation, metadata, hints, and footer text."
       }
     },
-    "breakpoints": [{ "name": "shell-stack", "value": "40rem" }]
+    "breakpoints": [
+      {
+        "name": "desktop",
+        "value": "64rem"
+      },
+      {
+        "name": "reading-stack",
+        "value": "40rem"
+      }
+    ]
   },
   "components": [
-    {
-      "name": "Terminal Command Input",
-      "kind": "input",
-      "refersTo": "command-input",
-      "description": "Native editable command field with a literal terminal caret.",
-      "html": "<label class=\"ds-visually-hidden\" for=\"ds-command\">Website navigation command</label><input class=\"ds-command-input\" id=\"ds-command\" value=\"pwd\">",
-      "css": ".ds-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; } .ds-command-input { width: 16rem; max-width: 100%; min-height: 2.75rem; padding: .5rem 0; border: 0; border-bottom: 1px solid var(--color-divider, #262626); border-radius: 0; background: var(--color-page, #000); color: var(--color-text, #f5f5f5); caret-color: #fff; font: 400 1rem/1.7 \"JetBrains Mono\", monospace; } .ds-command-input:focus-visible { outline: 2px solid #fff; outline-offset: .2rem; }"
-    },
-    {
-      "name": "Terminal Return Button",
-      "kind": "button",
-      "refersTo": "terminal-submit",
-      "description": "Compact submit control for touch and keyboard users.",
-      "html": "<button class=\"ds-terminal-submit\" type=\"button\" aria-label=\"Run command\">↵</button>",
-      "css": ".ds-terminal-submit { display: inline-flex; width: 2.75rem; height: 2.75rem; padding: 0; align-items: center; justify-content: center; border: 1px solid var(--color-divider, #262626); border-radius: 0; background: #000; color: #f5f5f5; font: 400 1rem/1 \"JetBrains Mono\", monospace; } .ds-terminal-submit:hover { border-color: #d4d4d4; background: #111; } .ds-terminal-submit:focus-visible { outline: 2px solid #fff; outline-offset: .25rem; }"
-    },
     {
       "name": "Primary Route Navigation",
       "kind": "nav",
       "refersTo": "navigation-link",
-      "description": "Literal route links with monochrome active treatment.",
-      "html": "<nav class=\"ds-nav\" aria-label=\"Primary navigation\"><a href=\"/about\">/about</a><a aria-current=\"page\" href=\"/blog\">/blog</a></nav>",
+      "description": "Literal route links with monochrome active treatment. Below 64rem they collapse into a hamburger disclosure whose panel centers the four links.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Primary navigation\"><a href=\"/projects\">/projects</a><a aria-current=\"page\" href=\"/blog\">/blog</a><a href=\"/about\">/about</a><a href=\"/contact\">/contact</a></nav>",
       "css": ".ds-nav { display: flex; gap: 1.5rem; background: #000; font: 400 .9375rem/1.7 \"JetBrains Mono\", monospace; } .ds-nav a { display: inline-flex; min-height: 2.75rem; align-items: center; color: #d4d4d4; text-decoration: none; } .ds-nav a:hover, .ds-nav a[aria-current=\"page\"] { color: #f5f5f5; text-decoration: underline; text-underline-offset: .35rem; } .ds-nav a:focus-visible { outline: 2px solid #fff; outline-offset: .25rem; }"
     },
     {
-      "name": "Blog Search Result",
+      "name": "Home Preview Stage",
+      "kind": "custom",
+      "description": "Desktop-only hover preview: one flat gray radial glow, the same size for every link, behind the previewed content. The only place a gradient, canvas, or WebGL is allowed.",
+      "html": "<div class=\"ds-stage\"><p class=\"ds-stage-text\">Preview content</p></div>",
+      "css": ".ds-stage { position: relative; display: grid; width: min(100%, 34rem); aspect-ratio: 1; place-items: center; background: radial-gradient(closest-side, rgb(255 255 255 / .24), rgb(255 255 255 / .1) 55%, transparent); color: #d4d4d4; font: 400 .9375rem/1.8 \"JetBrains Mono\", monospace; } .ds-stage-text { margin: 0; }"
+    },
+    {
+      "name": "Blog Result",
       "kind": "custom",
       "description": "Flat title, excerpt, and date hierarchy for the chronological index.",
       "html": "<article class=\"ds-result\"><h2><a href=\"/blog/example\">A Complete Article Title</a></h2><p>A concise preserved excerpt explaining the post.</p><time datetime=\"2026-06-09\">June 9, 2026</time></article>",
@@ -205,14 +205,14 @@
     }
   ],
   "narrative": {
-    "northStar": "The Quiet Shell Manual",
-    "overview": "The site combines the economy of a Unix manual page with the calm pacing of a small literary publication. Pitch black is the canvas, neutral text carries every hierarchy, and shell notation appears only where it explains navigation. The writing is always the product, and conventional navigation remains complete without the shell.",
+    "northStar": "The Quiet Manual",
+    "overview": "The site combines the economy of a Unix manual page with the calm pacing of a small literary publication. Pitch black is the canvas, neutral text carries every hierarchy, and slash-prefixed route names appear only where they explain navigation. The writing is always the product, and plain links reach everything.",
     "keyCharacteristics": [
       "Absolute black ground with a neutral gray-to-white hierarchy.",
       "One self-hosted monospace family and no decorative type pairing.",
       "Flat, square, line-based controls without cards or ornamental surfaces.",
-      "Distinct center-left, left-index, and centered-reading geometries.",
-      "Progressive enhancement: conventional links remain complete without the shell."
+      "A two-column home (welcome and links left, hover preview right on desktop) beside centered reading columns.",
+      "Progressive enhancement: plain links and a native disclosure menu work without JavaScript."
     ],
     "rules": [
       {
@@ -226,13 +226,18 @@
         "section": "colors"
       },
       {
-        "name": "The Prose Is Not a Terminal Rule",
+        "name": "The Prose Is Not Preformatted Rule",
         "body": "Use semantic paragraphs and natural wrapping; never turn articles into a preformatted text wall.",
         "section": "typography"
       },
       {
         "name": "The Flat Document Rule",
-        "body": "A new surface must earn its boundary through content or interaction; never add card elevation as decoration.",
+        "body": "A new surface must earn its boundary through content or interaction; never add card elevation as decoration. The only exception is the Preview Stage.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Preview Stage Rule",
+        "body": "A flat gray radial glow, canvas drawing, and WebGL are allowed only inside the home page's desktop preview stage, never elsewhere, always gray, and always reduced or removed under prefers-reduced-motion.",
         "section": "elevation"
       }
     ],
@@ -241,14 +246,15 @@
       "Do preserve the distinct home, index, and article alignments.",
       "Do use semantic document elements and native controls.",
       "Do keep standalone interactive targets near 2.75rem and show a two-pixel white focus outline.",
-      "Do test 320px reflow, long IPv6 identities, and long article slugs."
+      "Do test 320px reflow and long article slugs.",
+      "Do keep every preview optional: each destination stays a plain link."
     ],
     "donts": [
-      "Don't introduce colored accents, gradients, glows, textures, scanlines, or CRT effects.",
-      "Don't add cards, dashboard modules, fake window controls, or decorative terminal chrome.",
+      "Don't introduce colored accents, or gradients, glows, textures, scanlines, and 3D outside the home preview stage.",
+      "Don't add cards, dashboard modules, fake window controls, or decorative chrome.",
       "Don't center paragraph text or vertically center long reading pages.",
       "Don't hide layout defects with global overflow clipping.",
-      "Don't make the shell the only way to reach content."
+      "Don't make a hover preview the only way to reach content."
     ]
   }
 }

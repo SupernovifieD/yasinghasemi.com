@@ -24,7 +24,7 @@ Post body.
 - Add `updatedAt` only for a documented editorial update; it cannot precede the
   publication date.
 - Keep work unpublished with `draft: true`. Drafts are excluded from the blog
-  list, generated article paths, terminal route registry, and sitemap.
+  list, generated article paths, home blog preview, and sitemap.
 - Do not add category or tag fields. The schema rejects both because the public
   model is intentionally flat.
 - Start the body below frontmatter without repeating the title as an `h1`; the
@@ -47,28 +47,6 @@ Check the article directly, its position on `/blog`, its metadata, its mobile
 reflow, and every link. Newest-first order comes from `publishedAt`, with slug as
 the deterministic tie-breaker.
 
-## Legacy migration tool
-
-The archived five-post import is reproducible and read-only by default:
-
-```sh
-pnpm migrate:legacy --archive /Users/yasin/Downloads/yasinghasemi.com-main.zip --dry-run
-```
-
-The tool validates ZIP paths and expansion limits, inventories only published
-`article` elements under `mydocuments/`, and checks semantic parity before it can
-emit Markdown. It never executes archived scripts. The audited source hash,
-mapping, and transformations are recorded in `docs/content-migration.md`.
-
-## Terminal maintenance
-
-The shell is only a public-route navigator. Its supported commands are `cd`,
-`pwd`, `ls`, `clear`, and `help`; do not connect it to a process, server action,
-filesystem, URL passthrough, or arbitrary router destination. Post directories in
-`ls /blog` come from the validated published catalogue. When routes change,
-update the single public registry and its resolver/evaluator tests rather than
-adding a second route list in a client component.
-
 ## Static preview and deployment
 
 JetBrains Mono v2.304 is bundled in `app/fonts/` (Regular, Medium, and Bold WOFF2)
@@ -76,26 +54,24 @@ from the [official release](https://github.com/JetBrains/JetBrainsMono/tree/v2.3
 Its SIL Open Font License is retained alongside the files. `next/font/local`
 serves these assets from the site, so builds require no Google Fonts fetch.
 
-`pnpm build` creates the complete static site in `out/` and then adds five exact
-legacy HTML redirect documents. `pnpm start` serves that generated directory for
-local production-style review; rebuild after changing application or content
-files.
+`pnpm build` creates the complete static site in `out/`. `pnpm start` serves that
+generated directory for local production-style review; rebuild after changing
+application or content files.
 
 Pushes to `main` run `.github/workflows/deploy-pages.yml`. The workflow installs
 the frozen pnpm graph, checks formatting, lint, types, and unit tests, builds the
 static export, and deploys the `out/` artifact through the `github-pages`
 environment. GitHub Pages must remain configured with **GitHub Actions** as its
-build source so the legacy Jekyll branch build cannot replace the Next.js export.
+build source so the Jekyll branch build cannot replace the Next.js export.
 
 The custom domain is recorded in `public/CNAME`, and `public/.nojekyll` preserves
-Next.js `_next` assets. The prompt uses the static `yasinghasemi.com` identity and
-does not inspect or display reader IP addresses. GitHub Pages cannot provide
-request-time Next.js routes or custom `next.config.ts` response headers.
+Next.js `_next` assets. GitHub Pages cannot provide request-time Next.js routes or
+custom `next.config.ts` response headers.
 
 ## Storage and policy changes
 
-The baseline application sets no cookies and keeps terminal history and transcript
-only in memory. Before adding analytics, optional storage, external assets, or
+The baseline application sets no cookies and keeps no persistent client state.
+Before adding analytics, optional storage, external assets, or
 another processor, update the actual controls and the Privacy Policy and Cookie
 Management page together. Never add a banner or preference toggle that does not
 control real behavior.

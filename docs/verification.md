@@ -1,5 +1,39 @@
 # Terminal blog refresh verification
 
+## Header, navigation, and home previews — 2026-11-09
+
+Replaces the terminal prompt with a site-name header and the four route links
+(`/projects`, `/blog`, `/about`, `/contact`), adds a hamburger menu below 64rem,
+and turns the home page into a two-column layout whose desktop hover previews
+cover projects, a random post, an ASCII portrait, and floating 3D logos. The
+legacy Windows 98 redirect pipeline and its migration tooling were removed;
+every post remains its own static page at `/blog/<slug>`. Nothing was committed
+or pushed from this work.
+
+| Check                            | Result                                                                                                                                                                 |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check`, `pnpm lint` | Passed with zero warnings.                                                                                                                                             |
+| `pnpm typecheck`                 | Passed.                                                                                                                                                                |
+| `pnpm test`                      | Passed: 12 files, 70 tests.                                                                                                                                            |
+| `pnpm build`                     | Passed as a static export; every published post has `out/blog/<slug>.html`; no redirect documents are produced.                                                        |
+| `pnpm test:e2e`                  | 187 passed, 2 skipped, 0 failed across Chromium, Firefox, and WebKit. The two skips are the WebGL motion test on Firefox and WebKit, which use the flat icon fallback. |
+| Lazy loading                     | Initial plus idle load: 12 scripts, 508 KB, no three.js. The 603 KB three.js chunk loads only after hovering `/contact`.                                               |
+| Independent verification pass    | Run by a Haiku subagent against the production build; its 12 e2e failures were triaged and fixed (see below).                                                          |
+
+Triage of the first verification run. Real defects fixed: the home glow
+extended past the page gutter and caused horizontal overflow at 1024px, and the
+contact links depended on WebGL initialising. Test defects fixed: one-shot hover
+before hydration, a 600ms wait inside a 700ms fade, WebKit needing Option+Tab,
+a 14-page-load randomness test replaced by a stubbed `Math.random`, and polls
+too short for slow software-rendered frames.
+
+Not verified: how the ASCII portrait reads to a viewer (inspected by eye in
+screenshots only), the game-style cursor (headless screenshots do not draw it),
+frame rate on real GPU hardware (measured only in headless Chromium, p50 16.7 ms),
+and WebGL in Firefox and WebKit (not exercised there). Under extreme parallel
+load (6 workers) WebKit still shows rare timeouts from slow chunk and page loads;
+the default configuration is stable.
+
 ## Terminal and centered-page follow-up — 2026-09-29
 
 Repository: `https://github.com/SupernovifieD/yasinghasemi.com`, branch `main`.
@@ -61,7 +95,7 @@ Screenshots and geometry evidence are outside the checkout at
 `/tmp/yasin-terminal-followup/`, with `focus`, `results`, `results-confirm`,
 `short-pages`, and `final` subdirectories. Representative desktop, phone,
 short-height, output, legal, and enlarged-text screenshots were visually inspected.
-Automated keyboard, no-JavaScript, reduced-motion, IME, recall, legacy-link, and
+Automated keyboard, no-JavaScript, reduced-motion, IME, recall, and
 all-post journeys passed. Physical mobile keyboards, manual screen-reader use,
 literal 400% browser zoom, and new Lighthouse scores were not tested; 320px reflow
 was tested directly. Mobile browsers may restrict automatic keyboard opening.
@@ -140,9 +174,6 @@ notes from earlier the same day.
   `pwd`, `ls`, `help`, and `clear`, including safe path resolution, bounded
   history/transcript state, IME and multiline-paste protection, `cd -`, and
   browser history synchronization.
-- Exact static direct-HTML compatibility documents and a client-side hash bridge
-  for recognized legacy routes. Folder-only legacy views recover to the flat blog
-  index; categories were not restored.
 - A static `yasinghasemi.com` terminal identity. The site does not inspect or
   display reader IP addresses.
 - Canonical, social, and article metadata; sitemap and robots routes; a
@@ -193,7 +224,7 @@ ambiguous source directory name.
 | `pnpm lint`                              | Passed with zero warnings.                                                                                                         |
 | `pnpm typecheck`                         | Passed.                                                                                                                            |
 | `pnpm test --run`                        | Passed after the Pages conversion: 14 files, 150 tests.                                                                            |
-| `pnpm build`                             | Passed as a static export: 17 pages, five generated article paths, and five exact legacy redirect documents in `out/`.             |
+| `pnpm build`                             | Passed as a static export: 17 pages and five generated article paths.                                                              |
 | `pnpm test:e2e`                          | Passed against the exported artifact: 117 tests across Chromium, Firefox, and WebKit in 3.2 minutes.                               |
 | Legacy migration dry run                 | Passed: five audited sources; generated Markdown matched the checkout; two dry runs were identical.                                |
 | Impeccable detector                      | Passed: `impeccable detect --json app components lib/site-config.ts` returned an empty issue list.                                 |
@@ -201,7 +232,7 @@ ambiguous source directory name.
 
 The browser suite covers normal and no-JavaScript navigation, reduced motion,
 keyboard focus and history, terminal command/attack cases, every article,
-canonical metadata, static legacy redirects/hash recovery, exported 404 behavior,
+canonical metadata, exported 404 behavior,
 and responsive terminal containment. Playwright emits a harmless `NO_COLOR`
 versus `FORCE_COLOR` warning.
 
