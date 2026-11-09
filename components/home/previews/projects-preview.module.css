@@ -13,6 +13,9 @@
   width: var(--tile-width);
   height: 100%;
   overflow: hidden;
+  /* Clip, don't scroll: a focused tile that is out of view must not shift the
+     loop. (Browsers without it keep the hidden overflow above.) */
+  overflow: clip;
   /* Screenshots fade into the background at the top and bottom edges. */
   -webkit-mask-image: linear-gradient(
     to bottom,
@@ -49,8 +52,14 @@
 .tile {
   /* A margin (not a flex gap) keeps the track exactly two sets tall, so
      moving it by 50% lands precisely on the start of the second set. */
+  display: block;
   margin-block-end: var(--tile-gap);
   flex: none;
+}
+
+/* The band clips its edges, so the focus ring is drawn inside the tile. */
+.tile:focus-visible {
+  outline-offset: -3px;
 }
 
 .shot {
@@ -61,6 +70,12 @@
   border: 1px solid rgb(255 255 255 / 0.14);
   object-fit: cover;
   opacity: 0.88;
+  transition: opacity 200ms ease;
+}
+
+.tile:hover .shot,
+.tile:focus-visible .shot {
+  opacity: 1;
 }
 
 @keyframes scroll {
@@ -72,5 +87,9 @@
 @media (prefers-reduced-motion: reduce) {
   .track {
     animation: none;
+  }
+
+  .shot {
+    transition: none;
   }
 }

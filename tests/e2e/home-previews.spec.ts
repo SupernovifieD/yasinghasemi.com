@@ -208,12 +208,94 @@ test("every tile is a screenshot; a project with no site yet is left out", async
   // Projects with a website have a screenshot (a unit test keeps those in
   // step); each track holds its set twice.
   const withSites = projects.filter(({ url }) => url).length;
-  for (const track of await layer(page, "projects")
-    .locator("[data-direction]")
-    .all()) {
+  const tracks = layer(page, "projects").locator("[data-direction]");
+  await expect(tracks).toHaveCount(2);
+  for (const track of await tracks.all()) {
     await expect(track.locator("> *")).toHaveCount(withSites * 2);
     await expect(track.locator("img")).toHaveCount(withSites * 2);
   }
+});
+
+test("each screenshot links to its project, with one tab stop per project", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await hoverLink(page, "/projects");
+
+  const all = layer(page, "projects").locator("a");
+  const shown = projects.filter(({ url }) => url);
+  // Two bands, each holding its set twice. (The preview mounts lazily, so wait
+  // for it before reading anything.)
+  await expect(all).toHaveCount(shown.length * 4);
+  for (const link of await all.all()) {
+    await expect(link).toHaveAttribute("href", /^\/projects\/[a-z-]+$/);
+  }
+
+  // The first set of the first band is the tab order, and what a screen reader
+  // finds; the repeats and the opposing band are for the eye.
+  const focusable = layer(page, "projects").locator("a:not([tabindex])");
+  expect(
+    await focusable.evaluateAll((els) =>
+      els.map((el) => el.getAttribute("href")),
+    ),
+  ).toEqual(shown.map(({ slug }) => `/projects/${slug}`));
+  expect(
+    await layer(page, "projects")
+      .getByRole("link")
+      .evaluateAll((els) => els.map((el) => el.getAttribute("aria-label"))),
+  ).toEqual(shown.map(({ name }) => name));
+
+  const hidden = layer(page, "projects").locator('a[tabindex="-1"]');
+  await expect(hidden).toHaveCount((await all.count()) - shown.length);
+  for (const link of await hidden.all()) {
+    await expect(link).toHaveAttribute("aria-hidden", "true");
+  }
+});
+
+test("clicking a screenshot opens that project's page", async ({ page }) => {
+  await page.goto("/");
+  await hoverLink(page, "/projects");
+
+  // Aim at the tile nearest the middle of the first band; it slows to a crawl
+  // under the pointer, so wait for that, then click whatever is under it.
+  const track = layer(page, "projects").locator('[data-direction="up"]');
+  const band = (await track.locator("xpath=..").boundingBox())!;
+  const x = band.x + band.width / 2;
+  const y = band.y + band.height / 2;
+  await page.mouse.move(x, y, { steps: 5 });
+  await page.waitForTimeout(800);
+
+  const href = await page.evaluate(
+    ([px, py]) =>
+      document.elementFromPoint(px, py)?.closest("a")?.getAttribute("href"),
+    [x, y],
+  );
+  expect(href).toMatch(/^\/projects\/[a-z-]+$/);
+  await page.mouse.click(x, y);
+  await expect(page).toHaveURL(new RegExp(`${href}$`));
+});
+
+test("a focused screenshot slows its band like hover does", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await hoverLink(page, "/projects");
+
+  const tracks = layer(page, "projects").locator("[data-direction]");
+  const rates = () =>
+    tracks.evaluateAll((elements) =>
+      elements.map((element) => element.getAnimations()[0].playbackRate),
+    );
+  await expect.poll(rates).toEqual([1, 1]);
+
+  await layer(page, "projects").locator("a:not([tabindex])").first().focus();
+  await expect.poll(async () => (await rates())[0]).toBeLessThan(0.2);
+  expect((await rates())[1]).toBe(1);
+
+  await page.evaluate(() => (document.activeElement as HTMLElement).blur());
+  await expect
+    .poll(async () => (await rates())[0], { timeout: 10_000 })
+    .toBe(1);
 });
 
 test("the blog preview picks one post, keeps it, and links to it", async ({
