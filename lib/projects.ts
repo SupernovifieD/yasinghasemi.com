@@ -31,6 +31,8 @@ export type Project = {
   sections: readonly ProjectSection[];
   /** The live website, when there is one. */
   url?: string;
+  /** Text of the link to `url` (default: "Visit the website"). */
+  urlLabel?: string;
   /** Other places to find it: documentation, package, source. */
   links: readonly ProjectLink[];
   /** Set while a project is not launched yet. */
@@ -160,6 +162,7 @@ export const projects: readonly Project[] = [
       "MinexPy is a Python toolkit that turns geochemical assay values into a mineral potential map. It extends my master's research.",
     tech: ["python", "mkdocs"],
     url: "https://supernovified.github.io/MinexPy/",
+    urlLabel: "Read the documentation",
     links: [
       {
         label: "Source on GitHub",

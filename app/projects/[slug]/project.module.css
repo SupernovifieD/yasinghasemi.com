@@ -1,0 +1,31 @@
+/* Tucked up under the title, like the date on a post. */
+.tech {
+  margin-block: calc(var(--space-8) * -0.5) var(--space-8);
+}
+
+.notice {
+  margin-block: 0 var(--space-8);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-divider);
+  color: var(--color-body);
+  font-size: var(--font-body);
+}
+
+.notice strong {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.links {
+  display: flex;
+  margin-block-start: var(--space-10);
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+}
+
+.links a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: var(--space-2);
+}
