@@ -14,13 +14,13 @@ export const metadata: Metadata = createPageMetadata({
 export default function ProjectsPage() {
   return (
     <main id="main-content" className={styles.projects} tabIndex={-1}>
-      <header className={styles.heading}>
+      <div className={styles.heading}>
         <h1>/projects</h1>
         <p className={styles.subtitle}>
           I do software and web development. Here is some of what I&apos;ve
           built.
         </p>
-      </header>
+      </div>
       <ProjectBrowser />
     </main>
   );
