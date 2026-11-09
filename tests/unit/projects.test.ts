@@ -69,7 +69,8 @@ describe("projects data", () => {
   it("gives each project a one-line tagline and a meta-description-sized summary", () => {
     for (const { tagline, summary, slug } of projects) {
       expect(tagline, slug).not.toMatch(/\n/);
-      expect(tagline.length, slug).toBeLessThanOrEqual(90);
+      // Short enough to stay on one line in the hover list.
+      expect(tagline.length, slug).toBeLessThanOrEqual(48);
       expect(summary.length, slug).toBeGreaterThan(40);
       expect(summary.length, slug).toBeLessThanOrEqual(170);
     }

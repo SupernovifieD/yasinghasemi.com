@@ -2,7 +2,7 @@
   /* Shared geometry of the category toggles and the lists below them. */
   --icon-size: 4.4rem;
   --glow-size: 8.5rem;
-  --list-width: 22rem;
+  --list-width: 24rem;
 }
 
 .toggles {
@@ -168,6 +168,71 @@
   scale: 1 1;
 }
 
+/* A project's one-line description opens under it on hover or focus. It lives
+   in its own 0fr to 1fr row, so the items below slide down to make room (and
+   back up) instead of jumping. */
+.description {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 280ms cubic-bezier(0.22, 0.8, 0.26, 1),
+    opacity 180ms ease,
+    visibility 0s linear 280ms;
+}
+
+.item[data-active] .description {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 280ms cubic-bezier(0.22, 0.8, 0.26, 1),
+    opacity 240ms ease 40ms,
+    visibility 0s;
+}
+
+.descriptionInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.descriptionText {
+  display: block;
+  padding-block: 0 var(--space-2);
+  color: var(--color-muted);
+  font-size: var(--font-label);
+  line-height: 1.5;
+}
+
+/* Without hover (touch, or a narrow screen) every description is shown inline. */
+@media not all and (min-width: 64rem) and (hover: hover) and (pointer: fine) {
+  .description {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition: none;
+  }
+}
+
+.badge {
+  padding: 0 var(--space-1);
+  border: 1px solid var(--color-muted);
+  color: var(--color-muted);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 @keyframes drift {
   from {
     translate: 0 -2px;
@@ -189,6 +254,8 @@
   .label,
   .panel,
   .panel[data-open],
+  .description,
+  .item[data-active] .description,
   .link::after {
     transition: none;
   }

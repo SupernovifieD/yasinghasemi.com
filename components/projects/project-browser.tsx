@@ -6,6 +6,7 @@ import { useId, useState } from "react";
 import { BootstrapIcon } from "@/components/icons/bootstrap-icon";
 import type { BootstrapGlyphName } from "@/components/icons/bootstrap-icons";
 import styles from "@/components/projects/project-browser.module.css";
+import { useActiveItem } from "@/components/projects/use-active-item";
 import {
   projectCategories,
   projectsInCategory,
@@ -24,6 +25,7 @@ const categoryIcons: Record<ProjectCategory, BootstrapGlyphName> = {
  */
 export function ProjectBrowser() {
   const [open, setOpen] = useState<ProjectCategory | null>(null);
+  const { active, enter, leave, reset } = useActiveItem();
   const uid = useId();
   const toggleId = (id: ProjectCategory) => `${uid}-toggle-${id}`;
   const panelId = (id: ProjectCategory) => `${uid}-panel-${id}`;
@@ -43,7 +45,10 @@ export function ProjectBrowser() {
             className={styles.toggle}
             aria-expanded={open === id}
             aria-controls={panelId(id)}
-            onClick={() => setOpen((current) => (current === id ? null : id))}
+            onClick={() => {
+              reset();
+              setOpen((current) => (current === id ? null : id));
+            }}
           >
             <span className={styles.iconStage}>
               <span className={styles.glow} aria-hidden="true" />
@@ -67,16 +72,50 @@ export function ProjectBrowser() {
           >
             <div className={styles.panelInner}>
               <ul className={styles.list}>
-                {projectsInCategory(id).map((project) => (
-                  <li key={project.slug} className={styles.item}>
-                    <Link
-                      className={styles.link}
-                      href={`/projects/${project.slug}`}
+                {projectsInCategory(id).map((project) => {
+                  const descriptionId = `${uid}-description-${project.slug}`;
+
+                  return (
+                    <li
+                      key={project.slug}
+                      className={styles.item}
+                      data-active={active === project.slug ? "" : undefined}
+                      onPointerEnter={(event) => {
+                        if (event.pointerType !== "touch") enter(project.slug);
+                      }}
+                      onPointerLeave={leave}
                     >
-                      /{project.name}
-                    </Link>
-                  </li>
-                ))}
+                      <Link
+                        className={styles.link}
+                        href={`/projects/${project.slug}`}
+                        aria-describedby={descriptionId}
+                        onFocus={() => enter(project.slug, { immediate: true })}
+                        onBlur={leave}
+                      >
+                        /{project.name}
+                        {project.status ? (
+                          <span className={styles.badge}>
+                            <span aria-hidden="true">WIP</span>
+                            <span className={styles.srOnly}>
+                              {" "}
+                              (work in progress)
+                            </span>
+                          </span>
+                        ) : null}
+                      </Link>
+                      <div className={styles.description}>
+                        <div className={styles.descriptionInner}>
+                          <span
+                            id={descriptionId}
+                            className={styles.descriptionText}
+                          >
+                            {project.tagline}
+                          </span>
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           </div>

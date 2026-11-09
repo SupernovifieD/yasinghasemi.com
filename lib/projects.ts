@@ -48,7 +48,7 @@ export const projects: readonly Project[] = [
     slug: "blulexi",
     name: "BluLexi",
     category: "software",
-    tagline: "An AI SaaS for language test prep that I built from scratch.",
+    tagline: "An AI SaaS for language test prep.",
     summary:
       "BluLexi is an AI SaaS for language test prep. I built it myself, from the first idea and the architecture to deployment and feedback from real users.",
     tech: ["django", "postgresql", "nextjs", "wordpress", "redis", "nginx"],
@@ -87,7 +87,7 @@ export const projects: readonly Project[] = [
     slug: "earthcatalogue",
     name: "EarthCatalogue",
     category: "software",
-    tagline: "A directory of public geoscientific data, with an MCP server.",
+    tagline: "Public geoscience data, with an MCP server.",
     summary:
       "EarthCatalogue is a directory of publicly available geoscientific data with an MCP server, built with Django, Next.js and PostgreSQL.",
     tech: ["django", "nextjs", "postgresql", "mcp"],
@@ -118,8 +118,7 @@ export const projects: readonly Project[] = [
     slug: "naar",
     name: "Naar",
     category: "software",
-    tagline:
-      "A CLI package manager that helps you check whether agent skills are safe.",
+    tagline: "A CLI for checking agent skills for safety.",
     summary:
       "Naar is a CLI package manager for agent skills. It helps you check whether skills downloaded from around the web are safe.",
     tech: ["typescript", "nodejs", "npm", "astro"],
@@ -156,7 +155,7 @@ export const projects: readonly Project[] = [
     slug: "minexpy",
     name: "MinexPy",
     category: "software",
-    tagline: "A Python toolkit for preliminary mineral potential mapping.",
+    tagline: "Python toolkit for mineral potential mapping.",
     summary:
       "MinexPy is a Python toolkit that turns geochemical assay values into a mineral potential map. It extends my master's research.",
     tech: ["python", "mkdocs"],
@@ -192,7 +191,7 @@ export const projects: readonly Project[] = [
     slug: "karmania",
     name: "Karmania Map Viewer",
     category: "software",
-    tagline: "An online map viewer for geoscientific data. Work in progress.",
+    tagline: "An online map viewer for geoscientific data.",
     summary:
       "Karmania Map Viewer is an online map viewer for geoscientific data, written in Rust and TypeScript. It is a work in progress, launching in late November 2026.",
     tech: ["rust", "typescript"],
@@ -228,7 +227,7 @@ export const projects: readonly Project[] = [
     slug: "samiraarts",
     name: "samiraarts.com",
     category: "web",
-    tagline: "An artist's portfolio website, with her Etsy shop built in.",
+    tagline: "An artist's portfolio website.",
     summary:
       "samiraarts.com is an artist's portfolio website built with Django, PostgreSQL, WordPress and Next.js, with her Etsy shop integrated.",
     tech: ["django", "postgresql", "wordpress", "nextjs", "etsy"],
@@ -253,8 +252,7 @@ export const projects: readonly Project[] = [
     slug: "amasghari",
     name: "amasghari.com",
     category: "web",
-    tagline:
-      "A bilingual Persian and English website, built as a team project.",
+    tagline: "A bilingual Persian and English website.",
     summary:
       "amasghari.com is a bilingual Persian and English website built with Next.js and WordPress. I was in charge of the front end.",
     tech: ["nextjs", "wordpress"],
@@ -280,7 +278,7 @@ export const projects: readonly Project[] = [
     slug: "maham-iot",
     name: "maham-iot.ir",
     category: "web",
-    tagline: "A WordPress website I built alone, from architecture to design.",
+    tagline: "A WordPress website I built alone.",
     summary:
       "maham-iot.ir is a WordPress website I developed fully by myself, from the architecture and development to deployment, graphic design and interface design.",
     tech: ["wordpress", "php"],
@@ -305,7 +303,7 @@ export const projects: readonly Project[] = [
     slug: "birlik",
     name: "Birlik's website",
     category: "web",
-    tagline: "A bilingual Next.js website, built with a group of designers.",
+    tagline: "A bilingual Next.js website.",
     summary:
       "Birlik's website is a bilingual website that I implemented as a Next.js app, working with a group of designers.",
     tech: ["nextjs"],
