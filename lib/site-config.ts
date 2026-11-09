@@ -13,9 +13,10 @@ export const siteConfig = {
 } as const;
 
 export const primaryNavigation = [
+  { href: "/projects", label: "/projects" },
+  { href: "/blog", label: "/blog" },
   { href: "/about", label: "/about" },
   { href: "/contact", label: "/contact" },
-  { href: "/blog", label: "/blog" },
 ] as const;
 
 export const policyNavigation = [

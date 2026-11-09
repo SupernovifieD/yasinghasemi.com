@@ -1,32 +1,25 @@
 import { expect, test } from "@playwright/test";
 
-test("serves the root page", async ({ page }) => {
-  await page.goto("/");
+test("serves the root page with the welcome note and four links", async ({
+  page,
+}) => {
+  const response = await page.goto("/");
+  expect(response?.status()).toBe(200);
 
   await expect(page.locator("main")).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Hello, I'm Yasin Ghasemi." }),
   ).toBeVisible();
-  await expect(
-    page.getByRole("link", { name: /Read the blog/ }),
-  ).toHaveAttribute("href", "/blog");
-});
 
-test("hydrates terminal behavior from the static export", async ({ page }) => {
-  const response = await page.goto("/");
-  expect(response?.status()).toBe(200);
-
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await input.fill("pwd");
-  await input.press("Enter");
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toContainText("/");
+  const links = page
+    .getByRole("navigation", { name: "Sections" })
+    .getByRole("link");
+  await expect(links).toHaveText(["/projects", "/blog", "/about", "/contact"]);
+  await expect(links).toHaveCount(4);
 });
 
 for (const [path, heading] of [
+  ["/projects", "/projects"],
   ["/about", "/about"],
   ["/contact", "/contact"],
   ["/blog", "/blog"],
@@ -46,21 +39,20 @@ for (const [path, heading] of [
 test("marks the current primary navigation item", async ({ page }) => {
   await page.goto("/blog");
 
-  await expect(page.getByRole("link", { name: "/blog" })).toHaveAttribute(
-    "aria-current",
-    "page",
-  );
+  await expect(
+    page
+      .getByRole("navigation", { name: "Primary navigation" })
+      .getByRole("link", { name: "/blog", exact: true }),
+  ).toHaveAttribute("aria-current", "page");
 });
 
 test("moves keyboard focus from the skip link to main content", async ({
   browserName,
   page,
 }) => {
-  await page.goto("/");
-  await expect(page.getByRole("textbox")).toBeFocused();
-  const backwardsTab = browserName === "webkit" ? "Alt+Shift+Tab" : "Shift+Tab";
-  await page.keyboard.press(backwardsTab);
-  await page.keyboard.press(backwardsTab);
+  await page.goto("/about");
+  // Safari only tabs to links when Option is held.
+  await page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
 
   const skipLink = page.getByRole("link", { name: "Skip to content" });
   await expect(skipLink).toBeFocused();
@@ -75,13 +67,10 @@ test("keeps core reading and navigation available without JavaScript", async ({
   const page = await context.newPage();
 
   await page.goto("/");
-  await expect(
-    page.getByText(/Shell commands require JavaScript/),
-  ).toBeVisible();
-  await expect(
-    page.getByRole("textbox", { name: "Website navigation command" }),
-  ).toHaveCount(0);
-  await page.getByRole("link", { name: "/blog" }).click();
+  await page
+    .getByRole("navigation", { name: "Sections" })
+    .getByRole("link", { name: "/blog", exact: true })
+    .click();
   await expect(page).toHaveURL(/\/blog$/);
   await page
     .getByRole("link", {
@@ -147,12 +136,10 @@ for (const width of [320, 1440, 1920]) {
   }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");
-    await expect(page.getByRole("textbox")).toBeFocused();
     await page.evaluate(() => document.fonts.ready);
     const article = (await page.locator("main").boundingBox())!;
     const articleHeader = (await page.locator("header").boundingBox())!;
     await page.goto("/blog");
-    await expect(page.getByRole("textbox")).toBeFocused();
     await page.evaluate(() => document.fonts.ready);
     const index = (await page.locator("main").boundingBox())!;
     const indexHeader = (await page.locator("header").boundingBox())!;
@@ -160,7 +147,7 @@ for (const width of [320, 1440, 1920]) {
     await expect(heading).toBeVisible();
     expect(Math.abs(index.x - article.x)).toBeLessThan(1);
     expect(Math.abs(index.width - article.width)).toBeLessThan(1);
-    // Long post paths wrap in the mobile header; compare the gap below it.
+    // The header has the same height on every page; compare the gap below it.
     const articleGap = article.y - (articleHeader.y + articleHeader.height);
     const indexGap = index.y - (indexHeader.y + indexHeader.height);
     expect(Math.abs(indexGap - articleGap)).toBeLessThan(1);
@@ -277,94 +264,6 @@ test("unknown post slugs return not found", async ({ page }) => {
   ).toHaveAttribute("href", "/blog");
 });
 
-test("legacy html article URLs replace history with canonical posts", async ({
-  page,
-}) => {
-  for (const [source, destination] of [
-    [
-      "/mydocuments/0-thebeginning/howitcametobe.html",
-      "/blog/the-story-of-this-blog",
-    ],
-    [
-      "/mydocuments/1-NetRadar/1-howitstarted/howitstarted.html",
-      "/blog/how-netradar-was-started",
-    ],
-    [
-      "/mydocuments/2-MineralProspectivityMapping/why/why.html",
-      "/blog/why-i-started-mineral-prospectivity-mapping",
-    ],
-    [
-      "/mydocuments/2-MineralProspectivityMapping/May-20/mpm-and-its-challenges.html",
-      "/blog/when-mpm-becomes-a-decision-marathon",
-    ],
-    [
-      "/mydocuments/Journal/06-09-2026/a-bit-of-bordom.html",
-      "/blog/three-fast-weeks-and-a-first-taste-of-paid-programming",
-    ],
-  ]) {
-    await page.goto(source);
-    await expect(page).toHaveURL(new RegExp(`${destination}$`));
-    await expect(page.locator("h1")).toHaveCount(1);
-  }
-});
-
-test("recovers known legacy hash bookmarks with history replacement", async ({
-  page,
-}) => {
-  for (const [hash, slug] of [
-    ["/docs/0-thebeginning", "the-story-of-this-blog"],
-    ["/docs/1-NetRadar/1-howitstarted", "how-netradar-was-started"],
-    [
-      "/docs/2-MineralProspectivityMapping/why",
-      "why-i-started-mineral-prospectivity-mapping",
-    ],
-    [
-      "/docs/2-MineralProspectivityMapping/May-20",
-      "when-mpm-becomes-a-decision-marathon",
-    ],
-    [
-      "/docs/Journal/06-09-2026",
-      "three-fast-weeks-and-a-first-taste-of-paid-programming",
-    ],
-  ] as const) {
-    await page.goto(`/#${hash}`);
-    await expect(page).toHaveURL(new RegExp(`/blog/${slug}$`));
-  }
-
-  await page.goto("/#%2Fdocs%2FJournal%2F06-09-2026%2F");
-  await expect(page).toHaveURL(
-    /\/blog\/three-fast-weeks-and-a-first-taste-of-paid-programming$/,
-  );
-
-  for (const hash of [
-    "/docs",
-    "/docs/1-NetRadar",
-    "/docs/1-NetRadar/2026-05-03",
-    "/docs/2-MineralProspectivityMapping",
-    "/docs/Journal",
-  ]) {
-    await page.goto(`/#${hash}`);
-    await expect(page).toHaveURL(/\/blog$/);
-  }
-});
-
-test("leaves modern anchors alone and explains unknown legacy hashes", async ({
-  page,
-}) => {
-  await page.goto("/#main-content");
-  await expect(page).toHaveURL(/\/#main-content$/);
-  await expect(page.getByText(/old document bookmark/i)).toHaveCount(0);
-
-  await page.goto("/about");
-  await page.goto("/#/docs/not-in-the-audit");
-  await expect(page).toHaveURL(/\/#\/docs\/not-in-the-audit$/);
-  await expect(page.getByText(/old document bookmark/i)).toBeVisible();
-  await expect(page.getByRole("link", { name: "all posts" })).toHaveAttribute(
-    "href",
-    "/blog",
-  );
-});
-
 test("long article content does not overflow the page", async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 900 });
   await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");
@@ -397,465 +296,6 @@ test("footer exposes every policy route", async ({ page }) => {
   ).toHaveAttribute("href", "/cookies");
 });
 
-test("keeps mobile navigation and the site identity on separate rows", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 320, height: 800 });
-  await page.goto("/blog");
-
-  const identity = page.getByRole("link", { name: "Home" });
-  const navigation = page.getByRole("navigation", {
-    name: "Primary navigation",
-  });
-  const [identityBox, navigationBox] = await Promise.all([
-    identity.boundingBox(),
-    navigation.boundingBox(),
-  ]);
-
-  expect(identityBox).not.toBeNull();
-  expect(navigationBox).not.toBeNull();
-  expect(navigationBox!.y + navigationBox!.height).toBeLessThanOrEqual(
-    identityBox!.y,
-  );
-  expect(
-    await page.evaluate(
-      () =>
-        document.documentElement.scrollWidth <=
-        document.documentElement.clientWidth,
-    ),
-  ).toBe(true);
-});
-
-for (const width of [390, 1440]) {
-  test(`accepts typing on arrival without clicking at ${width}px`, async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width, height: 900 });
-    for (const path of ["/", "/blog/the-story-of-this-blog"]) {
-      await page.goto(path);
-      const input = page.getByRole("textbox", {
-        name: "Website navigation command",
-      });
-      await expect(input).toBeFocused();
-      expect(await page.evaluate(() => scrollY)).toBe(0);
-      await page.keyboard.type("pwd");
-      await expect(input).toHaveValue("pwd");
-      await page.keyboard.press("Enter");
-      await expect(
-        page.getByRole("region", { name: "Terminal command output" }),
-      ).toContainText(path);
-    }
-  });
-}
-
-test("initial focus respects a link focused before hydration", async ({
-  page,
-}) => {
-  let releaseScripts!: () => void;
-  const scriptsReady = new Promise<void>((resolve) => {
-    releaseScripts = resolve;
-  });
-  await page.route("**/_next/static/**/*.js", async (route) => {
-    await scriptsReady;
-    await route.continue();
-  });
-  try {
-    await page.goto("/", { waitUntil: "commit" });
-    const skipLink = page.getByRole("link", { name: "Skip to content" });
-    await skipLink.focus();
-    releaseScripts();
-    await expect(page.getByRole("textbox")).toBeVisible();
-    await expect(skipLink).toBeFocused();
-  } finally {
-    releaseScripts();
-  }
-});
-
-test("idle terminal cursor yields to native editing and respects reduced motion", async ({
-  browserName,
-  page,
-}) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  const idleCursor = () =>
-    input.evaluate((element) => {
-      const style = getComputedStyle(element.parentElement!, "::after");
-      return { content: style.content, animation: style.animationName };
-    });
-
-  await expect(input).toBeFocused();
-  await input.blur();
-  await expect(page.getByRole("button", { name: "Run command" })).toBeHidden();
-  await expect(input).toHaveCSS("border-bottom-width", "0px");
-  expect((await idleCursor()).content).toBe('""');
-  expect((await idleCursor()).animation).not.toBe("none");
-
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  expect((await idleCursor()).animation).toBe("none");
-  expect((await idleCursor()).content).toBe('""');
-
-  await input.focus();
-  expect((await idleCursor()).content).toBe("none");
-  await expect(input).toHaveCSS("caret-color", "rgb(255, 255, 255)");
-  await input.fill("pwd");
-  await input.press("ControlOrMeta+A");
-  expect(
-    await input.evaluate((element: HTMLInputElement) =>
-      element.value.slice(element.selectionStart!, element.selectionEnd!),
-    ),
-  ).toBe("pwd");
-  await input.press("Enter");
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toContainText("/");
-  await expect(input).toBeFocused();
-  await input.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
-  await expect(
-    page.getByRole("link", { name: "/about", exact: true }),
-  ).toBeFocused();
-});
-
-test("narrow terminal keeps a usable touch submit control", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  const submit = page.getByRole("button", { name: "Run command" });
-  await expect(input).toHaveCSS("font-size", "16px");
-  await expect(submit).toBeVisible();
-  const bounds = await submit.boundingBox();
-  expect(bounds!.width).toBeGreaterThanOrEqual(44);
-  expect(bounds!.height).toBeGreaterThanOrEqual(44);
-  await input.fill("cd /about");
-  await submit.click();
-  await expect(page).toHaveURL(/\/about$/);
-  await expect(input).toBeFocused();
-});
-
-test("runs terminal information and navigation commands safely", async ({
-  page,
-}) => {
-  await page.goto("/");
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await expect(input).toBeFocused();
-
-  await input.fill("pwd");
-  await input.press("Enter");
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toContainText("/");
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toHaveAttribute("tabindex", "0");
-
-  await input.fill("cd blog");
-  await input.press("Enter");
-  await expect(page).toHaveURL(/\/blog$/);
-  await expect(page.getByText("yasinghasemi.com: /blog $")).toBeVisible();
-  await expect(input).toBeFocused();
-
-  await input.fill("ls");
-  await input.press("Enter");
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toContainText("the-story-of-this-blog/");
-
-  await input.fill("clear");
-  await input.press("Enter");
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toHaveCount(0);
-  await expect(page).toHaveURL(/\/blog$/);
-});
-
-test("keeps failed terminal navigation on the current route", async ({
-  page,
-}) => {
-  await page.goto("/about");
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await input.fill("cd blog");
-  await input.press("Enter");
-
-  await expect(page).toHaveURL(/\/about$/);
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toContainText("Try cd /blog.");
-});
-
-test("serializes rapid terminal navigation submissions", async ({ page }) => {
-  await page.goto("/");
-  const historyLength = await page.evaluate(() => history.length);
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await input.fill("cd /blog");
-  await input.evaluate((element) => {
-    const form = element.closest("form");
-    form?.dispatchEvent(
-      new Event("submit", { bubbles: true, cancelable: true }),
-    );
-    form?.dispatchEvent(
-      new Event("submit", { bubbles: true, cancelable: true }),
-    );
-  });
-
-  await expect(page).toHaveURL(/\/blog$/);
-  const transcript = page.getByRole("region", {
-    name: "Terminal command output",
-  });
-  await expect(input).toBeFocused();
-  await expect(transcript).toHaveCount(0);
-  expect(await page.evaluate(() => history.length)).toBe(historyLength + 1);
-});
-
-test("shows only the latest result without command echoes", async ({
-  page,
-}) => {
-  await page.goto("/about");
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  const output = page.getByRole("region", { name: "Terminal command output" });
-  async function command(value: string) {
-    await input.fill(value);
-    await input.press("Enter");
-  }
-
-  await command("ls /blog");
-  await expect(output.getByRole("link")).toHaveCount(5);
-  await expect(output).not.toContainText("ls /blog");
-  await command("help");
-  await expect(output.locator("p")).toHaveCount(8);
-  await expect(output.getByRole("link")).toHaveCount(0);
-  await command("pwd");
-  await expect(output).toHaveText("/about");
-  await command("   ");
-  await expect(output).toHaveText("/about");
-  await input.press("ArrowUp");
-  await expect(input).toHaveValue("pwd");
-  await command("unknown");
-  await expect(output).toHaveText(
-    "unknown: command not found. Type help for available commands.",
-  );
-  await command("ls");
-  await expect(output).toHaveCount(0);
-  await expect(page.getByRole("status")).toHaveText("No entries.");
-  await command("help");
-  await command("cd .");
-  await expect(output).toHaveCount(0);
-  await command("help");
-  await command("cd /blog");
-  await expect(page).toHaveURL(/\/blog$/);
-  await expect(output).toHaveCount(0);
-  await expect(input).toBeFocused();
-  await command("cd -");
-  await expect(page).toHaveURL(/\/about$/);
-  await expect(output).toHaveText("/about");
-});
-
-test("starts the latest result at the top of its scroll region", async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  const input = page.getByRole("textbox");
-  const output = page.getByRole("region", { name: "Terminal command output" });
-  await input.fill("x".repeat(1024));
-  await input.press("Enter");
-  await output.evaluate((element) => {
-    element.scrollTop = element.scrollHeight;
-  });
-  expect(await output.evaluate((element) => element.scrollTop)).toBeGreaterThan(
-    0,
-  );
-  await input.fill("help");
-  await input.press("Enter");
-  await expect(output).toContainText("This is a navigation shell");
-  await expect
-    .poll(() => output.evaluate((element) => element.scrollTop))
-    .toBe(0);
-  expect(await page.evaluate(() => scrollY)).toBe(0);
-  await expect(input).toBeFocused();
-});
-
-test("recalls terminal history and restores the in-progress draft", async ({
-  page,
-}) => {
-  await page.goto("/");
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  for (const command of ["pwd", "help"]) {
-    await input.fill(command);
-    await input.press("Enter");
-  }
-
-  await input.fill("unfinished draft");
-  await input.press("ArrowUp");
-  await expect(input).toHaveValue("help");
-  await input.press("ArrowUp");
-  await expect(input).toHaveValue("pwd");
-  await input.press("ArrowDown");
-  await expect(input).toHaveValue("help");
-  await input.press("ArrowDown");
-  await expect(input).toHaveValue("unfinished draft");
-  await input.press("Escape");
-  await expect(input).toHaveValue("");
-});
-
-test("uses link navigation for cd - history without forcing command focus", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page.getByRole("link", { name: "/about" }).click();
-  await expect(page).toHaveURL(/\/about$/);
-
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await expect(input).not.toBeFocused();
-  await input.fill("cd -");
-  await input.press("Enter");
-  await expect(page).toHaveURL(/\/$/);
-  await input.fill("cd -");
-  await input.press("Enter");
-  await expect(page).toHaveURL(/\/about$/);
-});
-
-test("tracks browser history in the prompt and previous directory", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await page.getByRole("link", { name: "/about" }).click();
-  await expect(page.getByText("yasinghasemi.com: /about $")).toBeVisible();
-
-  await page.goBack();
-  await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByText("yasinghasemi.com: / $")).toBeVisible();
-
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await input.fill("cd -");
-  await input.press("Enter");
-  await expect(page).toHaveURL(/\/about$/);
-
-  await page.goBack();
-  await page.goForward();
-  await expect(page.getByText("yasinghasemi.com: /about $")).toBeVisible();
-});
-
-test("recovers from an unknown direct route through the shell", async ({
-  page,
-}) => {
-  await page.goto("/not-a-public-route");
-  await expect(
-    page.getByText("yasinghasemi.com: /not-a-public-route $"),
-  ).toBeVisible();
-
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await input.fill("cd /");
-  await input.press("Enter");
-  await expect(page).toHaveURL(/\/$/);
-  await expect(
-    page.getByRole("heading", { name: "Hello, I'm Yasin Ghasemi." }),
-  ).toBeVisible();
-});
-
-test("clear preserves recall history and the current route", async ({
-  page,
-}) => {
-  await page.goto("/about");
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-  await input.fill("pwd");
-  await input.press("Enter");
-  await input.fill("clear");
-  await input.press("Enter");
-
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toHaveCount(0);
-  await expect(page).toHaveURL(/\/about$/);
-  await input.press("ArrowUp");
-  await expect(input).toHaveValue("clear");
-  await input.press("ArrowUp");
-  await expect(input).toHaveValue("pwd");
-});
-
-test("rejects multiline paste and composition Enter", async ({ page }) => {
-  await page.goto("/");
-  const input = page.getByRole("textbox", {
-    name: "Website navigation command",
-  });
-
-  await input.evaluate((element) => {
-    const event = new Event("paste", { bubbles: true, cancelable: true });
-    Object.defineProperty(event, "clipboardData", {
-      value: { getData: () => "pwd\ncd /blog" },
-    });
-    element.dispatchEvent(event);
-  });
-  await expect(
-    page.getByRole("region", { name: "Terminal command output" }),
-  ).toContainText("submit one single-line command");
-  await expect(page).toHaveURL(/\/$/);
-
-  await input.fill("cd /blog");
-  await input.dispatchEvent("compositionstart");
-  await input.press("Enter");
-  await expect(page).toHaveURL(/\/$/);
-  await input.dispatchEvent("compositionend");
-});
-
-for (const viewport of [
-  { width: 320, height: 760 },
-  { width: 390, height: 844 },
-  { width: 768, height: 420 },
-]) {
-  test(`keeps the terminal contained at ${viewport.width}x${viewport.height}`, async ({
-    page,
-  }) => {
-    await page.setViewportSize(viewport);
-    await page.goto(
-      "/blog/three-fast-weeks-and-a-first-taste-of-paid-programming",
-    );
-    const input = page.getByRole("textbox", {
-      name: "Website navigation command",
-    });
-    await input.fill("x".repeat(1024));
-    await input.press("Enter");
-
-    expect(
-      await page.evaluate(
-        () =>
-          document.documentElement.scrollWidth <=
-          document.documentElement.clientWidth,
-      ),
-    ).toBe(true);
-    const transcript = page.getByRole("region", {
-      name: "Terminal command output",
-    });
-    await expect(transcript).toBeVisible();
-    expect((await transcript.boundingBox())?.height).toBeLessThanOrEqual(
-      Math.min(224, viewport.height * 0.35) + 1,
-    );
-  });
-}
-
 for (const width of [320, 390, 768, 1024, 1440, 1920]) {
   test(`aligns short pages with the article column at ${width}px`, async ({
     page,
@@ -864,7 +304,7 @@ for (const width of [320, 390, 768, 1024, 1440, 1920]) {
     await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");
     await page.evaluate(() => document.fonts.ready);
     const article = (await page.locator("main").boundingBox())!;
-    for (const route of ["/about", "/contact"]) {
+    for (const route of ["/about", "/contact", "/projects"]) {
       await page.goto(route);
       await page.evaluate(() => document.fonts.ready);
       const main = (await page.locator("main").boundingBox())!;
@@ -893,7 +333,7 @@ for (const width of [320, 390, 768, 1024, 1440, 1920]) {
 
 test("top-aligns short pages on short screens", async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 420 });
-  for (const route of ["/about", "/contact"]) {
+  for (const route of ["/about", "/contact", "/projects"]) {
     await page.goto(route);
     const main = (await page.locator("main").boundingBox())!;
     const content = (await page.locator("main > div").boundingBox())!;
@@ -940,7 +380,7 @@ test("privacy policy describes implemented and unverified data handling", async 
 
   await expect(page.getByText(/no user accounts/)).toBeVisible();
   await expect(
-    page.getByText(/memory for the current browser tab/),
+    page.getByText(/in memory for the current browser tab/),
   ).toBeVisible();
   await expect(page.getByText(/may keep operational logs/)).toBeVisible();
   await expect(page.getByText(/have not been verified here/)).toBeVisible();

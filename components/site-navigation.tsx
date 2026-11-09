@@ -1,38 +1,24 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 import styles from "@/components/site-shell.module.css";
+import { isActivePath } from "@/lib/navigation";
 import { primaryNavigation } from "@/lib/site-config";
 
-function isActivePath(pathname: string, href: string) {
-  return (
-    pathname === href || (href === "/blog" && pathname.startsWith("/blog/"))
-  );
-}
-
-export function SiteNavigation() {
-  const pathname = usePathname();
-
+export function SiteNavigation({ pathname }: { pathname: string }) {
   return (
     <nav className={styles.primaryNavigation} aria-label="Primary navigation">
       <ul className={styles.navigation}>
-        {primaryNavigation.map(({ href, label }) => {
-          const active = isActivePath(pathname, href);
-
-          return (
-            <li key={href}>
-              <Link
-                className={styles.navigationLink}
-                href={href}
-                aria-current={active ? "page" : undefined}
-              >
-                {label}
-              </Link>
-            </li>
-          );
-        })}
+        {primaryNavigation.map(({ href, label }) => (
+          <li key={href}>
+            <Link
+              className={styles.navigationLink}
+              href={href}
+              aria-current={isActivePath(pathname, href) ? "page" : undefined}
+            >
+              {label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </nav>
   );

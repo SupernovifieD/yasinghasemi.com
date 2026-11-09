@@ -26,26 +26,13 @@
 }
 
 .header {
+  position: relative;
+  z-index: 5;
   border-block-end: 1px solid var(--color-divider);
 }
 
 .footer {
   border-block-start: 1px solid var(--color-divider);
-}
-
-.legacyRecovery,
-.noScriptNote {
-  width: min(100%, var(--outer-width));
-  margin: 0 auto;
-  padding: var(--space-3) var(--gutter);
-  border-block-end: 1px solid var(--color-divider);
-  color: var(--color-muted);
-  font-size: 0.875rem;
-}
-
-.legacyRecovery a,
-.noScriptNote a {
-  color: var(--color-text);
 }
 
 .headerInner,
@@ -57,25 +44,25 @@
 
 .headerInner {
   display: flex;
-  min-height: 5rem;
+  min-height: 4.25rem;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4) var(--space-8);
-  flex-wrap: wrap;
 }
 
-.terminalPrompt {
-  flex: 1 1 30rem;
-  min-width: 0;
-}
-
-.promptPlaceholder {
-  display: flex;
+.wordmark {
+  display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
-  color: var(--color-body);
+  color: var(--color-text);
   font-size: var(--font-label);
-  overflow-wrap: anywhere;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Desktop navigation: hidden on narrow screens, where the menu replaces it. */
+.primaryNavigation {
+  display: none;
 }
 
 .navigation {
@@ -116,6 +103,95 @@
 .navigationLink:hover::after,
 .navigationLink[aria-current="page"]::after {
   scale: 1 1;
+}
+
+/* Mobile menu: a <details> disclosure, so it works without JavaScript. */
+.menuButton {
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  margin-inline-end: calc(var(--space-3) * -1);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  list-style: none;
+}
+
+.menuButton::-webkit-details-marker {
+  display: none;
+}
+
+.menuButton::marker {
+  content: "";
+}
+
+.menuIcon path {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition:
+    transform 200ms ease,
+    opacity 200ms ease;
+}
+
+.mobileMenu[open] .menuIconTop {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.mobileMenu[open] .menuIconMiddle {
+  opacity: 0;
+}
+
+.mobileMenu[open] .menuIconBottom {
+  transform: translateY(-5px) rotate(-45deg);
+}
+
+.mobilePanel {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline: 0;
+  padding: var(--space-4) var(--gutter) var(--space-6);
+  border-block-end: 1px solid var(--color-divider);
+  background: var(--color-page);
+  animation: menuIn 160ms ease-out;
+}
+
+.mobileList {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  list-style: none;
+  text-align: center;
+}
+
+.mobileLink {
+  display: flex;
+  min-width: 10rem;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-body);
+  text-decoration: none;
+}
+
+.mobileLink:hover,
+.mobileLink[aria-current="page"] {
+  color: var(--color-text);
+}
+
+.mobileLink[aria-current="page"] {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    translate: 0 -0.25rem;
+  }
 }
 
 .main {
@@ -166,30 +242,40 @@
 }
 
 @media (max-width: 40rem) {
-  .headerInner {
-    min-height: 4.25rem;
-    padding-block: var(--space-2);
-    align-items: stretch;
-    gap: 0;
-  }
-
-  .primaryNavigation {
-    order: -1;
-  }
-
-  .navigation {
-    justify-content: space-between;
-  }
-
-  .terminalPrompt {
-    flex-basis: 100%;
-  }
-
   .main {
     padding-block-start: var(--space-8);
   }
 
   .footerInner {
     min-height: 4.25rem;
+  }
+}
+
+@media (min-width: 64rem) {
+  .headerInner {
+    min-height: 5rem;
+  }
+
+  .primaryNavigation {
+    display: block;
+  }
+
+  .mobileMenu {
+    display: none;
+  }
+
+  /* The home page carries its own navigation on desktop. */
+  .headerHome {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobilePanel {
+    animation: none;
+  }
+
+  .menuIcon path {
+    transition: none;
   }
 }
