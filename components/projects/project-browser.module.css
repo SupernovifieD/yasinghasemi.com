@@ -2,6 +2,7 @@
   /* Shared geometry of the category toggles and the lists below them. */
   --icon-size: 4.4rem;
   --glow-size: 8.5rem;
+  --list-width: 22rem;
 }
 
 .toggles {
@@ -93,6 +94,80 @@
   text-decoration-color: currentColor;
 }
 
+/* The lists: each panel animates between no height and its natural height
+   (grid-template-rows 0fr to 1fr), so nothing is measured and nothing jumps. */
+.lists {
+  position: relative;
+  margin-block-start: var(--space-2);
+}
+
+.panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    grid-template-rows 340ms cubic-bezier(0.22, 0.8, 0.26, 1),
+    opacity 240ms ease,
+    visibility 0s linear 340ms;
+}
+
+.panel[data-open] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition:
+    grid-template-rows 340ms cubic-bezier(0.22, 0.8, 0.26, 1),
+    opacity 300ms ease 60ms,
+    visibility 0s;
+}
+
+.panelInner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.list {
+  width: min(100%, var(--list-width));
+  margin: 0 auto;
+  padding: var(--space-4) 0 var(--space-2);
+  list-style: none;
+}
+
+/* Project names read like the site's navigation links: /BluLexi. */
+.link {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-body);
+  font-size: var(--font-reading);
+  text-decoration: none;
+}
+
+.link::after {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0.35rem;
+  height: 1px;
+  background: currentColor;
+  content: "";
+  scale: 0 1;
+  transform-origin: left;
+  transition: scale 220ms ease;
+}
+
+.link:hover,
+.link:focus-visible {
+  color: var(--color-text);
+}
+
+.link:hover::after,
+.link:focus-visible::after {
+  scale: 1 1;
+}
+
 @keyframes drift {
   from {
     translate: 0 -2px;
@@ -111,7 +186,10 @@
   .toggle,
   .glow,
   .icon,
-  .label {
+  .label,
+  .panel,
+  .panel[data-open],
+  .link::after {
     transition: none;
   }
 }
