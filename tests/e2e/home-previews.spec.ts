@@ -135,6 +135,37 @@ test("the projects preview loops two opposing, faded bands", async ({
   }
 });
 
+test("hovering a projects band slows only that band, then it recovers", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await hoverLink(page, "/projects");
+
+  const tracks = layer(page, "projects").locator("[data-direction]");
+  await expect(tracks).toHaveCount(2);
+  const rates = () =>
+    tracks.evaluateAll((elements) =>
+      elements.map((element) => element.getAnimations()[0].playbackRate),
+    );
+  await expect.poll(rates).toEqual([1, 1]);
+
+  const band = tracks.first().locator("xpath=..");
+  const box = (await band.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {
+    steps: 5,
+  });
+
+  // Very slow while hovered (eased, so it settles near 0.1 rather than jumping)
+  // and the other band keeps its normal speed.
+  await expect.poll(async () => (await rates())[0]).toBeLessThan(0.2);
+  expect((await rates())[1]).toBe(1);
+
+  await page.mouse.move(20, 20, { steps: 4 });
+  await expect
+    .poll(async () => (await rates())[0], { timeout: 10_000 })
+    .toBe(1);
+});
+
 test("screenshots share one aspect ratio defined by a single CSS variable", async ({
   page,
 }) => {
