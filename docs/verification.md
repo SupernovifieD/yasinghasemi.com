@@ -1,5 +1,43 @@
 # Terminal blog refresh verification
 
+## Refinements: layout, portraits, and previews — 2026-11-09
+
+Ten changes on top of the header and home previews: the English amasghari.com
+screenshot; a hovered `/projects` band eases to 0.1x while the other keeps
+moving; the home portrait now shows the whole face, chin, and a short stretch of
+neck; the contact logos are 20% smaller; the home note sits in a centered group
+close to the preview stage; the header and footer are one notch smaller; the home
+page has no header at any width and, with `/about`, `/contact`, and `/projects`,
+is vertically centered on phones; the cookie page and its footer link are gone and
+the phone footer is centered; and `/about` ends with a second ASCII portrait on the
+same gray glow.
+
+| Check                            | Result                                                                                                                                                        |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check`, `lint`      | Passed with zero warnings.                                                                                                                                    |
+| `pnpm typecheck`                 | Passed.                                                                                                                                                       |
+| `pnpm test`                      | Passed: 13 files, 74 tests.                                                                                                                                   |
+| `pnpm install --frozen-lockfile` | Passed ("Lockfile is up to date"), which is what CI runs.                                                                                                     |
+| `pnpm build`                     | Passed: 17 static pages; every published post exported at `/blog/<slug>`; no `/cookies`; `CNAME` and `.nojekyll` present; sitemap has 11 entries.             |
+| `pnpm test:e2e`                  | 220 passed, 2 skipped, 0 failed across Chromium, Firefox, and WebKit. The skips are the WebGL motion test on Firefox and WebKit, which use the flat fallback. |
+| Independent verification pass    | Run by a Haiku subagent against the production build. It found one failing test (an over-broad footer selector, fixed) and a cosmetic footer wrap (fixed).    |
+
+Measured on the production build: a hovered band eases to a playback rate of 0.1
+while the other stays at 1 and both return to 1 after the pointer leaves; the
+desktop home group has equal 176px margins at 1440px; the mobile home has no
+header, does not scroll, and its text block is vertically centered to the pixel at
+375x667, 390x844, and 430x932; `/about` and `/contact` are centered on phones; no
+horizontal overflow at 320, 375, 390, 768, 1024, 1440, or 1920px on any page; the
+contact link targets are 70.4px; the initial and idle JavaScript (518KB) contains
+no three.js, which loads only after hovering `/contact`.
+
+Not verified: how the portraits read to a viewer (checked by eye in screenshots),
+the game-style cursor (headless screenshots do not draw it), real touch devices,
+frame rate on real GPU hardware, and WebGL in Firefox and WebKit. "No scrolling on
+the phone home" holds where the text block fits the viewport (about 640px tall and
+up); shorter screens scroll rather than clip. `public/` still holds five unused
+create-next-app SVGs that are deployed but unreferenced.
+
 ## Header, navigation, and home previews — 2026-11-09
 
 Replaces the terminal prompt with a site-name header and the four route links
@@ -7,8 +45,8 @@ Replaces the terminal prompt with a site-name header and the four route links
 and turns the home page into a two-column layout whose desktop hover previews
 cover projects, a random post, an ASCII portrait, and floating 3D logos. The
 legacy Windows 98 redirect pipeline and its migration tooling were removed;
-every post remains its own static page at `/blog/<slug>`. Nothing was committed
-or pushed from this work.
+every post remains its own static page at `/blog/<slug>`. The first round
+was committed as five commits; the refinements below followed in small commits.
 
 | Check                            | Result                                                                                                                                                                 |
 | -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
