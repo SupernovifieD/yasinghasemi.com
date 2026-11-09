@@ -25,7 +25,7 @@ import { floatPose, floatSpecs } from "@/lib/float-motion";
 const FOV = 35;
 const CAMERA_Z = 9;
 // Edge length of a logo in scene units.
-const LOGO_SIZE = 1.5;
+const LOGO_SIZE = 1.2;
 const MAX_DPR = 2;
 const HOVER_SCALE = 1.14;
 // Where the motion is frozen for reduced motion (seconds into the cycle).
