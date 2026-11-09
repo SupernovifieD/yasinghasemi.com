@@ -1,0 +1,117 @@
+.browser {
+  /* Shared geometry of the category toggles and the lists below them. */
+  --icon-size: 4.4rem;
+  --glow-size: 8.5rem;
+}
+
+.toggles {
+  display: grid;
+  max-width: 34rem;
+  margin: var(--space-10) auto 0;
+  gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.toggle {
+  display: flex;
+  padding: var(--space-2);
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  border: 0;
+  background: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-label);
+  transition: color 250ms ease;
+}
+
+.iconStage {
+  position: relative;
+  display: grid;
+  width: var(--glow-size);
+  height: var(--glow-size);
+  place-items: center;
+}
+
+/* A small, soft glow behind the icon: the home stage's gradient, scaled down. */
+.glow {
+  position: absolute;
+  inset: 0;
+  background: var(--glow-gradient);
+  opacity: 0.5;
+  transition: opacity 400ms ease;
+}
+
+.icon {
+  position: relative;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  color: var(--color-body);
+  transition: color 250ms ease;
+  /* A slow, barely noticeable drift; each icon has its own pace and phase. */
+  animation: drift 8s ease-in-out infinite alternate;
+}
+
+.toggle:nth-child(2) .icon {
+  animation-duration: 9.5s;
+  animation-delay: -3.5s;
+}
+
+.label {
+  padding-block: var(--space-1);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.35em;
+  transition:
+    color 250ms ease,
+    text-decoration-color 250ms ease;
+}
+
+.toggle:hover,
+.toggle[aria-expanded="true"] {
+  color: var(--color-text);
+}
+
+.toggle:hover .icon,
+.toggle[aria-expanded="true"] .icon {
+  color: var(--color-text);
+}
+
+.toggle:hover .glow {
+  opacity: 0.75;
+}
+
+/* The open category: a brighter icon and glow, and a thin underline. */
+.toggle[aria-expanded="true"] .glow {
+  opacity: 1;
+}
+
+.toggle[aria-expanded="true"] .label {
+  text-decoration-color: currentColor;
+}
+
+@keyframes drift {
+  from {
+    translate: 0 -2px;
+  }
+
+  to {
+    translate: 0 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon {
+    animation: none;
+  }
+
+  .toggle,
+  .glow,
+  .icon,
+  .label {
+    transition: none;
+  }
+}
