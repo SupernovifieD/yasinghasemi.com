@@ -483,6 +483,42 @@ test.describe("project pages", () => {
     expect(colors).not.toContain("rgb(0, 0, 0)");
   });
 
+  test("the page links are centered, and one per line on a phone", async ({
+    page,
+  }) => {
+    await page.goto("/projects/naar");
+    const links = page.locator("main article div[class*='links'] a");
+    await expect(links).toHaveCount(3);
+
+    const measure = async () => {
+      const article = (await page.locator("main article").boundingBox())!;
+      const boxes = await links.evaluateAll((items) =>
+        items.map((item) => {
+          const { x, y, width } = item.getBoundingClientRect();
+          return { x, y, width };
+        }),
+      );
+      return { articleCenter: article.x + article.width / 2, boxes };
+    };
+
+    // Desktop: one row, centered as a group.
+    let { articleCenter, boxes } = await measure();
+    expect(Math.max(...boxes.map((b) => b.y)) - boxes[0].y).toBeLessThan(2);
+    const left = Math.min(...boxes.map((b) => b.x));
+    const right = Math.max(...boxes.map((b) => b.x + b.width));
+    expect(Math.abs((left + right) / 2 - articleCenter)).toBeLessThan(2);
+
+    // Phone: a line each, every one centered.
+    await page.setViewportSize({ width: 390, height: 844 });
+    ({ articleCenter, boxes } = await measure());
+    for (let i = 1; i < boxes.length; i++) {
+      expect(boxes[i].y - boxes[i - 1].y).toBeGreaterThan(30);
+    }
+    for (const { x, width } of boxes) {
+      expect(Math.abs(x + width / 2 - articleCenter)).toBeLessThan(2);
+    }
+  });
+
   test("an unknown project is not found", async ({ page }) => {
     const response = await page.goto("/projects/not-a-project");
     expect(response?.status()).toBe(404);
