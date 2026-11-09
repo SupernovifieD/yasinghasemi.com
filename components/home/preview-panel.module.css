@@ -13,12 +13,7 @@
   /* Extends past the stage, but never further than the page gutter, so it
      cannot create horizontal scroll on narrower desktops. */
   inset: calc(-1 * min(12%, var(--gutter)));
-  background: radial-gradient(
-    closest-side,
-    rgb(255 255 255 / 0.24),
-    rgb(255 255 255 / 0.1) 55%,
-    transparent
-  );
+  background: var(--glow-gradient);
   opacity: 0;
   pointer-events: none;
   transition: opacity 700ms ease;

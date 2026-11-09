@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { AboutPortrait } from "@/components/about/about-portrait";
 import { ReadingLayout } from "@/components/reading-layout";
 import { createPageMetadata } from "@/lib/metadata";
 
@@ -26,6 +27,7 @@ export default function AboutPage() {
         This site is where I write about the things I build, the decisions
         behind them, and what I learn along the way.
       </p>
+      <AboutPortrait />
     </ReadingLayout>
   );
 }

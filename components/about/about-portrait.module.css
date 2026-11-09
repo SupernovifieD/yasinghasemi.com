@@ -1,0 +1,15 @@
+.stage {
+  position: relative;
+  width: min(100%, 34rem);
+  margin: var(--space-10) auto 0;
+  aspect-ratio: 1;
+}
+
+.glow {
+  position: absolute;
+  /* Extends past the stage, but never further than the page gutter, so it
+     cannot create horizontal scroll on narrow screens. */
+  inset: calc(-1 * min(12%, var(--gutter)));
+  background: var(--glow-gradient);
+  pointer-events: none;
+}

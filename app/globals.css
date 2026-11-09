@@ -23,6 +23,14 @@
   --reading-width: 70ch;
   --gutter: clamp(1.25rem, 3vw, 2.5rem);
   --focus-ring: 2px solid var(--color-focus);
+  /* The gray radial glow behind a preview stage or portrait. DESIGN.md allows
+     it only in those places. */
+  --glow-gradient: radial-gradient(
+    closest-side,
+    rgb(255 255 255 / 0.24),
+    rgb(255 255 255 / 0.1) 55%,
+    transparent
+  );
   --font-label: 0.875rem;
   --font-chrome: 0.8125rem;
   --font-body: 0.9375rem;
