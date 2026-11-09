@@ -2,6 +2,11 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { projects } from "@/lib/projects";
 
+// Each test here visits many pages in one go (up to 21 and as many image
+// fetches). Alone that takes seconds, but with all three browsers running in
+// parallel Firefox went past the default 30s.
+test.describe.configure({ timeout: 120_000 });
+
 /** Every URL the site lists in its sitemap, as a path. */
 async function sitemapPaths(page: Page) {
   const response = await page.request.get("/sitemap.xml");
