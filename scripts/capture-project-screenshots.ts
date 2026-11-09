@@ -10,7 +10,7 @@
  *     site this machine cannot).
  *
  * Output: assets/projects/<slug>.webp, cropped to the aspect ratio declared by
- * `--shot-aspect` in the preview stylesheet and resized for a small tile.
+ * `--shot-aspect` in app/globals.css and resized for a small tile.
  */
 import { mkdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
@@ -18,10 +18,7 @@ import { resolve } from "node:path";
 import { chromium } from "@playwright/test";
 import sharp from "sharp";
 
-const ASPECT_SOURCE = resolve(
-  process.cwd(),
-  "components/home/previews/projects-preview.module.css",
-);
+const ASPECT_SOURCE = resolve(process.cwd(), "app/globals.css");
 const OUTPUT_DIR = resolve(process.cwd(), "assets/projects");
 const CAPTURE_WIDTH = 1280;
 const OUTPUT_WIDTH = 480;

@@ -23,6 +23,11 @@
   --reading-width: 70ch;
   --gutter: clamp(1.25rem, 3vw, 2.5rem);
   --focus-ring: 2px solid var(--color-focus);
+  /* Project screenshots: one aspect ratio and one size, shared by the home
+     marquee and the /projects hover panel. The capture script reads the ratio,
+     so tiles and images can never drift apart. */
+  --shot-aspect: 16 / 9;
+  --shot-width: 11.5rem;
   /* The gray radial glow behind a preview stage or portrait. DESIGN.md allows
      it only in those places. */
   --glow-gradient: radial-gradient(

@@ -1,8 +1,5 @@
 .bands {
-  /* The one place the screenshot aspect ratio is defined. The capture script
-     reads this value, so tiles and images can never drift apart. */
-  --shot-aspect: 16 / 9;
-  --tile-width: 11.5rem;
+  --tile-width: var(--shot-width);
   --tile-gap: 1rem;
 
   position: absolute;
