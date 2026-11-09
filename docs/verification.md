@@ -1,5 +1,51 @@
 # Terminal blog refresh verification
 
+## Projects directory and project pages — 2026-11-09
+
+`/projects` became a directory: two category toggles (Software & Apps, Web
+Development) that expand into project lists, a hover description and screenshot per
+project on desktop, and inline descriptions on touch. Each of the nine projects has
+its own page at `/projects/<slug>`, all generated from `lib/projects.ts`. Work landed
+as one commit per step; the deep verification ran once at the end, against the
+pushed commit.
+
+| Check                         | Result                                                                                                                                                                                                        |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `pnpm format:check`, `lint`   | Passed with zero warnings.                                                                                                                                                                                    |
+| `pnpm typecheck`              | Passed.                                                                                                                                                                                                       |
+| `pnpm test`                   | Passed: 16 files, 95 tests.                                                                                                                                                                                   |
+| `pnpm build`                  | Passed: `/projects` plus nine statically generated `/projects/<slug>` pages; the sitemap has 21 URLs.                                                                                                         |
+| `pnpm test:e2e`               | 310 passed, 2 skipped, 0 failed across Chromium, Firefox, and WebKit. The skips are the WebGL motion test on Firefox and WebKit, which use the flat icon fallback.                                            |
+| Independent verification pass | Run by a Haiku subagent against the production build. Findings are triaged below.                                                                                                                             |
+| Deployment                    | Pages run for `bb9e5a7` succeeded. From `blulexi-dev`: every route returned 200, 44 of 44 assets matched the build, project metadata and external links were correct, and the pages logged no console errors. |
+
+What the deep verification caught, and what was done:
+
+- **Real bug, fixed.** The `/projects` heading was a `<header>` inside `<main>`, so the
+  page had two `header` elements and `header.spec.ts` failed on all three browsers
+  (strict-mode locator). It is now a plain `div`.
+- **Test fragility, fixed.** WebKit needs Option held to Tab to a button (as
+  `smoke.spec.ts` already handles); the "grows smoothly" test counted frames, which
+  depends on machine load (Firefox sampled 4 to 5 distinct heights under parallel
+  runs and 17 when run alone), so it now requires at least two in-between heights;
+  and the 320px test resized a mobile context, which times out on Firefox, so it now
+  has a context of its own.
+
+Measured on the production build: the open animation passes through 17 to 18
+in-between heights on every engine; a hovered item pushes the ones below it down by
+29px and they return to rest on leave; the screenshot panel is 184 x 103.5 (16:9,
+the shared `--shot-width` and `--shot-aspect`), is hidden on phones, and does not
+overflow at 1024 or 1440px; every logo meets 3:1 contrast on the black page; no
+horizontal overflow at 320, 390, 768, or 1440px on `/projects` or any project page.
+
+Not verified: how the hover and the slide feel on real hardware (only sampled
+heights and positions), real touch devices, how the Open Graph images render inside
+social platforms, and the live hover interactions (the live site is reachable only
+from `blulexi-dev`, which has no Playwright, so those were tested on the production
+build). Domains of private projects are taken from the live sites and cannot be
+confirmed as final from GitHub. MinexPy has no PyPI link because PyPI could not be
+checked, and the Karmania tile on the home preview is an intentional placeholder.
+
 ## Refinements: layout, portraits, and previews — 2026-11-09
 
 Ten changes on top of the header and home previews: the English amasghari.com
