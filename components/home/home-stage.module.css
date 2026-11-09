@@ -48,11 +48,14 @@
 }
 
 @media (min-width: 64rem) {
+  /* One centered composition: the welcome note hugs its column and sits
+     close to the preview stage instead of drifting to the far-left edge. */
   .layout {
     display: grid;
     align-items: center;
-    gap: var(--space-12);
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    justify-content: center;
+    gap: var(--space-4);
+    grid-template-columns: minmax(0, 33rem) minmax(0, 34rem);
   }
 
   .intro {
