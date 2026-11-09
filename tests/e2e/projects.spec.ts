@@ -110,7 +110,11 @@ test.describe("projects page", () => {
 
   test("toggles work with the keyboard and keep closed lists out of reach", async ({
     page,
+    browserName,
   }) => {
+    // WebKit only tabs to buttons with Option held.
+    const tab = () =>
+      page.keyboard.press(browserName === "webkit" ? "Alt+Tab" : "Tab");
     await page.goto("/projects");
     const software = toggle(page, SOFTWARE);
 
@@ -121,15 +125,15 @@ test.describe("projects page", () => {
     await expect(software).toHaveAttribute("aria-expanded", "false");
 
     // While closed, Tab skips the (inert) list and goes to the next toggle.
-    await page.keyboard.press("Tab");
+    await tab();
     await expect(toggle(page, WEB)).toBeFocused();
 
     // Open again: the project links are now tab stops.
     await software.focus();
     await page.keyboard.press("Enter");
     await page.waitForTimeout(450);
-    await page.keyboard.press("Tab");
-    await page.keyboard.press("Tab");
+    await tab();
+    await tab();
     await expect(page.getByRole("link", { name: /^\/BluLexi/ })).toBeFocused();
   });
 
@@ -158,8 +162,10 @@ test.describe("projects page", () => {
     const final = heights.at(-1)!;
     expect(final).toBeGreaterThan(150);
     expect(heights[0]).toBeLessThan(final / 2);
-    // Many distinct in-between heights, never decreasing.
-    expect(new Set(heights).size).toBeGreaterThan(5);
+    // Several in-between heights (not a jump), never decreasing. The count of
+    // frames depends on machine load, so only require a few of them.
+    const between = heights.filter((h) => h > heights[0] && h < final);
+    expect(new Set(between).size).toBeGreaterThanOrEqual(2);
     for (let i = 1; i < heights.length; i++) {
       expect(heights[i]).toBeGreaterThanOrEqual(heights[i - 1] - 1);
     }
@@ -327,11 +333,19 @@ test.describe("projects page on a phone", () => {
     await projectLink(page, "MinexPy").tap();
     await expect(page).toHaveURL(/\/projects\/minexpy$/);
   });
+});
+
+test.describe("projects page on the narrowest phone", () => {
+  // A context of its own: Firefox hangs when a mobile context is resized.
+  test.use({
+    viewport: { width: 320, height: 700 },
+    hasTouch: true,
+    isMobile: true,
+  });
 
   test("the toggles stay side by side at 320px without overflow", async ({
     page,
   }) => {
-    await page.setViewportSize({ width: 320, height: 700 });
     await page.goto("/projects");
     await toggle(page, SOFTWARE).tap();
     await toggle(page, WEB).tap();
