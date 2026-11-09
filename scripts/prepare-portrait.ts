@@ -22,6 +22,9 @@ const SIZE = 640;
 
 type Ellipse = { cx: number; cy: number; rx: number; ry: number };
 
+/** A point as fractions of the crop. */
+type Point = { x: number; y: number };
+
 type Target = {
   output: string;
   /**
@@ -55,6 +58,12 @@ type Target = {
         core: Ellipse;
         /** Colour matching is trusted only inside this head-and-neck prior. */
         prior: Ellipse;
+        /**
+         * Never subject, whatever its colour (the core aside): a polygon over
+         * background that happens to be skin-coloured, such as tan scenery
+         * beside the face.
+         */
+        cut?: readonly Point[];
       };
 };
 
@@ -84,6 +93,32 @@ const TARGETS: Record<string, Target> = {
       kind: "skin",
       core: { cx: 0.5, cy: 0.45, rx: 0.28, ry: 0.36 },
       prior: { cx: 0.5, cy: 0.504, rx: 0.364, ry: 0.523 },
+      // The blurred tan scenery beside the left ear and under it has the same
+      // hue as skin (hue 20-32 against 7-21, with overlapping saturation), so
+      // colour cannot remove it. This follows the ear's outer rim and then the
+      // jaw line, neck and shoulder, about 8px (of 640) outside the subject, measured
+      // from the photo.
+      cut: [
+        { x: 0, y: 0.5 },
+        { x: 0.183, y: 0.5 },
+        { x: 0.186, y: 0.516 },
+        { x: 0.194, y: 0.547 },
+        { x: 0.202, y: 0.563 },
+        { x: 0.2125, y: 0.594 },
+        { x: 0.23, y: 0.625 },
+        { x: 0.239, y: 0.645 },
+        { x: 0.311, y: 0.655 },
+        { x: 0.336, y: 0.75 },
+        { x: 0.395, y: 0.813 },
+        // Under the jaw it follows the neck, then the sweater's shoulder line.
+        { x: 0.33, y: 0.84 },
+        { x: 0.31, y: 0.862 },
+        { x: 0.297, y: 0.866 },
+        { x: 0.203, y: 0.875 },
+        { x: 0.109, y: 0.902 },
+        { x: 0.031, y: 0.956 },
+        { x: 0, y: 0.97 },
+      ],
     },
   },
 };
@@ -235,12 +270,33 @@ function hueSatValue(r: number, g: number, b: number) {
   };
 }
 
+/** Whether the point (fractions of the crop) lies inside the polygon. */
+function insidePolygon(x: number, y: number, polygon: readonly Point[]) {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const a = polygon[i];
+    const b = polygon[j];
+    if (
+      a.y > y !== b.y > y &&
+      x < ((b.x - a.x) * (y - a.y)) / (b.y - a.y) + a.x
+    ) {
+      inside = !inside;
+    }
+  }
+  return inside;
+}
+
 /**
  * Subject coverage 0..1 for a coloured background: hair and dark things by
  * value, skin and clothing by hue, both trusted only inside a head-and-neck
  * prior, plus an always-on face core (eyes and teeth are not skin coloured).
  */
-async function skinMatte(rgb: Uint8Array, core: Ellipse, prior: Ellipse) {
+async function skinMatte(
+  rgb: Uint8Array,
+  core: Ellipse,
+  prior: Ellipse,
+  cut: readonly Point[] = [],
+) {
   const matte = new Uint8Array(SIZE * SIZE);
 
   for (let y = 0; y < SIZE; y++) {
@@ -261,7 +317,10 @@ async function skinMatte(rgb: Uint8Array, core: Ellipse, prior: Ellipse) {
       const colour =
         warm * smoothstep(SKIN_SAT_MIN[0], SKIN_SAT_MIN[1], saturation);
 
-      const trusted = Math.max(dark, colour) * ellipseWeight(x, y, prior, 0.9);
+      const cutOut = cut.length > 0 && insidePolygon(x / SIZE, y / SIZE, cut);
+      const trusted = cutOut
+        ? 0
+        : Math.max(dark, colour) * ellipseWeight(x, y, prior, 0.9);
       const coreWeight = ellipseWeight(x, y, core, 0.8);
       matte[index] = Math.round(255 * Math.max(trusted, coreWeight));
     }
@@ -363,6 +422,7 @@ async function main() {
           new Uint8Array(await base.clone().removeAlpha().raw().toBuffer()),
           matte.core,
           matte.prior,
+          matte.cut,
         );
 
   // Local contrast, then an unsharp pass for crisp edges (eyes, mouth, hair).
