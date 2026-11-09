@@ -19,9 +19,9 @@ import sharp, { type Sharp } from "sharp";
 const OUTPUT = resolve(process.cwd(), "assets/portrait/portrait.webp");
 const SIZE = 640;
 
-// Square crop of the source, as fractions of its width: tight on the head, so
-// the face gets as many ASCII cells as possible.
-const CROP = { left: 0.17, top: 0.09, size: 0.62 };
+// Square crop of the source, as fractions of its width: hair to the collar, so
+// the whole face, the chin, and a short stretch of neck are in the frame.
+const CROP = { left: 0.107, top: 0.0845, size: 0.745 };
 
 // The backdrop is a very smooth, bright gradient (about 225-245, +/-1 between
 // neighbours). It is flood-filled from the top and upper side edges: a pixel
@@ -41,12 +41,13 @@ const BACKDROP_GROW_MIN = 190;
 // Tonal stretch of the enhanced subject so skin sits mid-gray, not dim.
 const LEVELS = { black: 20, white: 225, gamma: 1 };
 
-// Vertical fade of the shirt: fully visible above FADE_START, black at the end.
-const FADE_START = 0.6;
-const FADE_END = 0.84;
+// Vertical fade toward the collar: fully visible above FADE_START (below the
+// chin and neck), black at FADE_END.
+const FADE_START = 0.8;
+const FADE_END = 0.94;
 
 // Soft oval around the face; everything outside it fades to black.
-const OVAL = { cx: 0.5, cy: 0.42, rx: 0.5, ry: 0.72 };
+const OVAL = { cx: 0.5, cy: 0.46, rx: 0.4, ry: 0.78 };
 
 /** Raw 8-bit pixels of one channel, asserting the buffer really is SIZE². */
 async function singleChannel(image: Sharp) {
