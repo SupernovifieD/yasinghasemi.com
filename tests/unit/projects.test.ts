@@ -24,7 +24,7 @@ describe("projects data", () => {
       "samiraarts.com",
       "amasghari.com",
       "maham-iot.ir",
-      "Birlik's website",
+      "birlikkalkinma.com.tr",
     ]);
   });
 

@@ -304,11 +304,11 @@ export const projects: readonly Project[] = [
   },
   {
     slug: "birlik",
-    name: "Birlik's website",
+    name: "birlikkalkinma.com.tr",
     category: "web",
     tagline: "A bilingual Next.js website.",
     summary:
-      "Birlik's website is a bilingual website that I implemented as a Next.js app, working with a group of designers.",
+      "birlikkalkinma.com.tr is a bilingual website that I implemented as a Next.js app, working with a group of designers.",
     tech: ["nextjs"],
     url: "https://birlikkalkinma.com.tr/",
     links: [],
