@@ -13,7 +13,9 @@ export function SiteFooter() {
           <span className={styles.copyrightPart}>
             <Link href="/">yasinghasemi.com</Link> ·
           </span>{" "}
-          <span className={styles.copyrightPart}>2026 ·</span>{" "}
+          <span className={styles.copyrightPart}>
+            2026<span className={styles.copyrightSeparator}> ·</span>
+          </span>{" "}
           <span className={styles.copyrightPart}>© All rights reserved</span>
         </p>
         <nav aria-label="Policy navigation">

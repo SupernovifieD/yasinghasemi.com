@@ -234,6 +234,10 @@
   white-space: nowrap;
 }
 
+.copyrightSeparator {
+  white-space: pre;
+}
+
 .policyNavigation {
   display: flex;
   padding: 0;
@@ -270,6 +274,16 @@
 
   .policyNavigation {
     justify-content: center;
+  }
+
+  /* Two tidy lines: "yasinghasemi.com · 2026" over "© All rights reserved",
+     with no separator left dangling at the end of the first. */
+  .copyrightSeparator {
+    display: none;
+  }
+
+  .copyrightPart:last-child {
+    display: block;
   }
 }
 
