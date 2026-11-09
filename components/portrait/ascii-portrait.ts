@@ -13,7 +13,8 @@ import {
 } from "@/lib/ascii/ramp";
 
 const TARGET_COLS = 220;
-const MIN_CELL_WIDTH = 2.4;
+// Small stages (phones) get denser cells so the face keeps enough of them.
+const MIN_CELL_WIDTH = 2;
 // Glyphs are about twice as tall as wide.
 const CELL_ASPECT = 2;
 const LEVELS = 10;
