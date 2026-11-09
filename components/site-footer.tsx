@@ -8,7 +8,13 @@ export function SiteFooter() {
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
         <p className={styles.copyright}>
-          <Link href="/">yasinghasemi.com</Link> · 2026 · © All rights reserved
+          {/* Each segment stays whole, so a phone wraps between them, never
+              inside one or with a stray separator opening a line. */}
+          <span className={styles.copyrightPart}>
+            <Link href="/">yasinghasemi.com</Link> ·
+          </span>{" "}
+          <span className={styles.copyrightPart}>2026 ·</span>{" "}
+          <span className={styles.copyrightPart}>© All rights reserved</span>
         </p>
         <nav aria-label="Policy navigation">
           <ul className={styles.policyNavigation}>
