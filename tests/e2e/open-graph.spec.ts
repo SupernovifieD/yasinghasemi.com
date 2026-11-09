@@ -94,3 +94,41 @@ test("projects with a website keep their own screenshot as the image", async ({
     );
   }
 });
+
+test("each blog post has its own card and its excerpt as the description", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const landing = await meta(page, 'meta[property="og:image"]');
+
+  await page.goto("/blog");
+  const posts = await page.locator("main article").evaluateAll((articles) =>
+    articles.map((article) => ({
+      href: article.querySelector("h2 a")!.getAttribute("href")!,
+      title: article.querySelector("h2 a")!.textContent!,
+      excerpt: article.querySelector("p")!.textContent!,
+    })),
+  );
+  expect(posts.length).toBeGreaterThan(0);
+
+  const seen = new Set<string>();
+  for (const { href, title, excerpt } of posts) {
+    await page.goto(href);
+    const image = (await meta(page, 'meta[property="og:image"]'))!;
+
+    expect(image, href).not.toBe(landing);
+    expect(image, href).toContain(href.replace("/blog/", ""));
+    seen.add(image);
+    expect(await meta(page, 'meta[property="og:image:alt"]'), href).toBe(
+      `${title}, a post on yasinghasemi.com`,
+    );
+    expect(await meta(page, 'meta[property="og:image:width"]'), href).toBe(
+      "1200",
+    );
+    expect(await meta(page, 'meta[property="og:description"]'), href).toBe(
+      excerpt,
+    );
+    expect(await meta(page, 'meta[property="og:type"]'), href).toBe("article");
+  }
+  expect(seen.size).toBe(posts.length);
+});

@@ -4,6 +4,10 @@
  *   pnpm exec tsx scripts/generate-og-images.ts default
  *     assets/og/default.png: the landing card, shared by every page that has no
  *     image of its own.
+ *   pnpm exec tsx scripts/generate-og-images.ts posts
+ *     assets/og/posts/<slug>.png: one card per published post, with its title
+ *     and excerpt. Run it after adding or editing a post, then register the
+ *     image in lib/og-images.ts (a unit test fails until you do).
  *
  * Each card is an HTML page drawn by headless Chromium with the site's own
  * JetBrains Mono (the woff2 files in app/fonts, embedded), so the type is exact
@@ -11,11 +15,13 @@
  * `--glow-gradient`, read from app/globals.css. The output is committed;
  * nothing here runs in CI or at build time.
  */
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir, readdir, readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 import { chromium } from "@playwright/test";
 import sharp from "sharp";
+
+import { parsePostSource, type Post } from "../lib/posts/catalog";
 
 const WIDTH = 1200;
 const HEIGHT = 630;
@@ -97,7 +103,56 @@ async function defaultCard() {
   );
 }
 
-async function render(html: string, output: string) {
+const escapeHtml = (text: string) =>
+  text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+
+const publicationDate = new Intl.DateTimeFormat("en", {
+  dateStyle: "long",
+  timeZone: "UTC",
+});
+
+/** A post: its title and excerpt, clipped to three lines each by CSS. */
+async function postCard({ title, excerpt, publishedAt }: Post) {
+  const date = publicationDate.format(new Date(`${publishedAt}T00:00:00Z`));
+
+  return page(
+    `<div class="site">${SITE}/blog</div>
+     <div>
+       <div class="title">${escapeHtml(title)}</div>
+       <div class="excerpt">${escapeHtml(excerpt)}</div>
+     </div>
+     <div class="site">${OWNER} &middot; ${date}</div>`,
+    `.title, .excerpt {
+       display: -webkit-box;
+       max-width: 980px;
+       overflow: hidden;
+       -webkit-box-orient: vertical;
+       -webkit-line-clamp: 3;
+     }
+     .title { font-size: 60px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+     .excerpt { margin-top: 28px; color: #d4d4d4; font-size: 28px; line-height: 1.5; }`,
+  );
+}
+
+/** The published posts, read and validated the way the site reads them. */
+async function publishedPosts() {
+  const directory = resolve(process.cwd(), "content/posts");
+  const files = (await readdir(directory)).filter((name) =>
+    name.endsWith(".md"),
+  );
+  const posts = await Promise.all(
+    files.map(async (name) =>
+      parsePostSource(await readFile(resolve(directory, name), "utf8"), name),
+    ),
+  );
+  return posts.filter(({ draft }) => !draft);
+}
+
+async function render(cards: { html: string; output: string }[]) {
   const browser = await chromium.launch();
 
   try {
@@ -105,22 +160,25 @@ async function render(html: string, output: string) {
       viewport: { width: WIDTH, height: HEIGHT },
       deviceScaleFactor: 1,
     });
-    await tab.setContent(html);
-    await tab.evaluate(() => document.fonts.ready);
-    // A silent fallback to another monospace font would still render, so check.
-    const loaded = await tab.evaluate(
-      () =>
-        document.fonts.check('400 20px "JetBrains Mono"') &&
-        document.fonts.check('700 20px "JetBrains Mono"'),
-    );
-    if (!loaded) throw new Error("JetBrains Mono did not load");
 
-    const png = await tab.screenshot({ type: "png" });
-    await mkdir(resolve(output, ".."), { recursive: true });
-    const info = await sharp(png)
-      .png({ palette: true, compressionLevel: 9, effort: 10 })
-      .toFile(output);
-    console.log(`${output} ${info.width}x${info.height} ${info.size} bytes`);
+    for (const { html, output } of cards) {
+      await tab.setContent(html);
+      await tab.evaluate(() => document.fonts.ready);
+      // A silent fallback to another monospace font would still render.
+      const loaded = await tab.evaluate(
+        () =>
+          document.fonts.check('400 20px "JetBrains Mono"') &&
+          document.fonts.check('700 20px "JetBrains Mono"'),
+      );
+      if (!loaded) throw new Error("JetBrains Mono did not load");
+
+      const png = await tab.screenshot({ type: "png" });
+      await mkdir(resolve(output, ".."), { recursive: true });
+      const info = await sharp(png)
+        .png({ palette: true, compressionLevel: 9, effort: 10 })
+        .toFile(output);
+      console.log(`${output} ${info.width}x${info.height} ${info.size} bytes`);
+    }
   } finally {
     await browser.close();
   }
@@ -130,9 +188,22 @@ async function main() {
   const [mode] = process.argv.slice(2);
 
   if (mode === "default") {
-    return render(await defaultCard(), resolve(OUTPUT_DIR, "default.png"));
+    return render([
+      { html: await defaultCard(), output: resolve(OUTPUT_DIR, "default.png") },
+    ]);
   }
-  throw new Error("Usage: generate-og-images.ts default");
+  if (mode === "posts") {
+    const posts = await publishedPosts();
+    return render(
+      await Promise.all(
+        posts.map(async (post) => ({
+          html: await postCard(post),
+          output: resolve(OUTPUT_DIR, "posts", `${post.slug}.png`),
+        })),
+      ),
+    );
+  }
+  throw new Error("Usage: generate-og-images.ts <default|posts>");
 }
 
 main().catch((error: unknown) => {

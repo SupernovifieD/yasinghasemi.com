@@ -32,6 +32,15 @@ Post body.
   emphasis, lists, blockquotes, fenced code, tables, and images with useful alt
   text. Raw HTML is not rendered.
 
+Each post needs a social card (the image shown when a link is shared), made from
+its title and excerpt. After the post is final, run
+`pnpm exec tsx scripts/generate-og-images.ts posts` (it renders every published
+post into `assets/og/posts/<slug>.png`; it needs the site's JetBrains Mono files in
+`app/fonts`, which are in the repository), import the new image in
+`lib/og-images.ts`, and look at it. Run it again after changing a title or
+excerpt. A unit test fails for a published post without a card; pages without an
+image of their own share `assets/og/default.png`.
+
 Before changing `draft` to `false`, run:
 
 ```sh

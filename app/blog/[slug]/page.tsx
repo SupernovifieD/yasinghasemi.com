@@ -6,6 +6,7 @@ import { KeepReading } from "@/components/keep-reading";
 import { PostBody } from "@/components/post-body";
 import { ReadingLayout } from "@/components/reading-layout";
 import { createPageMetadata } from "@/lib/metadata";
+import { postSocialImage } from "@/lib/og-images";
 import {
   getPublishedPostBySlug,
   getPublishedPosts,
@@ -38,6 +39,7 @@ export async function generateMetadata({
     title: post.title,
     description: post.excerpt,
     path: `/blog/${post.slug}`,
+    image: postSocialImage(post),
   });
 
   return {
