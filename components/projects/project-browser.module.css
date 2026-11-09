@@ -4,11 +4,14 @@
   --glow-size: 8.5rem;
   --list-width: 24rem;
   --panel-gap: 2rem;
+  --toggles-width: 34rem;
+  /* From the middle of the page to the middle of either toggle column. */
+  --column-shift: calc((var(--toggles-width) + var(--space-4)) / 4);
 }
 
 .toggles {
   display: grid;
-  max-width: 34rem;
+  max-width: var(--toggles-width);
   margin: var(--space-10) auto 0;
   gap: var(--space-4);
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -135,6 +138,30 @@
   list-style: none;
 }
 
+/* Wide screens: each list opens under its own toggle, centered on it, and the
+   two panels share one cell so switching crossfades in place. */
+@media (min-width: 64rem) {
+  .lists {
+    display: grid;
+  }
+
+  .panel {
+    grid-area: 1 / 1;
+  }
+
+  .list {
+    text-align: center;
+  }
+
+  .panel[data-side="start"] .list {
+    translate: calc(var(--column-shift) * -1) 0;
+  }
+
+  .panel[data-side="end"] .list {
+    translate: var(--column-shift) 0;
+  }
+}
+
 /* Project names read like the site's navigation links: /BluLexi. */
 .link {
   position: relative;
@@ -234,9 +261,10 @@
   white-space: nowrap;
 }
 
-/* The hover screenshot sits in the free space to the right of the list: small,
-   in the shared screenshot size and ratio, and only where there is room and a
-   pointer to hover with. It fades between projects. */
+/* The hover screenshot sits beside the list, on the side facing the middle of
+   the page (right of the left list, left of the right one): small, in the
+   shared screenshot size and ratio, and only where there is room and a pointer
+   to hover with. It fades between projects. */
 .shotPanel {
   display: none;
 }
@@ -246,10 +274,19 @@
     position: absolute;
     display: block;
     inset-block-start: var(--space-4);
-    inset-inline-start: calc(50% + var(--list-width) / 2 + var(--panel-gap));
     width: var(--shot-width);
     aspect-ratio: var(--shot-aspect);
     pointer-events: none;
+    inset-inline-start: calc(
+      50% - var(--column-shift) + var(--list-width) / 2 + var(--panel-gap)
+    );
+  }
+
+  .shotPanel[data-side="end"] {
+    inset-inline-start: calc(
+      50% + var(--column-shift) - var(--list-width) / 2 - var(--panel-gap) -
+        var(--shot-width)
+    );
   }
 }
 

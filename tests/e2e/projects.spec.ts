@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { projectsInCategory, projects } from "@/lib/projects";
 import { getTech } from "@/lib/tech";
@@ -12,6 +12,8 @@ const projectLink = (page: Page, name: string) =>
   page.getByRole("link", { name: `/${name}` });
 const shotPanel = (page: Page) =>
   page.locator('[aria-hidden="true"][class*="shotPanel"]');
+const listOf = (page: Page, name: string) =>
+  page.getByRole("region", { name }).locator("ul");
 
 /** Open a category and wait for its list to finish growing. */
 async function open(page: Page, name: string) {
@@ -234,9 +236,9 @@ test.describe("projects page", () => {
     expect(Math.abs(size.width - 184)).toBeLessThan(1); // --shot-width: 11.5rem
     expect(Math.abs(size.width / size.height - 16 / 9)).toBeLessThan(0.02);
 
-    // It sits to the right of the list, clear of it.
-    const list = (await projectLink(page, "BluLexi").boundingBox())!;
-    expect(size.x).toBeGreaterThan(list.x + 300);
+    // It sits to the right of the Software list, clear of it.
+    const list = (await listOf(page, SOFTWARE).boundingBox())!;
+    expect(size.x).toBeGreaterThanOrEqual(list.x + list.width);
 
     await hover(page, "Naar");
     await expect(panel.locator("> div[data-active]")).toHaveCount(1);
@@ -247,6 +249,78 @@ test.describe("projects page", () => {
 
     await page.mouse.move(40, 40, { steps: 4 });
     await expect(panel.locator("> div[data-active]")).toHaveCount(0);
+  });
+
+  test("each list opens under its own toggle, with its preview toward the middle", async ({
+    page,
+  }) => {
+    const centerX = async (locator: Locator) => {
+      const box = (await locator.boundingBox())!;
+      return box.x + box.width / 2;
+    };
+    await page.goto("/projects");
+
+    await open(page, SOFTWARE);
+    const softwareList = listOf(page, SOFTWARE);
+    const softwareTop = (await softwareList.boundingBox())!.y;
+    const softwareCenter = await centerX(softwareList);
+    expect(
+      Math.abs(
+        (await centerX(softwareList)) - (await centerX(toggle(page, SOFTWARE))),
+      ),
+    ).toBeLessThan(2);
+    await hover(page, "BluLexi");
+    await expect(shotPanel(page).locator("> div[data-active]")).toHaveCount(1);
+    const left = (await softwareList.boundingBox())!;
+    const leftShot = (await shotPanel(page).boundingBox())!;
+    expect(leftShot.x).toBeGreaterThanOrEqual(left.x + left.width);
+
+    // Switching crossfades in place: the Web list opens at the same height,
+    // under the right-hand toggle, with its preview on its left.
+    await open(page, WEB);
+    const webList = listOf(page, WEB);
+    expect(
+      Math.abs((await webList.boundingBox())!.y - softwareTop),
+    ).toBeLessThan(2);
+    expect(
+      Math.abs((await centerX(webList)) - (await centerX(toggle(page, WEB)))),
+    ).toBeLessThan(2);
+    expect(await centerX(webList)).toBeGreaterThan(softwareCenter);
+    await hover(page, "amasghari.com");
+    await expect(shotPanel(page).locator("> div[data-active]")).toHaveCount(1);
+    const right = (await webList.boundingBox())!;
+    const rightShot = (await shotPanel(page).boundingBox())!;
+    expect(rightShot.x + rightShot.width).toBeLessThanOrEqual(right.x);
+    expect(Math.abs(rightShot.width - 184)).toBeLessThan(1);
+  });
+
+  test("the mirrored lists and previews fit at 1024px", async ({ page }) => {
+    await page.setViewportSize({ width: 1024, height: 800 });
+    await page.goto("/projects");
+
+    for (const [name, link] of [
+      [SOFTWARE, "Karmania Map Viewer"],
+      [WEB, "birlikkalkinma.com.tr"],
+    ] as const) {
+      await open(page, name);
+      await hover(page, link);
+      await expect(shotPanel(page).locator("> div[data-active]")).toHaveCount(
+        1,
+      );
+      const shot = (await shotPanel(page).boundingBox())!;
+      expect(shot.x).toBeGreaterThanOrEqual(0);
+      expect(shot.x + shot.width).toBeLessThanOrEqual(1024);
+      const list = (await listOf(page, name).boundingBox())!;
+      expect(list.x).toBeGreaterThanOrEqual(0);
+      expect(list.x + list.width).toBeLessThanOrEqual(1024);
+      expect(
+        await page.evaluate(
+          () =>
+            document.documentElement.scrollWidth <=
+            document.documentElement.clientWidth,
+        ),
+      ).toBe(true);
+    }
   });
 
   test("Karmania shows a WIP badge and a work-in-progress panel", async ({

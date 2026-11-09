@@ -21,13 +21,25 @@ const categoryIcons: Record<ProjectCategory, BootstrapGlyphName> = {
   web: "globe",
 };
 
+type Side = "start" | "end";
+
+/** The toggle column each category sits in; its list opens under it. */
+const categorySides: Record<ProjectCategory, Side> = {
+  software: "start",
+  web: "end",
+};
+
 /**
  * The /projects directory: two category toggles that reveal a project list
  * each. Clicking the open category closes it; clicking the other one switches
- * (one closes while the other opens).
+ * (one closes while the other opens). On wide screens the lists mirror each
+ * other: each opens under its own toggle with its screenshot toward the middle.
  */
 export function ProjectBrowser() {
   const [open, setOpen] = useState<ProjectCategory | null>(null);
+  // The side of the category opened last. Kept after a close, so the preview
+  // does not swap sides while it fades out.
+  const [shotSide, setShotSide] = useState<Side>("start");
   const [primed, setPrimed] = useState(false);
   const { active, enter, leave, reset } = useActiveItem();
   const uid = useId();
@@ -50,9 +62,11 @@ export function ProjectBrowser() {
             aria-expanded={open === id}
             aria-controls={panelId(id)}
             onClick={() => {
+              const next = open === id ? null : id;
               reset();
               setPrimed(true);
-              setOpen((current) => (current === id ? null : id));
+              setOpen(next);
+              if (next) setShotSide(categorySides[next]);
             }}
           >
             <span className={styles.iconStage}>
@@ -72,6 +86,7 @@ export function ProjectBrowser() {
             className={styles.panel}
             role="region"
             aria-labelledby={toggleId(id)}
+            data-side={categorySides[id]}
             data-open={open === id ? "" : undefined}
             inert={open !== id}
           >
@@ -126,10 +141,14 @@ export function ProjectBrowser() {
           </div>
         ))}
 
-        {/* Hover screenshots, to the right of the list. They are mounted only
-            once a category has been opened, so nothing loads before that. */}
+        {/* Hover screenshots, beside the open list. They are mounted only once
+            a category has been opened, so nothing loads before that. */}
         {primed ? (
-          <div className={styles.shotPanel} aria-hidden="true">
+          <div
+            className={styles.shotPanel}
+            data-side={shotSide}
+            aria-hidden="true"
+          >
             {projects.map((project) => {
               const shot = projectShots[project.slug];
               if (!shot && !project.status) return null;
