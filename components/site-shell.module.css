@@ -44,7 +44,7 @@
 
 .headerInner {
   display: flex;
-  min-height: 4.25rem;
+  min-height: 3.5rem;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4) var(--space-8);
@@ -55,7 +55,7 @@
   min-height: 2.75rem;
   align-items: center;
   color: var(--color-text);
-  font-size: var(--font-label);
+  font-size: var(--font-chrome);
   font-weight: 500;
   text-decoration: none;
 }
@@ -80,7 +80,7 @@
   min-height: 2.75rem;
   align-items: center;
   color: var(--color-body);
-  font-size: var(--font-label);
+  font-size: var(--font-chrome);
   text-decoration: none;
 }
 
@@ -199,7 +199,7 @@
   width: min(100%, var(--outer-width));
   margin-inline: auto;
   flex: 1 0 auto;
-  padding: var(--space-12) var(--gutter) var(--space-16);
+  padding: var(--space-12) var(--gutter);
 }
 
 .main > :global(main) {
@@ -208,13 +208,13 @@
 
 .footerInner {
   display: flex;
-  min-height: 4.75rem;
+  min-height: 3.75rem;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3) var(--space-8);
   flex-wrap: wrap;
   color: var(--color-muted);
-  font-size: 0.875rem;
+  font-size: var(--font-chrome);
 }
 
 .footerInner a {
@@ -224,6 +224,10 @@
 .copyright,
 .policyNavigation {
   margin: 0;
+}
+
+.copyright {
+  text-wrap: balance;
 }
 
 .policyNavigation {
@@ -241,19 +245,33 @@
   align-items: center;
 }
 
+/* The home page carries its own navigation, so it has no header at any width. */
+.headerHome {
+  display: none;
+}
+
 @media (max-width: 40rem) {
   .main {
-    padding-block-start: var(--space-8);
+    padding-block: var(--space-8);
   }
 
+  /* The footer strip stacks and centers on phones. */
   .footerInner {
-    min-height: 4.25rem;
+    padding-block: var(--space-3);
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+    text-align: center;
+  }
+
+  .policyNavigation {
+    justify-content: center;
   }
 }
 
 @media (min-width: 64rem) {
   .headerInner {
-    min-height: 5rem;
+    min-height: 4rem;
   }
 
   .primaryNavigation {
@@ -261,11 +279,6 @@
   }
 
   .mobileMenu {
-    display: none;
-  }
-
-  /* The home page carries its own navigation on desktop. */
-  .headerHome {
     display: none;
   }
 }

@@ -24,6 +24,7 @@
   --gutter: clamp(1.25rem, 3vw, 2.5rem);
   --focus-ring: 2px solid var(--color-focus);
   --font-label: 0.875rem;
+  --font-chrome: 0.8125rem;
   --font-body: 0.9375rem;
   --font-reading: 1rem;
   --font-heading: clamp(1.5rem, 1.35rem + 0.6vw, 1.75rem);

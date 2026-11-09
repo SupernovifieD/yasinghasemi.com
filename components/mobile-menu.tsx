@@ -55,8 +55,8 @@ export function MobileMenu({ pathname }: { pathname: string }) {
         <svg
           className={styles.menuIcon}
           viewBox="0 0 24 24"
-          width="24"
-          height="24"
+          width="20"
+          height="20"
           fill="none"
           stroke="currentColor"
           strokeWidth="1.5"
