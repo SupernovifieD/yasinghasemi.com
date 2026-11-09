@@ -66,16 +66,16 @@ const TARGETS: Record<string, Target> = {
   // the foliage is yellow, so separate them by hue.
   about: {
     output: "assets/portrait/portrait-about.webp",
-    crop: { left: 0.2775, top: 0.2722, size: 0.402 },
-    fade: { start: 0.8, end: 0.95 },
-    oval: { cx: 0.5, cy: 0.47, rx: 0.34, ry: 0.5 },
+    crop: { left: 0.3015, top: 0.2791, size: 0.354 },
+    fade: { start: 0.84, end: 1 },
+    oval: { cx: 0.5, cy: 0.504, rx: 0.386, ry: 0.568 },
     levels: "auto",
     // Darker skin and black hair would sink into the black page otherwise.
     gamma: 0.62,
     matte: {
       kind: "skin",
-      core: { cx: 0.5, cy: 0.43, rx: 0.22, ry: 0.29 },
-      prior: { cx: 0.5, cy: 0.47, rx: 0.32, ry: 0.46 },
+      core: { cx: 0.5, cy: 0.45, rx: 0.28, ry: 0.36 },
+      prior: { cx: 0.5, cy: 0.504, rx: 0.364, ry: 0.523 },
     },
   },
 };
