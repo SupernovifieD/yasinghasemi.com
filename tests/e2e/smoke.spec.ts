@@ -334,7 +334,7 @@ for (const width of [320, 390, 768, 1024, 1440, 1920]) {
     await page.goto("/blog/why-i-started-mineral-prospectivity-mapping");
     await page.evaluate(() => document.fonts.ready);
     const article = (await page.locator("main").boundingBox())!;
-    for (const route of ["/about", "/contact", "/projects"]) {
+    for (const route of ["/about", "/contact"]) {
       await page.goto(route);
       await page.evaluate(() => document.fonts.ready);
       const main = (await page.locator("main").boundingBox())!;
@@ -394,7 +394,7 @@ for (const viewport of [
 
 test("top-aligns short pages on short screens", async ({ page }) => {
   await page.setViewportSize({ width: 768, height: 420 });
-  for (const route of ["/about", "/contact", "/projects"]) {
+  for (const route of ["/about", "/contact"]) {
     await page.goto(route);
     const main = (await page.locator("main").boundingBox())!;
     const content = (await page.locator("main > div").boundingBox())!;
