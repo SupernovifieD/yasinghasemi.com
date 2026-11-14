@@ -10,11 +10,12 @@ export default function HomePage() {
         <div className={styles.copy}>
           <p>
             I&apos;m a product manager with experience building products people
-            value.
+            value—from ideation and prototyping through launch, marketing, and
+            fundraising.
           </p>
           <p>
-            I&apos;ve worked from ideation and prototyping through launch,
-            marketing, and fundraising.
+            Explore my projects and writings, learn more about me, or get in
+            touch through the links below.
           </p>
         </div>
       </HomeStage>

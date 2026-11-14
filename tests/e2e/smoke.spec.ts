@@ -12,12 +12,12 @@ test("serves the root page with the welcome note and four links", async ({
   ).toBeVisible();
   await expect(
     page.getByText(
-      "I'm a product manager with experience building products people value.",
+      "I'm a product manager with experience building products people value—from ideation and prototyping through launch, marketing, and fundraising.",
     ),
   ).toBeVisible();
   await expect(
     page.getByText(
-      "I've worked from ideation and prototyping through launch, marketing, and fundraising.",
+      "Explore my projects and writings, learn more about me, or get in touch through the links below.",
     ),
   ).toBeVisible();
 
