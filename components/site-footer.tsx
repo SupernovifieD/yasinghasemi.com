@@ -1,9 +1,16 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 import styles from "@/components/site-shell.module.css";
 import { policyNavigation } from "@/lib/site-config";
 
 export function SiteFooter() {
+  const pathname = usePathname();
+
+  if (pathname === "/") return null;
+
   return (
     <footer className={styles.footer}>
       <div className={styles.footerInner}>

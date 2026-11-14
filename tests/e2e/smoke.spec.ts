@@ -350,8 +350,21 @@ test("header and footer text is one notch smaller", async ({ page }) => {
   expect((await page.locator("header").boundingBox())!.height).toBeLessThan(70);
 });
 
+test("homepage omits the footer while inner pages keep it", async ({
+  page,
+}) => {
+  for (const width of [390, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await expect(page.getByRole("contentinfo")).toHaveCount(0);
+
+    await page.goto("/about");
+    await expect(page.getByRole("contentinfo")).toBeVisible();
+  }
+});
+
 test("footer exposes the policy routes", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/about");
 
   const footer = page.getByRole("contentinfo");
   await expect(footer).toContainText(
