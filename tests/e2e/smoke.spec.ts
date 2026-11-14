@@ -10,6 +10,16 @@ test("serves the root page with the welcome note and four links", async ({
   await expect(
     page.getByRole("heading", { name: "Hello, I'm Yasin Ghasemi." }),
   ).toBeVisible();
+  await expect(
+    page.getByText(
+      "I'm a product manager with experience building products people value.",
+    ),
+  ).toBeVisible();
+  await expect(
+    page.getByText(
+      "I've worked from ideation and prototyping through launch, marketing, and fundraising.",
+    ),
+  ).toBeVisible();
 
   const links = page
     .getByRole("navigation", { name: "Sections" })

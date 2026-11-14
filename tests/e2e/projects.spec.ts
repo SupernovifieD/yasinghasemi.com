@@ -39,7 +39,7 @@ test.describe("projects page", () => {
     const box = (await heading.boundingBox())!;
     expect(Math.abs(box.x + box.width / 2 - 720)).toBeLessThan(2);
     await expect(
-      page.getByText(/software and web development/i).first(),
+      page.getByText(/products I've helped take from idea to reality/i).first(),
     ).toBeVisible();
   });
 

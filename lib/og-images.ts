@@ -18,7 +18,7 @@ export type SocialImage = {
 /** The card (see scripts/generate-og-images.ts) for pages with no image of their own. */
 export const defaultSocialImage: SocialImage = {
   image: defaultCard,
-  alt: "Yasin Ghasemi, software and web development. yasinghasemi.com",
+  alt: "Yasin Ghasemi, product management from idea to market. yasinghasemi.com",
 };
 
 /**

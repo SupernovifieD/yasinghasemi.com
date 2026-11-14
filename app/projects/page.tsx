@@ -7,7 +7,7 @@ import styles from "./projects.module.css";
 
 export const metadata: Metadata = createPageMetadata({
   title: "Projects",
-  description: "Software and web development projects by Yasin Ghasemi.",
+  description: "Products Yasin Ghasemi has helped take from idea to reality.",
   path: "/projects",
 });
 
@@ -17,8 +17,7 @@ export default function ProjectsPage() {
       <div className={styles.heading}>
         <h1>/projects</h1>
         <p className={styles.subtitle}>
-          I do software and web development. Here is some of what I&apos;ve
-          built.
+          Here are some products I&apos;ve helped take from idea to reality.
         </p>
       </div>
       <ProjectBrowser />

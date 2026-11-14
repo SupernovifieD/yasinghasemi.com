@@ -33,7 +33,7 @@ const FONTS = [
 
 const OWNER = "Yasin Ghasemi";
 const SITE = "yasinghasemi.com";
-const TAGLINE = "Software and web development.";
+const TAGLINE = "Product management, from idea to market.";
 
 async function readGlow() {
   const css = await readFile(resolve(process.cwd(), "app/globals.css"), "utf8");

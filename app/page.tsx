@@ -8,10 +8,13 @@ export default function HomePage() {
       <HomeStage posts={getBlogPreviewPosts()}>
         <h1>Hello, I&apos;m Yasin Ghasemi.</h1>
         <div className={styles.copy}>
-          <p>I build things and write about the process.</p>
           <p>
-            This is where I share notes on my projects, the decisions behind
-            them, and what I learn along the way.
+            I&apos;m a product manager with experience building products people
+            value.
+          </p>
+          <p>
+            I&apos;ve worked from ideation and prototyping through launch,
+            marketing, and fundraising.
           </p>
         </div>
       </HomeStage>

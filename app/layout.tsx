@@ -39,14 +39,14 @@ export const metadata: Metadata = {
     template: "%s | Yasin Ghasemi",
   },
   description:
-    "Yasin Ghasemi writes about building software, project decisions, and lessons learned along the way.",
+    "Yasin Ghasemi is a product manager who writes about building products, the decisions behind them, and lessons learned along the way.",
   alternates: { canonical: siteConfig.origin },
   openGraph: {
     type: "website",
     siteName: siteConfig.name,
     title: "Yasin Ghasemi",
     description:
-      "Notes on software projects, the decisions behind them, and lessons learned along the way.",
+      "Notes on building products, the decisions behind them, and lessons learned along the way.",
     url: siteConfig.origin,
     images: [socialImageDescriptor(defaultSocialImage)],
   },
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Yasin Ghasemi",
     description:
-      "Notes on software projects, the decisions behind them, and lessons learned along the way.",
+      "Notes on building products, the decisions behind them, and lessons learned along the way.",
     images: [socialImageDescriptor(defaultSocialImage)],
   },
 };
