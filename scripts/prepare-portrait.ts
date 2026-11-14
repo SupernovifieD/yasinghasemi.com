@@ -109,8 +109,10 @@ const TARGETS: Record<string, Target> = {
         { x: 0.239, y: 0.645 },
         { x: 0.311, y: 0.655 },
         { x: 0.336, y: 0.75 },
-        { x: 0.395, y: 0.813 },
-        // Under the jaw it follows the neck, then the sweater's shoulder line.
+        // Keep following the neck's outer edge here. Moving this point farther
+        // right cuts a triangular gap out of the lower-left neck.
+        { x: 0.34, y: 0.813 },
+        // Then follow the sweater's shoulder line.
         { x: 0.33, y: 0.84 },
         { x: 0.31, y: 0.862 },
         { x: 0.297, y: 0.866 },

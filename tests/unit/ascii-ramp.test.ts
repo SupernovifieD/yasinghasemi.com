@@ -1,3 +1,6 @@
+import { resolve } from "node:path";
+
+import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -57,6 +60,28 @@ describe("sampleLuminanceGrid", () => {
     const grid = sampleLuminanceGrid(gray, 4, 4, 1);
     expect(grid).toHaveLength(4);
     expect(Array.from(grid).every((value) => value === 1)).toBe(true);
+  });
+});
+
+describe("prepared about portrait", () => {
+  it("keeps the lower-left neck continuous", async () => {
+    const { data, info } = await sharp(
+      resolve(process.cwd(), "assets/portrait/portrait-about.webp"),
+    )
+      .greyscale()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    let visible = 0;
+    let total = 0;
+    for (let y = info.height * 0.77; y < info.height * 0.83; y++) {
+      for (let x = info.width * 0.34; x < info.width * 0.39; x++) {
+        if (data[Math.floor(y) * info.width + Math.floor(x)] > 12) visible++;
+        total++;
+      }
+    }
+
+    expect(visible / total).toBeGreaterThan(0.85);
   });
 });
 
